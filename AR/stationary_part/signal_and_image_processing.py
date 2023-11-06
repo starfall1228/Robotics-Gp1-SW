@@ -3,16 +3,22 @@ import cv2
 import numpy as np
 
 # Define the lower and upper boundaries of the red color in the HSV color space
-lower_red = np.array([0, 100, 100])
-upper_red = np.array([10, 255, 255])
 
 # Define the lower and upper boundaries of the black color in the HSV color space
-lower_black = np.array([0, 0, 0])
-upper_black = np.array([180, 255, 30])
 
+lower_green = np.array([36, 25, 25])
+upper_green = np.array([70, 255, 255])
+
+lower_red = np.array([0, 50, 50])
+upper_red = np.array([10, 255, 255])
+
+lower_blue = np.array([100, 50, 50])
+upper_blue = np.array([130, 255, 255])
 # Initialize the video capture object
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(1)
 
+cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
 # Loop until the user presses 'q' to quit
 while True:
     # Read a frame from the camera
@@ -25,24 +31,37 @@ while True:
     # mask_red = cv2.inRange(hsv, lower_red, upper_red)
 
     # Create a mask for the black color
-    mask = cv2.inRange(hsv, lower_red, upper_red)
-
+    # mask_green = cv2.inRange(hsv, lower_green, upper_green)
+    mask_blue = cv2.inRange(hsv, lower_blue, upper_blue)
+    mask_red = cv2.inRange(hsv, lower_red, upper_red)
     # Combine the two masks using the bitwise OR operation
     # mask = cv2.bitwise_or(mask_red, mask_black)
 
-    # Find the contours of the red and black regions
-    contours, hierarchy = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
+    # Find the contours of the red
+    contours_red, hierarchy_red = cv2.findContours(
+        mask_red, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    # contours_green, hierarchy_green = cv2.findContours(
+        # mask_green, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    contours_blue, hierarchy_blue = cv2.findContours(
+        mask_blue, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     # Draw the contours on the original frame
-    cv2.drawContours(frame, contours, -1, (0, 255, 0), 2)
+    cv2.drawContours(frame, contours_red, -1, (0, 255, 0), 2)
+    # cv2.drawContours(frame, contours_green, -1, (0, 255, 0), 2)
+    cv2.drawContours(frame, contours_blue, -1, (0, 255, 0), 2)
 
     # Show the frame
     cv2.imshow('Frame', frame)
 
     # Check if the mask contains any non-zero pixels
-    if np.any(mask):
+    if np.any(mask_red):
         # Print a message on the terminal
         print('red detected')
+    # if np.any(mask_green):
+    #     # Print a message on the terminal
+    #     print('green detected')
+    if np.any(mask_blue):
+        # Print a message on the terminal
+        print('blue detected')
 
     # Check if the user presses 'q' to quit
     if cv2.waitKey(1) & 0xFF == ord('q'):
