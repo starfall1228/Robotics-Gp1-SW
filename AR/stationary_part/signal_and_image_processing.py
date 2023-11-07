@@ -6,8 +6,8 @@ import numpy as np
 
 # Define the lower and upper boundaries of the black color in the HSV color space
 
-lower_green = np.array([36, 25, 25])
-upper_green = np.array([70, 255, 255])
+lower_green = np.array([12, 25, 25])
+upper_green = np.array([86, 255, 255])
 
 lower_red = np.array([0, 50, 50])
 upper_red = np.array([10, 255, 255])
