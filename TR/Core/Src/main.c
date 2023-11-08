@@ -113,11 +113,11 @@ int main(void) {
     tft_force_clear();
     while (1) {
         if (HAL_GetTick() - last_ticks >= 100) {
-            tft_prints(0, 0, "Hello World!");
-            led_toggle(LED1);
-            led_toggle(LED2);
-            led_toggle(LED3);
-            led_toggle(LED4);
+            // tft_prints(0, 0, "Hello World!");
+            // led_toggle(LED1);
+            // led_toggle(LED2);
+            // led_toggle(LED3);
+            // led_toggle(LED4);
             last_ticks = HAL_GetTick();
         }
         /* USER CODE END WHILE */
