@@ -4,8 +4,8 @@ import cv2
 import numpy as np
 from tkinter import Tk
 from PIL import Image
-
 # You should have no reason to modify this class
+import path_signals as ps 
 class ColorDisplayWindow:
     def __init__(
         self,
@@ -115,7 +115,6 @@ class ColorDisplayWindow:
 
 
 
-cap = cv2.VideoCapture(0)
 
 def get_limits(color):
     c = np.uint8([[color]])  # BGR values
@@ -146,6 +145,11 @@ yellow = [0,255,255]
 green = [0,255,0]
 blue = [255,0,0]
 red = [0,0,255]
+
+
+
+
+cap = cv2.VideoCapture(0)
 if __name__ == "__main__":
     # TODO: Change your team's name
     color_display_1 = ColorDisplayWindow(
@@ -153,7 +157,7 @@ if __name__ == "__main__":
     )
 
     color_detection_list = [[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]]
-    
+    count = 0
     while True:
          
         ret, frame = cap.read()
@@ -173,25 +177,49 @@ if __name__ == "__main__":
         
 
         hsvImage = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+        # cropping the image 
+        
+        # Cropping image 1 
+        lowerLimitGreen, upperLimitGreen = get_limits(color=green)
+        maskGreen = cv2.inRange(hsvImage, lowerLimitGreen, upperLimitGreen)
+        maskGreen_ = Image.fromarray(maskGreen)
 
-        lowerLimit, upperLimit = get_limits(color=red)
-
-        mask = cv2.inRange(hsvImage, lowerLimit, upperLimit)
-
-        mask_ = Image.fromarray(mask)
-
-        bbox = mask_.getbbox()
+        
+        # Detecting blue color 
+        lowerLimitBlue, upperLimitBlue = get_limits(color=blue)
+        maskBlue = cv2.inRange(hsvImage, lowerLimitBlue, upperLimitBlue)
+        maskBlue_ = Image.fromarray(maskBlue)
+        
+        
+        # Detecting red color
+        bbox = maskGreen_.getbbox()
+        lowerLimitRed, upperLimitRed = get_limits(color=red)
+        maskRed = cv2.inRange(hsvImage, lowerLimitRed, upperLimitRed)
+        maskRed_ = Image.fromarray(maskRed)
 
         if bbox is not None:
             x1, y1, x2, y2 = bbox
-
             frame = cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 5)
 
+          
+        if np.any(maskGreen_):
+            print("Green")
+
+        # if np.any(maskRed):
+        #     print("Green")
+
+        # if np.any(maskBlue_):
+        #     print("Blue")
+        
+
         cv2.imshow('frame', frame) 
+        # cv2.imshow('hsv',hsvImage)
         # Updates display
         # color_display_1.display(color_detection_list)
         # print(frame) 
         if cv2.waitKey(10) & 0xFF == ord("q"):  # waits for 'q' key to be pressed
+            # Sending signal to the robot so that the robot can be terminated
+            # For shutting down the robot when necessary
             break
 
     cv2.destroyAllWindows()
