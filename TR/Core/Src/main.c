@@ -54,7 +54,19 @@
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-
+void gpio_classwork(void);
+void tft_classwork(void);
+void tutorial2_homework(void);
+void tutorial2_homework2(void);
+void tutorial2_homework3(void);
+void Smileface_Init(void);
+void pwm_init(void);
+void pwm_classwork(void);
+void pwm_classwork2(void);
+void pwm_homework(void);
+void set_motor_speed(Motor tar_motor, int16_t tar_vel);
+int32_t General_PID(int16_t, int16_t, double*, const double, const double, const double);
+void testing(Motor);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -97,6 +109,7 @@ int main(void) {
     MX_TIM5_Init();
     /* USER CODE BEGIN 2 */
     volatile uint32_t last_ticks = 0;
+    volatile uint32_t last_ticks_inc = 0;
 
     // we turn off all the led first
     led_off(LED1);
@@ -105,23 +118,156 @@ int main(void) {
     led_off(LED4);
     tft_init(PIN_ON_TOP, BLACK, WHITE, YELLOW, DARK_GREEN);
     HAL_GPIO_WritePin(GPIOC, GPIO_PIN_3, GPIO_PIN_SET);
+    pwm_init();
 
     /* USER CODE END 2 */
 
     /* Infinite loop */
     /* USER CODE BEGIN WHILE */
     tft_force_clear();
+    Smileface_Init();
+    can_init();
+
+	// pre-define constant
+	const Motor motorchoice[] = {CAN1_MOTOR0, CAN1_MOTOR1, CAN1_MOTOR2, CAN1_MOTOR3};
+	const char text_k[6][20] = {"kp-up", "kp-down", "ki-up", "ki-down", "kd-up", "kd-down"};
+	const char test_m[4][20] = {"First Motor", "Second Motor", "Third Motor", "Fourth Motor"};
+
+	// Status of each Btn
+	static int motornum = 0;
+	enum {kp_increase, kp_decrease, ki_increase, ki_decrease, kd_increase, kd_decrease} k_choice;
+	static int target_vel[4] = {0,0,0,0};
+
+	//initialize
+	k_choice = kp_increase;
+
+	// Hold&click Variable
+	static int Btn1_mode = 0;
+	static int Btn2_mode = 0;
+	static int Btn1_HoldTime = 0;
+	static int Btn2_HoldTime = 0;
+
+	// varying constant
+	static double kp[4] = {20,20,20,20},
+				kd[4] = {-0.5,-0.5,-0.5,-0.5},
+				ki[4] = {0.01,0.01,0.01,0.01};
+
     while (1) {
-        if (HAL_GetTick() - last_ticks >= 100) {
-            // tft_prints(0, 0, "Hello World!");
-            // led_toggle(LED1);
-            // led_toggle(LED2);
-            // led_toggle(LED3);
-            // led_toggle(LED4);
-            last_ticks = HAL_GetTick();
-        }
-        /* USER CODE END WHILE */
-        tft_update(100);
+    	can_ctrl_loop();
+    	if (HAL_GetTick() - last_ticks >= 100) {
+			led_toggle(LED1);
+			last_ticks = HAL_GetTick();
+		}
+
+        tft_prints(0, 0, "VEL: %d", get_motor_feedback(CAN1_MOTOR1).vel_rpm);
+        tft_prints(0, 1, "ENC: %d", get_motor_feedback(CAN1_MOTOR1).encoder);
+        tft_prints(0, 2, "CUR: %0.3f", (double)get_motor_feedback(CAN1_MOTOR1).actual_current);
+
+    	switch(Btn1_mode) {
+    	    // listening
+    	    case (0):
+    	        if (!btn_read(BTN1)) {
+    	        	Btn1_mode++;
+    	        	Btn1_HoldTime = HAL_GetTick();
+    	        }
+    	    break;
+
+    	    // Holding
+    	    case (1):
+				if (HAL_GetTick() - Btn1_HoldTime < 500) {
+					if (btn_read(BTN1)) Btn1_mode = 2;
+				}
+				else Btn1_mode = 3;
+    	    break;
+
+    	    //Clicking
+    	    case (2):
+				motornum++; motornum %= 4;
+    	    	Btn1_mode = 0;
+    	    break;
+
+    	    //Holding
+    	    case (3):
+    	    	target_vel[motornum] = 1000;
+    	    	testing(motorchoice[motornum]);
+    	    	if (btn_read(BTN1)) {
+    	    		target_vel[motornum] = 0;
+    	    		Btn1_mode = 0;
+    	    	}
+			break;
+    	}
+
+    	switch(Btn2_mode) {
+			// listening
+			case (0):
+				if (!btn_read(BTN2)) {
+					Btn2_mode++;
+					Btn2_HoldTime = HAL_GetTick();
+				}
+			break;
+
+			// Holding
+			case (1):
+				if (HAL_GetTick() - Btn2_HoldTime < 500) {
+					if (btn_read(BTN2)) Btn2_mode = 2;
+				}
+				else Btn2_mode = 3;
+			break;
+
+			//Clicking
+			case (2):
+				k_choice++; k_choice %= 6;
+
+				Btn2_mode = 0;
+			break;
+
+			//Holding
+			case (3):
+				if (btn_read(BTN2)) Btn2_mode = 0;
+
+				if (HAL_GetTick() - last_ticks_inc >= 100) {
+					switch (k_choice) {
+						case (kp_increase):
+							kp[motornum] *= 1.1;
+						break;
+
+						case (kp_decrease):
+							kp[motornum] *= 0.9;
+						break;
+
+						case (ki_increase):
+							ki[motornum] *= 1.1;
+						break;
+
+						case (ki_decrease):
+							ki[motornum] *= 0.9;
+						break;
+
+						case (kd_increase):
+							kd[motornum] *= 1.1;
+						break;
+
+						case (kd_decrease):
+							kd[motornum] *= 0.9;
+						break;
+					}
+					last_ticks_inc = HAL_GetTick();
+				}
+				tft_prints(0, 7, "%0.5f", kp[motornum]);
+				tft_prints(0, 8, "%0.5f", ki[motornum]);
+				tft_prints(0, 9, "%0.5f", kd[motornum]);
+			break;
+		}
+
+    	for (int i = 0; i < 4; i++ ) {
+    		set_motor_speed(motorchoice[i],target_vel[i]);
+    		tft_prints(0,5+i,"%d", target_vel[i]);
+    	}
+
+    	tft_prints(0, 3, "%s", test_m[motornum]);
+    	tft_prints(0, 4, "%s", text_k[k_choice]);
+    	tft_update(100);
+
         /* USER CODE BEGIN 3 */
     }
     /* USER CODE END 3 */

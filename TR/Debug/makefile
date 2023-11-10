@@ -34,34 +34,34 @@ $(wildcard ../makefile.init) \
 $(wildcard ../makefile.targets) \
 
 
-BUILD_ARTIFACT_NAME := SW Tutorial 2022
+BUILD_ARTIFACT_NAME := sw-tutorial
 BUILD_ARTIFACT_EXTENSION := elf
 BUILD_ARTIFACT_PREFIX :=
 BUILD_ARTIFACT := $(BUILD_ARTIFACT_PREFIX)$(BUILD_ARTIFACT_NAME)$(if $(BUILD_ARTIFACT_EXTENSION),.$(BUILD_ARTIFACT_EXTENSION),)
 
 # Add inputs and outputs from these tool invocations to the build variables 
 EXECUTABLES += \
-SW\ Tutorial\ 2022.elf \
+sw-tutorial.elf \
 
 MAP_FILES += \
-SW\ Tutorial\ 2022.map \
+sw-tutorial.map \
 
 SIZE_OUTPUT += \
 default.size.stdout \
 
 OBJDUMP_LIST += \
-SW\ Tutorial\ 2022.list \
+sw-tutorial.list \
 
 
 # All Target
 all: main-build
 
 # Main-build Target
-main-build: SW\ Tutorial\ 2022.elf secondary-outputs
+main-build: sw-tutorial.elf secondary-outputs
 
 # Tool invocations
-SW\ Tutorial\ 2022.elf SW\ Tutorial\ 2022.map: $(OBJS) $(USER_OBJS) /Users/christsui1211/Desktop/UST\ 22-23\ Fall/ELEC\ 3300/stm32/SW\ Tutorial\ 2022/STM32F405RGTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "SW Tutorial 2022.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"/Users/christsui1211/Desktop/UST 22-23 Fall/ELEC 3300/stm32/SW Tutorial 2022/STM32F405RGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="SW Tutorial 2022.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+sw-tutorial.elf sw-tutorial.map: $(OBJS) $(USER_OBJS) C:\Users\tr246\Desktop\Robotics\sw-tutorial\STM32F405RGTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "sw-tutorial.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\tr246\Desktop\Robotics\sw-tutorial\STM32F405RGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="sw-tutorial.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -70,14 +70,14 @@ default.size.stdout: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
 	@echo 'Finished building: $@'
 	@echo ' '
 
-SW\ Tutorial\ 2022.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "SW Tutorial 2022.list"
+sw-tutorial.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "sw-tutorial.list"
 	@echo 'Finished building: $@'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) SW\ Tutorial\ 2022.elf SW\ Tutorial\ 2022.list SW\ Tutorial\ 2022.map SW\\ Tutorial\\ 2022.elf default.size.stdout
+	-$(RM) default.size.stdout sw-tutorial.elf sw-tutorial.list sw-tutorial.map
 	-@echo ' '
 
 secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST)
