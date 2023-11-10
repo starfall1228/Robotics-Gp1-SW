@@ -115,7 +115,6 @@ class ColorDisplayWindow:
 
 
 
-cap = cv2.VideoCapture(0)
 
 def get_limits(color):
     c = np.uint8([[color]])  # BGR values
@@ -147,33 +146,10 @@ green = [0,255,0]
 blue = [255,0,0]
 red = [0,0,255]
 
-import serial 
 
 
 
-
-
-
-ser = serial.Serial()
-
-
-def send_path1():
-    path1_signal = "L0"
-    ser.write(path1_signal)
-
-def send_path2():
-    path2_signal = "L1"
-    ser.write(path2_signal) 
-
-def send_path3():
-
-    path3_signal = "R0"
-    ser.write(path3_signal)
-
-def send_path4():
-    path4_signal = "R1"
-    ser.write(path4_signal)
-    
+cap = cv2.VideoCapture(0)
 if __name__ == "__main__":
     # TODO: Change your team's name
     color_display_1 = ColorDisplayWindow(
@@ -226,17 +202,14 @@ if __name__ == "__main__":
             frame = cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 5)
 
           
-        if np.any(maskRed_) and count == 0:
-            send_path1()
+        if np.any(maskGreen_):
+            print("Green")
 
-        if np.any(maskRed) and count == 1:
-            send_path2()
+        # if np.any(maskRed):
+        #     print("Green")
 
-        if np.any(maskBlue_) and count == 0:
-            send_path3()
-        
-        if np.any(maskBlue) and count == 1:
-            send_path4()
+        # if np.any(maskBlue_):
+        #     print("Blue")
         
 
         cv2.imshow('frame', frame) 
@@ -247,7 +220,6 @@ if __name__ == "__main__":
         if cv2.waitKey(10) & 0xFF == ord("q"):  # waits for 'q' key to be pressed
             # Sending signal to the robot so that the robot can be terminated
             # For shutting down the robot when necessary
-            ser.write('T')
             break
 
     cv2.destroyAllWindows()
