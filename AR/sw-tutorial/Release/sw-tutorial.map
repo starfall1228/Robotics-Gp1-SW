@@ -182,9 +182,9 @@ Discarded input sections
  .text.PID_current_input
                 0x0000000000000000       0xb0 ./Core/Src/main.o
  .text.init_PID
-                0x0000000000000000        0xa ./Core/Src/main.o
+                0x0000000000000000       0x22 ./Core/Src/main.o
  .text.upp_state_speed
-                0x0000000000000000       0x2e ./Core/Src/main.o
+                0x0000000000000000      0x10c ./Core/Src/main.o
  .rodata.PI     0x0000000000000000        0x8 ./Core/Src/main.o
  .rodata.R      0x0000000000000000        0x8 ./Core/Src/main.o
  .text          0x0000000000000000        0x0 ./Core/Src/spi.o
