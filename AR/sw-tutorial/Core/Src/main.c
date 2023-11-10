@@ -149,25 +149,25 @@ double PID_current_input2(double target_dist,Motor motor, double dt) {
 
 // Implemented for outputting steady speed- alternative approach
 // Hi Taimas, please help me to test these 2  functions if you arrive early lol
-void init_PID(PID pid, double setspeed,double kp, double ki, double kd){
-	pid.kp = kp;
-	pid.ki = ki;
-	pid.kd = kd;
-	pid.err=0.0;
-	pid.err_last=0.0;
-	pid.integral=0.0;
-	pid.setspeed = setspeed;
+void init_PID(PID* pid, double setspeed,double kp, double ki, double kd){
+	pid->kp = kp;
+	pid->ki = ki;
+	pid->kd = kd;
+	pid->err=0.0;
+	pid->err_last=0.0;
+	pid->integral=0.0;
+	pid->setspeed = setspeed;
 }
 
-void upp_state_speed(double setspeed,Motor motor, PID pid,double* last_ticks){
+void upp_state_speed(double setspeed,Motor motor, PID* pid,double* last_ticks){
 	double cur_vel = get_motor_feedback(motor).vel_rpm / 60.0 * 2 * PI * 3.5;
-    pid.setspeed = setspeed;
-    pid.err = pid.setspeed - cur_vel;
-    pid.integral+=pid.err;
+    pid->setspeed = setspeed;
+    pid->err = pid->setspeed - cur_vel;
+    pid->integral += pid->err;
     double dt = (HAL_GetTick() - *last_ticks)/1000;
     *last_ticks = HAL_GetTick();
-    pid.current=pid.kp*pid.err+pid.ki*pid.integral+pid.kd*(pid.err-pid.err_last)/dt;
-    pid.err_last=pid.err;
+    pid->current = pid->kp*pid->err + pid->ki*pid->integral+pid->kd*(pid->err-pid->err_last)/dt;
+    pid->err_last=pid->err;
 }
 
 int main(void) {
