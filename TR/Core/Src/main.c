@@ -64,9 +64,6 @@ void pwm_init(void);
 void pwm_classwork(void);
 void pwm_classwork2(void);
 void pwm_homework(void);
-void set_motor_speed(Motor tar_motor, int16_t tar_vel);
-int32_t General_PID(int16_t, int16_t, double*, const double, const double, const double);
-void testing(Motor);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -125,8 +122,8 @@ int main(void) {
     /* Infinite loop */
     /* USER CODE BEGIN WHILE */
     tft_force_clear();
-    Smileface_Init();
     can_init();
+    PID_variable_init();
 
 	// pre-define constant
 	const Motor motorchoice[] = {CAN1_MOTOR0, CAN1_MOTOR1, CAN1_MOTOR2, CAN1_MOTOR3};
@@ -260,7 +257,7 @@ int main(void) {
 		}
 
     	for (int i = 0; i < 4; i++ ) {
-    		set_motor_speed(motorchoice[i],target_vel[i]);
+    		set_motor_speed(motorchoice[i],target_vel[i],kp[i],ki[i],kd[i]);
     		tft_prints(0,5+i,"%d", target_vel[i]);
     	}
 

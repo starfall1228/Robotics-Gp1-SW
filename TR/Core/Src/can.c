@@ -19,6 +19,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "can.h"
+#include "lcd/lcd.h"
 
 #include "main.h"
 
@@ -359,17 +360,13 @@ int min (int currents[]) {
 	return tempmin;
 }
 
-//double currentV = 0;
-//int currents[500] = {};
-//int ind = 0;
-
 int32_t General_PID(int16_t error, int16_t prev_error, double* accu, const double kp, const double ki, const double kd) {
 	// variable declaration
 	static uint32_t last_ticks = 0;
 	uint32_t deltatime = HAL_GetTick()-last_ticks;
-	uint32_t P_Gain;
-	uint32_t I_Gain;
-	uint32_t D_Gain;
+	double P_Gain;
+	double I_Gain;
+	double D_Gain;
 
 	// prevent 0
 	deltatime = (deltatime == 0)? 1 : deltatime;
@@ -390,28 +387,38 @@ int32_t General_PID(int16_t error, int16_t prev_error, double* accu, const doubl
 }
 
 int currents[MAX_NUM_OF_MOTORS][500] = {};
-static int indexes[MAX_NUM_OF_MOTORS] = {0,0,0,0};
-static double error[MAX_NUM_OF_MOTORS]={0,0,0,0};
-static double prev_error[MAX_NUM_OF_MOTORS]={0,0,0,0};
-static double accu[MAX_NUM_OF_MOTORS] = {0,0,0,0};
-static double tar_current[MAX_NUM_OF_MOTORS] = {0,0,0,0};
+static int indexes[MAX_NUM_OF_MOTORS];
+static double error[MAX_NUM_OF_MOTORS];
+static double prev_error[MAX_NUM_OF_MOTORS];
+static double accu[MAX_NUM_OF_MOTORS];
+static double tar_current[MAX_NUM_OF_MOTORS];
+
+void PID_variable_init() {
+	for (int i = 0; i < MAX_NUM_OF_MOTORS; i++) {
+		indexes[i] = 0;
+		error[i] = 0;
+		prev_error[i] = 0;
+		accu[i] = 0;
+		tar_current[i] = 0;
+	}
+}
 
 //for (int i = 0, i < MAX_NUM_OF_MOTORS; i++) {
 //	indexes[i]
 //}
 
-void set_motor_speed(Motor tar_motor, int16_t tar_vel) {
-	static double Cur_vel;
+void set_motor_speed(Motor tar_motor, int16_t tar_vel, const double kp, const double ki, const double kd) {
+	static double Cur_vel = 0;
 
 	// collect current velocity
 	Cur_vel = get_motor_feedback(tar_motor).vel_rpm;
 	error[tar_motor] = tar_vel - Cur_vel;
 
 	// calculate error
-	tar_current[tar_motor] = General_PID(error[tar_motor], prev_error[tar_motor], accu+tar_motor,20,0,-0);
+	tar_current[tar_motor] = General_PID(error[tar_motor], prev_error[tar_motor], accu+tar_motor,kp,ki,kd);
 	prev_error[tar_motor] = error[tar_motor];
 
-	set_motor_current(tar_motor,tar_current);
+	set_motor_current(tar_motor,tar_current[tar_motor]);
 
 	currents[tar_motor][indexes[tar_motor]++ % 500] = Cur_vel;
 }
@@ -422,7 +429,7 @@ void testing(Motor tar_motor) {
 	tft_prints(0, 6, "%d   ", maximum);
 	tft_prints(0, 7, "%d   ", minimum);
 	tft_prints(0, 8, "%d   ", maximum-minimum);
-	tft_prints(0, 9, "A: %d  ", tar_current[tar_motor]);
+	tft_prints(0, 9, "A: %0.5f  ", tar_current[tar_motor]);
 }
 
 /* USER CODE END 1 */
