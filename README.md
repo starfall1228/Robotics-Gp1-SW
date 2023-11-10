@@ -4,8 +4,10 @@ robotics things
 ## AR- things to be done 
 - [x] PID-distance code
 - [x] PID-speed code
-- [ ] Image-Processing codes
+- [x] Image-Processing codes
+- [ ] Image-processing debugging
 - [ ] Signal sending codes
+- [ ] Signal sending debugging
 - [x] PID-distance test
 - [ ] PID-speed test
 
