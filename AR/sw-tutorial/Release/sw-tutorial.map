@@ -173,10 +173,8 @@ Discarded input sections
  .text          0x0000000000000000        0x0 ./Core/Src/main.o
  .data          0x0000000000000000        0x0 ./Core/Src/main.o
  .bss           0x0000000000000000        0x0 ./Core/Src/main.o
- .text.path_1   0x0000000000000000        0x2 ./Core/Src/main.o
- .text.path_2   0x0000000000000000        0x2 ./Core/Src/main.o
- .text.path_3   0x0000000000000000        0x2 ./Core/Src/main.o
- .text.path_4   0x0000000000000000        0x2 ./Core/Src/main.o
+ .text.init_PID
+                0x0000000000000000        0xa ./Core/Src/main.o
  .text.rpm_error
                 0x0000000000000000       0x2c ./Core/Src/main.o
  .text.rpm_differential_error
@@ -185,6 +183,10 @@ Discarded input sections
                 0x0000000000000000       0x30 ./Core/Src/main.o
  .text.PID_current_input
                 0x0000000000000000       0xb0 ./Core/Src/main.o
+ .text.upp_state_speed
+                0x0000000000000000       0x1c ./Core/Src/main.o
+ .text.PID_current_input3
+                0x0000000000000000       0x66 ./Core/Src/main.o
  .rodata.PI     0x0000000000000000        0x8 ./Core/Src/main.o
  .rodata.R      0x0000000000000000        0x8 ./Core/Src/main.o
  .text          0x0000000000000000        0x0 ./Core/Src/spi.o

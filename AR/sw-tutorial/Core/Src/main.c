@@ -72,26 +72,28 @@ void pwm_init(void); //add this line!
 void pwm_classwork(void); //add this line!
 void pwm_homework(void); //add this line!
 
-// Function to be used when the robot start from the left side, traveling the topmost path
-void path_1(){
+typedef struct PID {
+	double kp;
+	double ki;
+	double kd;
+	double setspeed;
+	double actual_speed;
+	double integral;
+	double err;
+	double err_last;
+	double current;
+}PID;
 
+void init_PID(PID pid, double setspeed,double kp, double ki, double kd){
+	pid.kp = kp;
+	pid.ki = ki;
+	pid.kd = kd;
+	pid.err=0.0;
+	pid.err_last=0.0;
+	pid.integral=0.0;
+	pid.setspeed = setspeed;
 }
 
-// Function to be used when the robot start from the left side, traveling to bottommost path
-void path_2(){
-
-}
-
-// Function to be called when the robot starts from the right side, traveling to the second topmost path
-void path_3(){
-
-}
-// function to be called when the robot starts from the right side,
-//traveling to the second bottommost path
-
-void path_4(){
-
-}
 
 double error_integral = 0;
 double rpm_error(double target_rpm, Motor motor){
@@ -151,6 +153,18 @@ double PID_current_input2(double target_dist,Motor motor, double dt) {
 	if(cur_err < 0)return 0;
 	return kp * cur_err + ki * error_integral + kd *  dif_err;
 }
+
+// Implemented for outputting steady speed- alternative approach
+// Hi Taimas, please help me to check this function if you arrive early lol
+void upp_state_speed(double setspeed,Motor motor, PID pid){
+	double cur_vel = get_motor_feedback(motor).vel_rpm / 60.0 * 2 * PI * 3.5;
+    pid.setspeed = setspeed;
+    pid.err = pid.setspeed - cur_vel;
+    pid.integral+=pid.err;
+    pid.current=pid.kp*pid.err+pid.ki*pid.integral+pid.kd*(pid.err-pid.err_last);
+    pid.err_last=pid.err;
+}
+
 int main(void) {
     /* USER CODE BEGIN 1 */
 
