@@ -9,6 +9,8 @@ robotics things
 - [ ] Signal sending codes
 - [ ] Signal sending debugging
 - [x] PID-distance test
-- [ ] PID-speed test
+- [x] PID-speed test
+- [ ] Movement functions
+- [ ] Bluetooth implementation
 
 ## TR - things to be done 
