@@ -360,6 +360,14 @@ int min (int currents[]) {
 	return tempmin;
 }
 
+int average (int currents[]) {
+	int tempsum = currents[0];
+	for (int i = 1; i < 500; i++) {
+		tempsum += currents[i];
+	}
+	return tempsum/500;
+}
+
 int32_t General_PID(int16_t error, int16_t prev_error, double* accu, const double kp, const double ki, const double kd) {
 	// variable declaration
 	static uint32_t last_ticks = 0;
@@ -375,12 +383,11 @@ int32_t General_PID(int16_t error, int16_t prev_error, double* accu, const doubl
 	P_Gain = kp * error;
 
 	// I
-	*accu += error * deltatime;
+	*accu += error * deltatime/1000;
 	I_Gain = ki * (*accu);
 
 	// D
-	D_Gain = kd * (error - prev_error);
-			///deltatime * 1000;
+	D_Gain = kd * (error - prev_error)/deltatime;
 
 	last_ticks = HAL_GetTick();
 
@@ -432,6 +439,10 @@ void testing(Motor tar_motor) {
 	tft_prints(0, 7, "   %d   ", minimum);
 	tft_prints(0, 8, "   %d   ", maximum-minimum);
 	tft_prints(0, 9, "A: %0.5f  ", tar_current[tar_motor]);
+}
+
+double averagespeed(Motor tar_motor) {
+	return average(currents[tar_motor]);
 }
 
 /* USER CODE END 1 */

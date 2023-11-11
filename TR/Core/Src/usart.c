@@ -19,6 +19,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "usart.h"
+#include "can.h"
 
 /* USER CODE BEGIN 0 */
 
@@ -182,5 +183,23 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
 }
 
 /* USER CODE BEGIN 1 */
+void RecieveData(char dat[10]) {
+	HAL_UART_Receive(&huart1, (uint8_t*)&dat, sizeof(char) * 10, 10);
+}
 
+void SendData(Motor motorchoice[4]) {
+	static uint32_t last_Send_Time = 0;
+	if (HAL_GetTick() - last_Send_Time > 100) {
+		double avg_M1 = averagespeed(motorchoice[0]);
+		double avg_M2 = averagespeed(motorchoice[1]);
+		double avg_M3 = averagespeed(motorchoice[2]);
+		double avg_M4 = averagespeed(motorchoice[3]);
+
+		double ver = (avg_M1+avg_M2+avg_M3+avg_M4) * 0.7071;
+		double hor = (avg_M1+avg_M3-avg_M2-avg_M4) * 0.7071;
+
+		uint8_t dat = ver*ver + hor*hor;
+		HAL_UART_Transmit (&huart1, (uint8_t*)&dat, sizeof(dat), 0xFFFF);
+	}
+}
 /* USER CODE END 1 */

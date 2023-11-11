@@ -123,6 +123,7 @@ void set_motor_speed(Motor tar_motor, int16_t tar_vel, const double kp, const do
 int32_t General_PID(int16_t, int16_t, double*, const double, const double, const double);
 void testing(Motor);
 void PID_variable_init();
+double averagespeed(Motor);
 
 /* USER CODE END Prototypes */
 
