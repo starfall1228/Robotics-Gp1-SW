@@ -256,7 +256,7 @@ int main(void) {
 				tft_prints(0, 9, "%0.5f", kd[motornum]);
 			break;
 		}
-
+    	ReceiveData(target_vel);
     	for (int i = 0; i < 4; i++ ) {
     		set_motor_speed(motorchoice[i],target_vel[i],kp[i],ki[i],kd[i]);
     	}

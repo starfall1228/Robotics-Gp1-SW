@@ -47,3 +47,7 @@ TR/Debug/sw-tutorial.list
 TR/Debug/sw-tutorial.map
 TR/Release/Core/Src/can.d
 TR/Release/Core/Src/can.o
+TR/Debug/sw-tutorial.elf
+TR/Debug/sw-tutorial.list
+TR/Debug/sw-tutorial.map
+TR/Debug/makefile
