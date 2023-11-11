@@ -369,7 +369,7 @@ int32_t General_PID(int16_t error, int16_t prev_error, double* accu, const doubl
 	double D_Gain;
 
 	// prevent 0
-	deltatime = (deltatime == 0)? 1 : deltatime;
+	//deltatime = (deltatime == 0)? 1 : deltatime;
 
 	// P
 	P_Gain = kp * error;
@@ -379,7 +379,8 @@ int32_t General_PID(int16_t error, int16_t prev_error, double* accu, const doubl
 	I_Gain = ki * (*accu);
 
 	// D
-	D_Gain = kd * (error - prev_error)/deltatime * 1000;
+	D_Gain = kd * (error - prev_error);
+			///deltatime * 1000;
 
 	last_ticks = HAL_GetTick();
 
@@ -426,9 +427,10 @@ void set_motor_speed(Motor tar_motor, int16_t tar_vel, const double kp, const do
 void testing(Motor tar_motor) {
 	int maximum = max(currents[tar_motor]);
 	int minimum = min(currents[tar_motor]);
-	tft_prints(0, 6, "%d   ", maximum);
-	tft_prints(0, 7, "%d   ", minimum);
-	tft_prints(0, 8, "%d   ", maximum-minimum);
+	tft_prints(0, 5, " %0.5f   ", accu[tar_motor]);
+	tft_prints(0, 6, "   %d   ", maximum);
+	tft_prints(0, 7, "   %d   ", minimum);
+	tft_prints(0, 8, "   %d   ", maximum-minimum);
 	tft_prints(0, 9, "A: %0.5f  ", tar_current[tar_motor]);
 }
 
