@@ -12,5 +12,7 @@ robotics things
 - [x] PID-speed test
 - [ ] Movement functions
 - [ ] Bluetooth implementation
+- [ ] Servo code
+- [ ] Servo code testing 
 
 ## TR - things to be done 
