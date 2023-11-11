@@ -28,3 +28,6 @@ gpio.o
 *.su
 *.launch
 *.cfg
+*.elf
+*.map
+*.list
