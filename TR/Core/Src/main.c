@@ -148,7 +148,7 @@ int main(void) {
 	// varying constant
 	static double kp[4] = {20,20,20,20},
 				kd[4] = {-0.5,-0.6,-0.5,-0.5},
-				ki[4] = {0.001,0.0,0.001,0.001};
+				ki[4] = {0.001,0.001,0.001,0.001};
 
     while (1) {
     	can_ctrl_loop();
@@ -262,7 +262,7 @@ int main(void) {
     	}
 
     	tft_prints(0, 3, "%s", test_m[motornum]);
-    	tft_prints(0, 4, "%s", text_k[k_choice]);
+    	tft_prints(0, 4, "%s     ", text_k[k_choice]);
     	tft_update(100);
 
         /* USER CODE BEGIN 3 */
