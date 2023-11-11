@@ -28,6 +28,8 @@ gpio.o
 *.su
 *.launch
 *.cfg
-*.elf
 *.map
 *.list
+TR/Release/sw-tutorial.map
+TR/Release/sw-tutorial.list
+TR/Release/sw-tutorial.elf
