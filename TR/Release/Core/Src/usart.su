@@ -1,4 +1,6 @@
-../Core/Src/usart.c:32:6:MX_USART1_UART_Init	8	static
-../Core/Src/usart.c:61:6:MX_USART2_UART_Init	8	static
-../Core/Src/usart.c:89:6:HAL_UART_MspInit	48	static
-../Core/Src/usart.c:143:6:HAL_UART_MspDeInit	0	static
+../Core/Src/usart.c:33:6:MX_USART1_UART_Init	8	static
+../Core/Src/usart.c:62:6:MX_USART2_UART_Init	8	static
+../Core/Src/usart.c:90:6:HAL_UART_MspInit	48	static
+../Core/Src/usart.c:144:6:HAL_UART_MspDeInit	0	static
+../Core/Src/usart.c:205:6:RecieveData	16	static
+../Core/Src/usart.c:209:6:SendData	152	static

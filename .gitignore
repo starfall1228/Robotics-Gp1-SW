@@ -33,3 +33,17 @@ gpio.o
 TR/Release/sw-tutorial.map
 TR/Release/sw-tutorial.list
 TR/Release/sw-tutorial.elf
+TR/Debug/Core/Src/can.d
+TR/Debug/Core/Src/can.o
+TR/Debug/Core/Src/can.su
+TR/Debug/Core/Src/main.o
+TR/Debug/Core/Src/main.su
+TR/Debug/Core/Src/usart.d
+TR/Debug/Core/Src/usart.o
+TR/Debug/Core/Src/usart.su
+TR/Debug/makefile
+TR/Debug/sw-tutorial.elf
+TR/Debug/sw-tutorial.list
+TR/Debug/sw-tutorial.map
+TR/Release/Core/Src/can.d
+TR/Release/Core/Src/can.o

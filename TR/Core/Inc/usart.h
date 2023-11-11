@@ -27,6 +27,7 @@ extern "C" {
 
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "can.h"
 
 /* USER CODE BEGIN Includes */
 
@@ -44,6 +45,8 @@ void MX_USART1_UART_Init(void);
 void MX_USART2_UART_Init(void);
 
 /* USER CODE BEGIN Prototypes */
+void RecieveData(char dat[10]);
+void SendData(const Motor motorchoice[4]);
 
 /* USER CODE END Prototypes */
 

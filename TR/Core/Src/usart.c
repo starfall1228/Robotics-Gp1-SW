@@ -20,7 +20,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "usart.h"
 #include "can.h"
-
+#include "math.h"
 /* USER CODE BEGIN 0 */
 
 /* USER CODE END 0 */
@@ -41,7 +41,7 @@ void MX_USART1_UART_Init(void)
 
   /* USER CODE END USART1_Init 1 */
   huart1.Instance = USART1;
-  huart1.Init.BaudRate = 115200;
+  huart1.Init.BaudRate = 9600;
   huart1.Init.WordLength = UART_WORDLENGTH_8B;
   huart1.Init.StopBits = UART_STOPBITS_1;
   huart1.Init.Parity = UART_PARITY_NONE;
@@ -70,7 +70,7 @@ void MX_USART2_UART_Init(void)
 
   /* USER CODE END USART2_Init 1 */
   huart2.Instance = USART2;
-  huart2.Init.BaudRate = 115200;
+  huart2.Init.BaudRate = 9600;
   huart2.Init.WordLength = UART_WORDLENGTH_8B;
   huart2.Init.StopBits = UART_STOPBITS_1;
   huart2.Init.Parity = UART_PARITY_NONE;
@@ -181,15 +181,34 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
   /* USER CODE END USART2_MspDeInit 1 */
   }
 }
+//
+//char *toString(uint8_t *a)
+//{
+//  char* buffer2;
+//  int i;
+//
+//  buffer2 = malloc(9);
+//  if (!buffer2)
+//    return NULL;
+//
+//  buffer2[8] = 0;
+//  for (i = 0; i <= 7; i++)
+//    buffer2[7 - i] = (((*a) >> i) & (0x01)) + '0';
+//
+//  puts(buffer2);
+//
+//  return buffer2;
+//}
+
 
 /* USER CODE BEGIN 1 */
 void RecieveData(char dat[10]) {
 	HAL_UART_Receive(&huart1, (uint8_t*)&dat, sizeof(char) * 10, 10);
 }
 
-void SendData(Motor motorchoice[4]) {
+void SendData(const Motor motorchoice[4]) {
 	static uint32_t last_Send_Time = 0;
-	if (HAL_GetTick() - last_Send_Time > 100) {
+	if (HAL_GetTick() - last_Send_Time > 1000) {
 		double avg_M1 = averagespeed(motorchoice[0]);
 		double avg_M2 = averagespeed(motorchoice[1]);
 		double avg_M3 = averagespeed(motorchoice[2]);
@@ -198,8 +217,26 @@ void SendData(Motor motorchoice[4]) {
 		double ver = (avg_M1+avg_M2+avg_M3+avg_M4) * 0.7071;
 		double hor = (avg_M1+avg_M3-avg_M2-avg_M4) * 0.7071;
 
-		uint8_t dat = ver*ver + hor*hor;
-		HAL_UART_Transmit (&huart1, (uint8_t*)&dat, sizeof(dat), 0xFFFF);
+		uint32_t value = ver*ver + hor*hor;
+		value = (uint32_t) sqrt(value);
+		char tempdat[50];
+		char dat[50];
+		int i = 0;
+
+		for (; i < 50; i++) {
+			tempdat[i] = value%10 + '0';
+			value /= 10;
+			if (value == 0) break;
+		}
+
+		dat[i+1] = '\0';
+		for (int k = 0; k <= i ; k++) {
+			dat[k] = tempdat[i-k];
+		}
+		tft_prints(0, 5, "%s  ", dat);
+		tft_update(100);
+		last_Send_Time = HAL_GetTick();
+		HAL_UART_Transmit (&huart1, (uint8_t*)&dat, sizeof(char)*(i+1), 0xFFFF);
 	}
 }
 /* USER CODE END 1 */

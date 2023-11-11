@@ -413,7 +413,7 @@ void PID_variable_init() {
 		prev_error[i] = 0;
 		accu[i] = 0;
 		tar_current[i] = 0;
-		last_ticks[i] = 0;
+//		last_ticks[i] = 0;
 	}
 }
 
