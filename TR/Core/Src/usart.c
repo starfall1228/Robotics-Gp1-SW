@@ -307,7 +307,7 @@ void ReceiveData(int tar_vel[4]) {
 		break;
 		
 		default:
-			// nigga what
+
 		break;
 
 	}
