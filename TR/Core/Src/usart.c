@@ -203,7 +203,107 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
 
 /* USER CODE BEGIN 1 */
 void RecieveData(char dat[10]) {
+	char dat[10];
 	HAL_UART_Receive(&huart1, (uint8_t*)&dat, sizeof(char) * 10, 10);
+	int value = 0;
+	int temp = 16;
+	for (int i = 0; i < 5; i++) {
+		value += (dat[i] - '0') * temp;
+		temp /= 2;
+	}
+	switch (value) {
+	// Push button
+		// Up
+		case 20:
+
+		break;
+
+		// Right
+		case 22:
+
+		break;
+
+		// Left
+		case 21:
+
+		break;
+
+		// Down
+		case 23:
+
+		break;
+
+		// Diag-Up-right
+		case 24:
+
+		break;
+
+		// Diag-Up-left
+		case 26:
+
+		break;
+
+		// Diag-Down-right
+		case 25:
+
+		break;
+
+		// Diag-Down-left
+		case 27:
+
+		break;
+
+	// Unpush Button
+		// Up
+		case 4:
+
+		break;
+
+		// Right
+		case 6:
+
+		break;
+
+		// Left
+		case 5:
+
+		break;
+
+		// Down
+		case 7:
+
+		break;
+
+		// Diag-Up-right
+		case 8:
+
+		break;
+
+		// Diag-Up-left
+		case 10:
+
+		break;
+
+		// Diag-Down-right
+		case 9:
+
+		break;
+
+		// Diag-Down-left
+		case 11:
+
+		break;
+	
+	// stop
+		case 0:
+			
+		break;
+		
+		default:
+			
+		break;
+	}
+
 }
 
 void SendData(const Motor motorchoice[4]) {
