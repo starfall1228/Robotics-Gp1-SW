@@ -17,5 +17,14 @@ TR/Release/Core/Src/can.o
 TR/Release/Core/Src/can.su
 TR/Release/Core/Src/main.o
 TR/Release/Core/Src/main.su
-*.o
 .DS_Store
+.metadata
+*.o
+Debug
+*.elf
+*.list
+*.map 
+gpio.o
+*.su
+*.launch
+*.cfg
