@@ -23,6 +23,7 @@
 #include "i2c.h"
 #include "spi.h"
 #include "tim.h"
+#include "string.h"
 #include "usart.h"
 #include "gpio.h"
 
@@ -131,7 +132,7 @@ int main(void) {
 	const char test_m[4][20] = {"First Motor", "Second Motor", "Third Motor", "Fourth Motor"};
 
 	// Status of each Btn
-	static int motornum = 0;
+	static int motornum = 1;
 	enum {kp_increase, kp_decrease, ki_increase, ki_decrease, kd_increase, kd_decrease} k_choice;
 	static int target_vel[4] = {0,0,0,0};
 
@@ -146,8 +147,8 @@ int main(void) {
 
 	// varying constant
 	static double kp[4] = {20,20,20,20},
-				kd[4] = {-0.5,-0.5,-0.5,-0.5},
-				ki[4] = {0.01,0.01,0.01,0.01};
+				kd[4] = {-0.5,-0.6,-0.5,-0.5},
+				ki[4] = {0.001,0.0,0.001,0.001};
 
     while (1) {
     	can_ctrl_loop();
@@ -258,7 +259,6 @@ int main(void) {
 
     	for (int i = 0; i < 4; i++ ) {
     		set_motor_speed(motorchoice[i],target_vel[i],kp[i],ki[i],kd[i]);
-    		tft_prints(0,5+i,"%d", target_vel[i]);
     	}
 
     	tft_prints(0, 3, "%s", test_m[motornum]);
