@@ -203,14 +203,22 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
 
 /* USER CODE BEGIN 1 */
 void ReceiveData(int tar_vel[4]) {
-	char dat[10];
-	HAL_UART_Receive(&huart1, (uint8_t*)&dat, sizeof(char) * 10, 10);
+	char dat[10]={NULL};
+
+	//HAL_UART_Receive(&huart1, (uint8_t*)&dat, sizeof(char) * 10, 10);
+	if(dat[0]==NULL) return;
 	int value = 0;
 	int temp = 16;
 	for (int i = 0; i < 5; i++) {
 		value += (dat[i] - '0') * temp;
 		temp /= 2;
 	}
+
+	tft_prints(0, 5, "%s        ", dat);
+	tft_prints(0, 6, "%d       ", value);
+	tft_update(100);
+
+
 
 	int velocity = 1000;
 
@@ -341,8 +349,8 @@ void SendData(const Motor motorchoice[4]) {
 		for (int k = 0; k <= i ; k++) {
 			dat[k] = tempdat[i-k];
 		}
-		tft_prints(0, 5, "%s  ", dat);
-		tft_update(100);
+//		tft_prints(0, 5, "%s  ", dat);
+//		tft_update(100);
 		last_Send_Time = HAL_GetTick();
 		HAL_UART_Transmit (&huart1, (uint8_t*)&dat, sizeof(char)*(i+1), 0xFFFF);
 	}
