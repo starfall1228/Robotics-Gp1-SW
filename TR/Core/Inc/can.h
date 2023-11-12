@@ -93,6 +93,7 @@ typedef struct {
 #define CAN1_RX_ID_START 0x201
 #define MOTOR_ID		 2
 /* USER CODE END Private defines */
+
 void MX_CAN1_Init(void);
 void MX_CAN2_Init(void);
 
@@ -120,7 +121,7 @@ void set_motor_current(Motor tar_motor, int16_t tar_current);
 
 // TODO: implement this (Tips: see PID notes)
 void set_motor_speed(Motor tar_motor, int16_t tar_vel, const double kp, const double ki, const double kd);
-int32_t Gxeneral_PID(Motor,int16_t, int16_t, double*, const double, const double, const double);
+int32_t General_PID(Motor,int16_t, int16_t, double*, const double, const double, const double);
 void testing(Motor);
 void PID_variable_init();
 double averagespeed(Motor);
@@ -132,3 +133,4 @@ double averagespeed(Motor);
 #endif
 
 #endif /* __CAN_H__ */
+

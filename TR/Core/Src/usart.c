@@ -20,9 +20,12 @@
 /* Includes ------------------------------------------------------------------*/
 #include "usart.h"
 #include "can.h"
+#include "lcd/lcd.h"
 #include "math.h"
-/* USER CODE BEGIN 0 */
 
+/* USER CODE BEGIN 0 */
+char dat[10];
+int* target = NULL;
 /* USER CODE END 0 */
 
 UART_HandleTypeDef huart1;
@@ -111,6 +114,9 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
     GPIO_InitStruct.Alternate = GPIO_AF7_USART1;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
+    /* USART1 interrupt Init */
+    HAL_NVIC_SetPriority(USART1_IRQn, 0, 0);
+    HAL_NVIC_EnableIRQ(USART1_IRQn);
   /* USER CODE BEGIN USART1_MspInit 1 */
 
   /* USER CODE END USART1_MspInit 1 */
@@ -135,6 +141,9 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
     GPIO_InitStruct.Alternate = GPIO_AF7_USART2;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
+    /* USART2 interrupt Init */
+    HAL_NVIC_SetPriority(USART2_IRQn, 0, 0);
+    HAL_NVIC_EnableIRQ(USART2_IRQn);
   /* USER CODE BEGIN USART2_MspInit 1 */
 
   /* USER CODE END USART2_MspInit 1 */
@@ -158,6 +167,8 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
     */
     HAL_GPIO_DeInit(GPIOA, GPIO_PIN_9|GPIO_PIN_10);
 
+    /* USART1 interrupt Deinit */
+    HAL_NVIC_DisableIRQ(USART1_IRQn);
   /* USER CODE BEGIN USART1_MspDeInit 1 */
 
   /* USER CODE END USART1_MspDeInit 1 */
@@ -176,49 +187,37 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
     */
     HAL_GPIO_DeInit(GPIOA, GPIO_PIN_2|GPIO_PIN_3);
 
+    /* USART2 interrupt Deinit */
+    HAL_NVIC_DisableIRQ(USART2_IRQn);
   /* USER CODE BEGIN USART2_MspDeInit 1 */
 
   /* USER CODE END USART2_MspDeInit 1 */
   }
 }
-//
-//char *toString(uint8_t *a)
-//{
-//  char* buffer2;
-//  int i;
-//
-//  buffer2 = malloc(9);
-//  if (!buffer2)
-//    return NULL;
-//
-//  buffer2[8] = 0;
-//  for (i = 0; i <= 7; i++)
-//    buffer2[7 - i] = (((*a) >> i) & (0x01)) + '0';
-//
-//  puts(buffer2);
-//
-//  return buffer2;
-//}
 
+void Reset_dat_init() {
+	for (int i = 0; i < 10; i++) {
+		dat[i] = '\0';
+	}
+	return;
+}
 
-/* USER CODE BEGIN 1 */
-void ReceiveData(int tar_vel[4]) {
-	char dat[10]={NULL};
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
 
-	//HAL_UART_Receive(&huart1, (uint8_t*)&dat, sizeof(char) * 10, 10);
-	if(dat[0]==NULL) return;
 	int value = 0;
 	int temp = 16;
 	for (int i = 0; i < 5; i++) {
 		value += (dat[i] - '0') * temp;
 		temp /= 2;
 	}
+	led_toggle(LED2);
 
 	tft_prints(0, 5, "%s        ", dat);
 	tft_prints(0, 6, "%d       ", value);
 	tft_update(100);
 
-
+	Reset_dat_init();
 
 	int velocity = 1000;
 
@@ -226,69 +225,69 @@ void ReceiveData(int tar_vel[4]) {
 	// Push button
 		// Up
 		case 20:
-			tar_vel[0] = 1*velocity;
-			tar_vel[1] = 1*velocity;
-			tar_vel[2] = 1*velocity;
-			tar_vel[3] = 1*velocity;
+			*(target) = 1*velocity;
+			*(target+1) = 1*velocity;
+			*(target+2) = 1*velocity;
+			*(target+3) = 1*velocity;
 		break;
 
 		// Right
 		case 22:
-			tar_vel[0] = 1*velocity;
-			tar_vel[1] = -1*velocity;
-			tar_vel[2] = 1*velocity;
-			tar_vel[3] = -1*velocity;
+			*(target) = 1*velocity;
+			*(target+1) = -1*velocity;
+			*(target+2) = 1*velocity;
+			*(target+3) = -1*velocity;
 		break;
 
 		// Left
 		case 21:
-			tar_vel[0] = -1*velocity;
-			tar_vel[1] = 1*velocity;
-			tar_vel[2] = -1*velocity;
-			tar_vel[3] = 1*velocity;
+			*(target) = -1*velocity;
+			*(target+1) = 1*velocity;
+			*(target+2) = -1*velocity;
+			*(target+3) = 1*velocity;
 		break;
 
 		// Down
 		case 23:
-			tar_vel[0] = -1*velocity;
-			tar_vel[1] = -1*velocity;
-			tar_vel[2] = -1*velocity;
-			tar_vel[3] = -1*velocity;
+			*(target) = -1*velocity;
+			*(target+1) = -1*velocity;
+			*(target+2) = -1*velocity;
+			*(target+3) = -1*velocity;
 		break;
 
 		// Diag-Up-right
 		case 24:
-			tar_vel[0] = 1*velocity;
-			tar_vel[1] = 0*velocity;
-			tar_vel[2] = 1*velocity;
-			tar_vel[3] = 0*velocity;
+			*(target) = 1*velocity;
+			*(target+1) = 0*velocity;
+			*(target+2) = 1*velocity;
+			*(target+3) = 0*velocity;
 		break;
 
 		// Diag-Up-left
 		case 26:
-			tar_vel[0] = 0*velocity;
-			tar_vel[1] = 1*velocity;
-			tar_vel[2] = 0*velocity;
-			tar_vel[3] = 1*velocity;
+			*(target) = 0*velocity;
+			*(target+1) = 1*velocity;
+			*(target+2) = 0*velocity;
+			*(target+3) = 1*velocity;
 		break;
 
 		// Diag-Down-right
 		case 25:
-			tar_vel[0] = -1*velocity;
-			tar_vel[1] = 0*velocity;
-			tar_vel[2] = -1*velocity;
-			tar_vel[3] = 0*velocity;
+			*(target) = -1*velocity;
+			*(target+1) = 0*velocity;
+			*(target+2) = -1*velocity;
+			*(target+3) = 0*velocity;
 		break;
 
 		// Diag-Down-left
 		case 27:
-			tar_vel[0] = 0*velocity;
-			tar_vel[1] = -1*velocity;
-			tar_vel[2] = 0*velocity;
-			tar_vel[3] = -1*velocity;
+			*(target) = 0*velocity;
+			*(target+1) = -1*velocity;
+			*(target+2) = 0*velocity;
+			*(target+3) = -1*velocity;
 		break;
 
-	// Unpush Button
+		// Unpush Button
 		// Up
 		case 4:
 		// Right
@@ -307,10 +306,10 @@ void ReceiveData(int tar_vel[4]) {
 		case 11:
 		// stop
 		case 0:
-			tar_vel[0] = 0;
-			tar_vel[1] = 0;
-			tar_vel[2] = 0;
-			tar_vel[3] = 0;
+			*(target) = 0;
+			*(target+1) = 0;
+			*(target+2) = 0;
+			*(target+3) = 0;
 
 		break;
 		
@@ -319,7 +318,15 @@ void ReceiveData(int tar_vel[4]) {
 		break;
 
 	}
+	return;
+}
 
+
+/* USER CODE BEGIN 1 */
+void ReceiveData(int tar_vel[4]) {
+	target = tar_vel;
+	HAL_UART_Receive_IT(&huart1, (uint8_t*)&dat, sizeof(char) * 5);
+	return;
 }
 
 void SendData(const Motor motorchoice[4]) {
@@ -336,7 +343,7 @@ void SendData(const Motor motorchoice[4]) {
 		uint32_t value = ver*ver + hor*hor;
 		value = (uint32_t) sqrt(value);
 		char tempdat[50];
-		char dat[50];
+		char dat_send[50];
 		int i = 0;
 
 		for (; i < 50; i++) {
@@ -345,14 +352,15 @@ void SendData(const Motor motorchoice[4]) {
 			if (value == 0) break;
 		}
 
-		dat[i+1] = '\0';
+		dat_send[i+1] = '\0';
 		for (int k = 0; k <= i ; k++) {
-			dat[k] = tempdat[i-k];
+			dat_send[k] = tempdat[i-k];
 		}
-//		tft_prints(0, 5, "%s  ", dat);
-//		tft_update(100);
+		tft_prints(0, 5, "%s  ", dat_send);
+		tft_update(100);
 		last_Send_Time = HAL_GetTick();
-		HAL_UART_Transmit (&huart1, (uint8_t*)&dat, sizeof(char)*(i+1), 0xFFFF);
+		HAL_UART_Transmit(&huart1, (uint8_t*)&dat_send, sizeof(char)*(i+1), 100);
 	}
+	return;
 }
 /* USER CODE END 1 */

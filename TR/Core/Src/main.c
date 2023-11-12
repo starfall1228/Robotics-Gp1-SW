@@ -125,11 +125,12 @@ int main(void) {
     tft_force_clear();
     can_init();
     PID_variable_init();
+    Reset_dat_init();
 
 	// pre-define constant
 	const Motor motorchoice[] = {CAN1_MOTOR0, CAN1_MOTOR1, CAN1_MOTOR2, CAN1_MOTOR3};
 	const char text_k[6][20] = {"kp-up", "kp-down", "ki-up", "ki-down", "kd-up", "kd-down"};
-	const char test_m[4][20] = {"First Motor", "Second Motor", "Third Motor", "Fourth Motor"};
+	const char test_m[5][20] = {"First Motor", "Second Motor", "Third Motor", "Fourth Motor", "Motor Status"};
 
 	// Status of each Btn
 	static int motornum = 1;
@@ -157,9 +158,9 @@ int main(void) {
 			last_ticks = HAL_GetTick();
 		}
 
-        tft_prints(0, 0, "VEL: %d", get_motor_feedback(CAN1_MOTOR1).vel_rpm);
-        tft_prints(0, 1, "ENC: %d", get_motor_feedback(CAN1_MOTOR1).encoder);
-        tft_prints(0, 2, "CUR: %0.3f", (double)get_motor_feedback(CAN1_MOTOR1).actual_current);
+        tft_prints(0, 0, "VEL: %d          ", get_motor_feedback(motorchoice[motornum]).vel_rpm);
+        tft_prints(0, 1, "ENC: %d   ", get_motor_feedback(motorchoice[motornum]).encoder);
+        tft_prints(0, 2, "CUR: %0.3f   ", (double)get_motor_feedback(motorchoice[motornum]).actual_current);
 
     	switch(Btn1_mode) {
     	    // listening
@@ -175,7 +176,7 @@ int main(void) {
 				if (HAL_GetTick() - Btn1_HoldTime < 500) {
 					if (btn_read(BTN1)) Btn1_mode = 2;
 				}
-				else Btn1_mode = 3;
+				else if (motornum < 4) Btn1_mode = 3;
     	    break;
 
     	    //Clicking
@@ -259,6 +260,7 @@ int main(void) {
     	ReceiveData(target_vel);
     	for (int i = 0; i < 4; i++ ) {
     		set_motor_speed(motorchoice[i],target_vel[i],kp[i],ki[i],kd[i]);
+    	    // tft_prints(0, 6+i, "%d", target_vel[i]);
     	}
 
     	tft_prints(0, 3, "%s", test_m[motornum]);

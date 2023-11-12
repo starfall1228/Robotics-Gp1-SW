@@ -28,6 +28,8 @@ extern "C" {
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "can.h"
+#include "lcd/lcd.h"
+#include "math.h"
 
 /* USER CODE BEGIN Includes */
 
@@ -47,7 +49,7 @@ void MX_USART2_UART_Init(void);
 /* USER CODE BEGIN Prototypes */
 void ReceiveData(int tar_vel[4]);
 void SendData(const Motor motorchoice[4]);
-
+void Reset_dat_init();
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

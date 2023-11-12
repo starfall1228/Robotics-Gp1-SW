@@ -1,5 +1,8 @@
-../Core/Src/tutorial2_hw.c:36:23:read_button	16	static
-../Core/Src/tutorial2_hw.c:47:13:btn_state	8	static
-../Core/Src/tutorial2_hw.c:69:6:gpio_classwork	4	static
-../Core/Src/tutorial2_hw.c:75:6:tft_classwork	4	static
-../Core/Src/tutorial2_hw.c:81:6:tutorial2_homework	4	static
+../Core/Src/tutorial2_hw.c:40:23:read_button	16	static
+../Core/Src/tutorial2_hw.c:51:13:btn_state	8	static
+../Core/Src/tutorial2_hw.c:89:6:Smileface_Init	16	static
+../Core/Src/tutorial2_hw.c:108:6:gpio_classwork	8	static
+../Core/Src/tutorial2_hw.c:172:6:tft_classwork	32	static
+../Core/Src/tutorial2_hw.c:201:6:tutorial2_homework	8	static
+../Core/Src/tutorial2_hw.c:219:6:tutorial2_homework2	8	static
+../Core/Src/tutorial2_hw.c:259:6:tutorial2_homework3	24	static
