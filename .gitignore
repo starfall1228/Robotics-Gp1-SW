@@ -51,3 +51,4 @@ TR/Debug/sw-tutorial.elf
 TR/Debug/sw-tutorial.list
 TR/Debug/sw-tutorial.map
 TR/Debug/makefile
+*.xml
