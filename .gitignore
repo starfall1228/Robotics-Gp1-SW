@@ -52,3 +52,10 @@ TR/Debug/sw-tutorial.list
 TR/Debug/sw-tutorial.map
 TR/Debug/makefile
 *.xml
+TR/Release/Core/Src/usart.o
+TR/Release/Core/Src/usart.su
+TR/Release/sw-tutorial.elf
+TR/Release/sw-tutorial.map
+*.prefs
+*.xml
+*.prefs
