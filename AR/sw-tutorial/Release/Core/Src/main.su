@@ -1,0 +1,7 @@
+../Core/Src/main.c:95:6:upd_state	64	static
+../Core/Src/main.c:105:8:PID_current_input2	24	static
+../Core/Src/main.c:118:6:init_PID	0	static
+../Core/Src/main.c:129:6:upp_state_speed	48	static
+../Core/Src/main.c:266:6:SystemClock_Config	88	static,ignoring_inline_asm
+../Core/Src/main.c:141:5:main	280	static
+../Core/Src/main.c:312:6:Error_Handler	0	static,ignoring_inline_asm
