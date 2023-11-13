@@ -451,6 +451,7 @@ void set_motor_speed(Motor tar_motor, int16_t tar_vel, const double kp, const do
 	set_motor_current(tar_motor,tar_current[tar_motor]);
 
 	currents[tar_motor][indexes[tar_motor]++ % 500] = Cur_vel;
+	return;
 }
 
 void testing(Motor tar_motor) {
@@ -462,6 +463,7 @@ void testing(Motor tar_motor) {
 	tft_prints(0, 7, "   %d   ", minimum);
 	tft_prints(0, 8, "   %d   ", maximum-minimum);
 	tft_prints(0, 9, "A: %0.5f  ", tar_current[tar_motor]);
+	return;
 }
 
 double averagespeed(Motor tar_motor) {
