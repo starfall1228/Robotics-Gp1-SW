@@ -26,7 +26,7 @@
 /* USER CODE BEGIN 0 */
 char dat[10];
 int* target = NULL;
-int velocity = 1000;
+int velocity = 3000;
 /* USER CODE END 0 */
 
 UART_HandleTypeDef huart1;
@@ -205,125 +205,149 @@ void Reset_dat_init() {
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-
 	int value = 0;
 	int temp = 16;
 
-	if (dat[0] == 's') {
-		velocity = (velocity == 300)? 1000:300;
-		return;
-	}
+	switch (dat[0]) {
+		case '0':
+		case '1':
+			for (int i = 0; i < 5; i++) {
+				value += (dat[i] - '0') * temp;
+				temp /= 2;
+			}
+			led_toggle(LED2);
 
-	for (int i = 0; i < 5; i++) {
-		value += (dat[i] - '0') * temp;
-		temp /= 2;
-	}
-	led_toggle(LED2);
+			tft_prints(0, 5, "%s        ", dat);
+			tft_prints(0, 6, "%d       ", value);
+			tft_update(100);
 
-	tft_prints(0, 5, "%s        ", dat);
-	tft_prints(0, 6, "%d       ", value);
-	tft_update(100);
+			Reset_dat_init();
 
-	Reset_dat_init();
+			switch (value) {
+			// Push button
+				// Up
+				case 20:
+					*(target) = 1*velocity;
+					*(target+1) = 1*velocity;
+					*(target+2) = 1*velocity;
+					*(target+3) = 1*velocity;
+				break;
 
-	switch (value) {
-	// Push button
-		// Up
-		case 20:
-			*(target) = 1*velocity;
-			*(target+1) = 1*velocity;
-			*(target+2) = 1*velocity;
-			*(target+3) = 1*velocity;
-		break;
+				// Right
+				case 22:
+					*(target) = 1*velocity;
+					*(target+1) = -1*velocity;
+					*(target+2) = 1*velocity;
+					*(target+3) = -1*velocity;
+				break;
 
-		// Right
-		case 22:
-			*(target) = 1*velocity;
-			*(target+1) = -1*velocity;
-			*(target+2) = 1*velocity;
-			*(target+3) = -1*velocity;
-		break;
+				// Left
+				case 21:
+					*(target) = -1*velocity;
+					*(target+1) = 1*velocity;
+					*(target+2) = -1*velocity;
+					*(target+3) = 1*velocity;
+				break;
 
-		// Left
-		case 21:
-			*(target) = -1*velocity;
-			*(target+1) = 1*velocity;
-			*(target+2) = -1*velocity;
-			*(target+3) = 1*velocity;
-		break;
+				// Down
+				case 23:
+					*(target) = -1*velocity;
+					*(target+1) = -1*velocity;
+					*(target+2) = -1*velocity;
+					*(target+3) = -1*velocity;
+				break;
 
-		// Down
-		case 23:
-			*(target) = -1*velocity;
-			*(target+1) = -1*velocity;
-			*(target+2) = -1*velocity;
-			*(target+3) = -1*velocity;
-		break;
+				// Diag-Up-right
+				case 24:
+					*(target) = 1*velocity;
+					*(target+1) = 0*velocity;
+					*(target+2) = 1*velocity;
+					*(target+3) = 0*velocity;
+				break;
 
-		// Diag-Up-right
-		case 24:
-			*(target) = 1*velocity;
-			*(target+1) = 0*velocity;
-			*(target+2) = 1*velocity;
-			*(target+3) = 0*velocity;
-		break;
+				// Diag-Up-left
+				case 26:
+					*(target) = 0*velocity;
+					*(target+1) = 1*velocity;
+					*(target+2) = 0*velocity;
+					*(target+3) = 1*velocity;
+				break;
 
-		// Diag-Up-left
-		case 26:
-			*(target) = 0*velocity;
-			*(target+1) = 1*velocity;
-			*(target+2) = 0*velocity;
-			*(target+3) = 1*velocity;
-		break;
+				// Diag-Down-right
+				case 25:
+					*(target) = -1*velocity;
+					*(target+1) = 0*velocity;
+					*(target+2) = -1*velocity;
+					*(target+3) = 0*velocity;
+				break;
 
-		// Diag-Down-right
-		case 25:
-			*(target) = -1*velocity;
-			*(target+1) = 0*velocity;
-			*(target+2) = -1*velocity;
-			*(target+3) = 0*velocity;
-		break;
+				// Diag-Down-left
+				case 27:
+					*(target) = 0*velocity;
+					*(target+1) = -1*velocity;
+					*(target+2) = 0*velocity;
+					*(target+3) = -1*velocity;
+				break;
 
-		// Diag-Down-left
-		case 27:
-			*(target) = 0*velocity;
-			*(target+1) = -1*velocity;
-			*(target+2) = 0*velocity;
-			*(target+3) = -1*velocity;
-		break;
+				// Rotate Right
+				case 28:
+					*(target) = 1*velocity;
+					*(target+1) = -1*velocity;
+					*(target+2) = 1*velocity;
+					*(target+3) = -1*velocity;
+				break;
 
-		// Unpush Button
-		// Up
-		case 4:
-		// Right
-		case 6:
-		// Left
-		case 5:
-		// Down
-		case 7:
-		// Diag-Up-right
-		case 8:
-		// Diag-Up-left
-		case 10:
-		// Diag-Down-right
-		case 9:
-		// Diag-Down-left
-		case 11:
-		// stop
-		case 0:
-			*(target) = 0;
-			*(target+1) = 0;
-			*(target+2) = 0;
-			*(target+3) = 0;
+				// Rotate Left
+				case 30:
+					*(target) = -1*velocity;
+					*(target+1) = 1*velocity;
+					*(target+2) = -1*velocity;
+					*(target+3) = 1*velocity;
+				break;
 
+				// Unpush Button
+				// Up
+				case 4:
+				// Right
+				case 6:
+				// Left
+				case 5:
+				// Down
+				case 7:
+				// Diag-Up-right
+				case 8:
+				// Diag-Up-left
+				case 10:
+				// Diag-Down-right
+				case 9:
+				// Diag-Down-left
+				case 11:
+				// Rotate Right
+				case 12:
+				// Rotate Left
+				case 14:
+				// stop
+				case 0:
+					*(target) = 0;
+					*(target+1) = 0;
+					*(target+2) = 0;
+					*(target+3) = 0;
+
+				break;
+
+				default:
+
+				break;
+
+			}
+			return;
 		break;
 		
-		default:
-
+		case 's':
+			velocity = (velocity == 300)? 1000:300;
+			return;
 		break;
-
 	}
-	return;
 }
 
 
