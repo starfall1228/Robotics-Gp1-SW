@@ -112,17 +112,49 @@ class ColorDisplayWindow:
             self.window_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN
         )
         cv2.imshow(self.window_name, self.window)
+def get_limits(color):
+    c = np.uint8([[color]])  # BGR values
+    hsvC = cv2.cvtColor(c, cv2.COLOR_BGR2HSV)
+
+    hue = hsvC[0][0][0]  # Get the hue value
+
+    # Handle red hue wrap-around
+    if hue >= 165:  # Upper limit for divided red hue
+        lowerLimit = np.array([hue - 10, 100, 100], dtype=np.uint8)
+        upperLimit = np.array([180, 255, 255], dtype=np.uint8)
+    elif hue <= 15:  # Lower limit for divided red hue
+        lowerLimit = np.array([0, 100, 100], dtype=np.uint8)
+        upperLimit = np.array([hue + 10, 255, 255], dtype=np.uint8)
+    else:
+        lowerLimit = np.array([hue - 10, 100, 100], dtype=np.uint8)
+        upperLimit = np.array([hue + 10, 255, 255], dtype=np.uint8)
+
+    return lowerLimit, upperLimit
+
+lower_green,upper_green = get_limits([0,255,0])
+lower_blue,upper_blue = get_limits([255,0,0])
+
+lower_red,upper_red = get_limits([0,0,255])
+
+# order BGR
+yellow = [0,255,255]
+green = [0,255,0]
+blue = [255,0,0]
+red = [0,0,255]
 
 
 if __name__ == "__main__":
     # TODO: Change your team's name
     color_display_1 = ColorDisplayWindow(
-        group_name="Isabella One",
+        group_name="RDC Team 1",
     )
-
     color_detection_list = [[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]]
-    
-    cap = cv2.VideoCapture(0) # Change 0 if you have more than one camera.
+    boundaries = [
+        (lower_red, upper_red),
+        (lower_green, upper_green),
+        (lower_blue, upper_blue)
+        ]
+    capture = cv2.VideoCapture(0)
     while True:
         # TODO: You should constantly update the values of color_detection_list based on the BGR values you get
         # color_detection_list[0][0] = (color_detection_list[0][0] + 1) % 255
@@ -133,67 +165,48 @@ if __name__ == "__main__":
         #     0,
         #     (color_detection_list[3][2] + 1) % 255,
         # ]
-
-        # Updates display
-        _, frame = cap.read()
-        hsv_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-        height, width, _ = frame.shape
-        imgs = []
+        ret, frame = capture.read()
+        height = frame.shape[0]
+        width = frame.shape[1]
+        blurredGaus = cv2.GaussianBlur(frame, (5, 5), 0)    
+        blurredMedian = cv2.medianBlur(frame, 5)
+        img = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+        # img = frame
+        # img = cv2.GaussianBlur(img, (11,11), 0)
+        # img = frame
         cury = 0
         part = int(width / 4)
-        party = int(height/4)
-        color = ["","","",""]
-        for i in range(4):
+        colors = ["","","",""]
+        imgs = []
+        for i in range(4) :        
+            ind = 0
             nexy = min(cury + part,width)
+            cropped = img[0:height - 1, cury:nexy - 1]
             cropped1 = frame[0:height - 1, cury:nexy - 1]
+            for (lower, upper) in boundaries:
+                # print(lower, upper)
+                lower = np.array(lower, dtype = "uint8")
+                upper = np.array(upper, dtype = "uint8")
+                mask = cv2.inRange(cropped, lower, upper)
+                output = cv2.bitwise_and(cropped, cropped, mask = mask)
+                color_detection_list[i][ind] = np.count_nonzero(output)
+                ind += 1
+            if color_detection_list[i][0] >= max(color_detection_list[i][1],color_detection_list[i][2]) :
+                colors[i] = "red"
+            elif color_detection_list[i][1] >= max(color_detection_list[i][0],color_detection_list[i][2]) :
+                colors[i] = "green"
+            else : 
+                colors[i] = "blue"
             cury = nexy
             imgs.append(cropped1)
-            cx = part // 2
-            cy = height // 2
-
-            pixel_center = hsv_frame[cy, cx+part*i]
-            hue_value = pixel_center[0]
-
-            # color = "Undefined"
-            if hue_value < 5:
-                color[i] = "RED"
-                color_detection_list[i] = [0,0,255]
-            elif hue_value < 22:
-                color[i] = "ORANGE"
-                color_detection_list[i] = [0,165,255]
-            elif hue_value < 33:
-                color_detection_list[i] = [0,255,255]
-                color[i] = "YELLOW"
-            elif hue_value < 78:
-                color[i] = "GREEN"
-                color_detection_list[i] = [0,255,0]
-            elif hue_value < 131:
-                color_detection_list[i] = [255,0,0]
-                color[i] = "BLUE"
-            elif hue_value < 170:
-                color_detection_list[i] = [228,130,238]
-                color[i] = "VIOLET"
-            else:
-                color_detection_list[i] = [0,0,255]
-                color[i] = "RED"
-
-            pixel_center_bgr = frame[cy, cx]
-            b, g, r = int(pixel_center_bgr[0]), int(pixel_center_bgr[1]), int(pixel_center_bgr[2])
-
-            # cv2.rectangle(frame, (cx - 220, 10), (cx + 200, 120), (255, 255, 255), -1)
-            # cv2.putText(frame, color, (cx - 200, 100), 0, 3, (b, g, r), 5)
-            # cv2.circle(frame, (cx, cy), 5, (25, 25, 25), 3)
-        color_display_1.display(color_detection_list)
-        print(imgs[0])
-        # print(color)
-        # cv2.imshow('img1', imgs[0])
-        # cv2.imshow('img2', imgs[1])
-        # cv2.imshow('img3', imgs[2])
-        # cv2.imshow('img4', imgs[3])        
-
-        key = cv2.waitKey(1)
-        if key == 27:
-            break
+        # Updates display
+        # color_display_1.display(color_detection_list)
+        print(colors)
+        # print(len(imgs))
+        cv2.imshow('img1', imgs[0])
+        cv2.imshow('img2', imgs[1])
+        cv2.imshow('img3', imgs[2])
+        cv2.imshow('img4', imgs[3])        
         if cv2.waitKey(10) & 0xFF == ord("q"):  # waits for 'q' key to be pressed
             break
 
