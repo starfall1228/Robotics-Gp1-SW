@@ -16,3 +16,8 @@ robotics things
 - [ ] Servo code testing 
 
 ## TR - things to be done 
+- [ ]Wheel
+- [x]Wireless
+- [ ]Auto pathing
+- [ ]Emergency Shutdown
+- [ ]Grab&put
