@@ -182,6 +182,7 @@ if __name__ == "__main__":
             ind = 0
             nexy = min(cury + part,width)
             cropped = img[0:height - 1, cury:nexy - 1]
+            cropped1 = frame[0:height - 1, cury:nexy - 1]
             for (lower, upper) in boundaries:
                 # print(lower, upper)
                 lower = np.array(lower, dtype = "uint8")
@@ -197,7 +198,7 @@ if __name__ == "__main__":
             else : 
                 colors[i] = "blue"
             cury = nexy
-            imgs.append(cropped)
+            imgs.append(cropped1)
         # Updates display
         # color_display_1.display(color_detection_list)
         print(colors)
