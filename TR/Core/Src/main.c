@@ -265,7 +265,7 @@ int main(void) {
 
     	tft_prints(0, 3, "%s", test_m[motornum]);
     	tft_prints(0, 4, "%s     ", text_k[k_choice]);
-    	tft_prints(0, 9, "%d", (int)HAL_GetTick());
+    	tft_prints(0, 9, "%d", (int) HAL_GetTick());
     	tft_update(100);
     	SendData(motorchoice);
         /* USER CODE BEGIN 3 */

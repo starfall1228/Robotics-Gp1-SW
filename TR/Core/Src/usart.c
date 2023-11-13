@@ -208,18 +208,20 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 	int value = 0;
 	int temp = 16;
 
+	led_toggle(LED2);
+	tft_prints(0, 5, "%s        ", dat);
 	switch (dat[0]) {
+		case 's':
+			velocity = (velocity == 300)? 1000:300;
+		break;
 		case '0':
 		case '1':
 			for (int i = 0; i < 5; i++) {
+				if (dat[i] != '0' && dat[i] != '1'){Reset_dat_init(); return;}
 				value += (dat[i] - '0') * temp;
 				temp /= 2;
 			}
-			led_toggle(LED2);
-
-			tft_prints(0, 5, "%s        ", dat);
 			tft_prints(0, 6, "%d       ", value);
-			tft_update(100);
 
 			Reset_dat_init();
 
@@ -340,14 +342,10 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 				break;
 
 			}
-			return;
 		break;
-		
-		case 's':
-			velocity = (velocity == 300)? 1000:300;
-			return;
-		break;
+
 	}
+	return;
 }
 
 
