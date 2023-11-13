@@ -361,8 +361,8 @@ void SendData(const Motor motorchoice[4]) {
 		for (int k = 0; k <= i ; k++) {
 			dat_send[k] = tempdat[i-k];
 		}
-		tft_prints(0, 5, "%s  ", dat_send);
-		tft_update(100);
+//		tft_prints(0, 5, "%s  ", dat_send);
+//		tft_update(100);
 		last_Send_Time = HAL_GetTick();
 		HAL_UART_Transmit(&huart1, (uint8_t*)&dat_send, sizeof(char)*(i+1), 100);
 	}
