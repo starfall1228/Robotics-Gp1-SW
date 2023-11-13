@@ -26,6 +26,7 @@
 /* USER CODE BEGIN 0 */
 char dat[10];
 int* target = NULL;
+int velocity = 1000;
 /* USER CODE END 0 */
 
 UART_HandleTypeDef huart1;
@@ -207,6 +208,12 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 
 	int value = 0;
 	int temp = 16;
+
+	if (dat[0] == 's') {
+		velocity = (velocity == 300)? 1000:300;
+		return;
+	}
+
 	for (int i = 0; i < 5; i++) {
 		value += (dat[i] - '0') * temp;
 		temp /= 2;
@@ -218,8 +225,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 	tft_update(100);
 
 	Reset_dat_init();
-
-	int velocity = 1000;
 
 	switch (value) {
 	// Push button
