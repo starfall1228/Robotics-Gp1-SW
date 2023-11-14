@@ -345,6 +345,8 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		break;
 
 	}
+
+	HAL_UART_Receive_IT(&huart1, (uint8_t*)&dat, sizeof(char) * 5);
 	return;
 }
 

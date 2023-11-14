@@ -151,6 +151,8 @@ int main(void) {
 				kd[4] = {-0.5,-0.6,-0.5,-0.5},
 				ki[4] = {0.001,0.001,0.001,0.001};
 
+	ReceiveData(target_vel);
+
     while (1) {
     	can_ctrl_loop();
     	if (HAL_GetTick() - last_ticks >= 100) {
@@ -257,7 +259,6 @@ int main(void) {
 				tft_prints(0, 9, "%0.5f", kd[motornum]);
 			break;
 		}
-    	ReceiveData(target_vel);
     	for (int i = 0; i < 4; i++ ) {
     		set_motor_speed(motorchoice[i],target_vel[i],kp[i],ki[i],kd[i]);
     	    // tft_prints(0, 6+i, "%d", target_vel[i]);
