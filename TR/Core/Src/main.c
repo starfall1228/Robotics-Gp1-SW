@@ -128,12 +128,12 @@ int main(void) {
     Reset_dat_init();
 
 	// pre-define constant
-	const Motor motorchoice[] = {CAN1_MOTOR0, CAN1_MOTOR1, CAN1_MOTOR2, CAN1_MOTOR3};
+	const Motor motorchoice[] = {CAN1_MOTOR0, CAN1_MOTOR1, CAN2_MOTOR2, CAN2_MOTOR3};
 	const char text_k[6][20] = {"kp-up", "kp-down", "ki-up", "ki-down", "kd-up", "kd-down"};
 	const char test_m[5][20] = {"First Motor", "Second Motor", "Third Motor", "Fourth Motor", "Motor Status"};
 
 	// Status of each Btn
-	static int motornum = 1;
+	static int motornum = 0;
 	enum {kp_increase, kp_decrease, ki_increase, ki_decrease, kd_increase, kd_decrease} k_choice;
 	static int target_vel[4] = {0,0,0,0};
 
