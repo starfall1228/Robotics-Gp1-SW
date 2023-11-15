@@ -198,6 +198,7 @@ int main(void) {
     	    		case 2:
     	    			if (HAL_GetTick() - deltatime > 100) {
     	    				deltatime = HAL_GetTick();
+    	    				//target_vel[2] = velocity;
 							for (int i = 0; i < 4; i++) {
 								target_vel[i] = velocity;
 							}
@@ -280,7 +281,8 @@ int main(void) {
     	}
 
     	testing(motorchoice);
-    	tft_prints(0, 1, "%s time: %d", test_m[motornum], (int) HAL_GetTick());
+    	tft_prints(0, 0, "time: %d", (int) HAL_GetTick());
+    	tft_prints(0, 1, "%s     ", test_m[motornum]);
     	tft_prints(0, 2, "%s %d", text_k[k_choice], velocity);
     	tft_prints(0, 3, "tar: %d %d ", target_vel[0], target_vel[1]);
     	tft_prints(0, 4, "tar: %d %d ", target_vel[2], target_vel[3]);

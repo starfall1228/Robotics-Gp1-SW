@@ -25,7 +25,7 @@
 
 /* USER CODE BEGIN 0 */
 char dat[30];
-char tempdat[30];
+char fulldat[30];
 int count = 0;
 int* target = NULL;
 int velocity = 1000;
@@ -213,7 +213,6 @@ void Reset_dat_init() {
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
 	static int mode = 0;
-
 	switch (mode) {
 		// start bit??
 		case 0:
@@ -225,166 +224,167 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 
 		// detecting...
 		case 1:
+			fulldat[count++] = dat[0];
 			if (dat[0] == 'n') {
-				mode = 2;
-				tempdat[count] = dat[0];
-				count++;
-				Reset_dat_init();
-			}
-		break;
+				fulldat[--count] = '\0';
+				if (count != 5) {
+					count = 0;
+					mode = 0;
+					Reset_dat_init();
+					break;
+				}
 
-		case 2:
-			tempdat[count] = '\0';
-			if (count != 5) {
+				int value = 0;
+				int temp = 16;
+
+				tft_prints(0, 5, "%s  %d   ", fulldat, value);
+				led_toggle(LED2);
+				//--------------------
+				switch (fulldat[0]) {
+					case 's':
+						velocity = (velocity == 300)? 1000:300;
+						Reset_dat_init();
+						tft_prints(0, 5, "%s", "Shifting");
+					break;
+					case '1':
+					case '0':
+						for (int i = 0; i < 5; i++) {
+							if (fulldat[i] != '0' && fulldat[i] != '1'){
+								Reset_dat_init();
+								count = 0;
+								mode = 0;
+								return;
+							}
+							value += (fulldat[i] - '0') * temp;
+							temp /= 2;
+						}
+						//tft_prints(0, 5, "%s %d succ ", fulldat,value);
+
+						Reset_dat_init();
+
+						switch (value) {
+						// Push button
+							// Up
+							case 20:
+								*(target) = 1*velocity;
+								*(target+1) = 1*velocity;
+								*(target+2) = 1*velocity;
+								*(target+3) = 1*velocity;
+							break;
+
+							// Right
+							case 22:
+								*(target) = 1*velocity;
+								*(target+1) = -1*velocity;
+								*(target+2) = 1*velocity;
+								*(target+3) = -1*velocity;
+							break;
+
+							// Left
+							case 21:
+								*(target) = -1*velocity;
+								*(target+1) = 1*velocity;
+								*(target+2) = -1*velocity;
+								*(target+3) = 1*velocity;
+							break;
+
+							// Down
+							case 23:
+								*(target) = -1*velocity;
+								*(target+1) = -1*velocity;
+								*(target+2) = -1*velocity;
+								*(target+3) = -1*velocity;
+							break;
+
+							// Diag-Up-right
+							case 24:
+								*(target) = 1*velocity;
+								*(target+1) = 0*velocity;
+								*(target+2) = 1*velocity;
+								*(target+3) = 0*velocity;
+							break;
+
+							// Diag-Up-left
+							case 26:
+								*(target) = 0*velocity;
+								*(target+1) = 1*velocity;
+								*(target+2) = 0*velocity;
+								*(target+3) = 1*velocity;
+							break;
+
+							// Diag-Down-right
+							case 25:
+								*(target) = 0*velocity;
+								*(target+1) = -1*velocity;
+								*(target+2) = 0*velocity;
+								*(target+3) = -1*velocity;
+							break;
+
+							// Diag-Down-left
+							case 27:
+								*(target) = -1*velocity;
+								*(target+1) = 0*velocity;
+								*(target+2) = -1*velocity;
+								*(target+3) = 0*velocity;
+							break;
+
+							// Rotate Right
+							case 28:
+								*(target) = 1*velocity;
+								*(target+1) = -1*velocity;
+								*(target+2) = 1*velocity;
+								*(target+3) = -1*velocity;
+							break;
+
+							// Rotate Left
+							case 30:
+								*(target) = -1*velocity;
+								*(target+1) = 1*velocity;
+								*(target+2) = -1*velocity;
+								*(target+3) = 1*velocity;
+							break;
+
+							// Unpush Button
+							// Up
+							case 4:
+							// Right
+							case 6:
+							// Left
+							case 5:
+							// Down
+							case 7:
+							// Diag-Up-right
+							case 8:
+							// Diag-Up-left
+							case 10:
+							// Diag-Down-right
+							case 9:
+							// Diag-Down-left
+							case 11:
+							// Rotate Right
+							case 12:
+							// Rotate Left
+							case 14:
+							// stop
+							case 0:
+								*(target) = 0;
+								*(target+1) = 0;
+								*(target+2) = 0;
+								*(target+3) = 0;
+
+							break;
+
+							default:
+
+							break;
+
+						}
+					break;
+
+				}
 				count = 0;
 				mode = 0;
-				Reset_dat_init();
-				break;
 			}
-
-			int value = 0;
-			int temp = 16;
-
-			led_toggle(LED2);
-			switch (tempdat[0]) {
-				case 's':
-					velocity = (velocity == 300)? 1000:300;
-					Reset_dat_init();
-					tft_prints(0, 5, "%s", "Shifting");
-				break;
-				case '1':
-				case '0':
-					for (int i = 0; i < 5; i++) {
-						if (tempdat[i] != '0' && tempdat[i] != '1'){Reset_dat_init(); return;}
-						value += (dat[i] - '0') * temp;
-						temp /= 2;
-					}
-					tft_prints(0, 5, "%s %d ", tempdat, value);
-
-					Reset_dat_init();
-
-					switch (value) {
-					// Push button
-						// Up
-						case 20:
-							*(target) = 1*velocity;
-							*(target+1) = 1*velocity;
-							*(target+2) = 1*velocity;
-							*(target+3) = 1*velocity;
-						break;
-
-						// Right
-						case 22:
-							*(target) = 1*velocity;
-							*(target+1) = -1*velocity;
-							*(target+2) = 1*velocity;
-							*(target+3) = -1*velocity;
-						break;
-
-						// Left
-						case 21:
-							*(target) = -1*velocity;
-							*(target+1) = 1*velocity;
-							*(target+2) = -1*velocity;
-							*(target+3) = 1*velocity;
-						break;
-
-						// Down
-						case 23:
-							*(target) = -1*velocity;
-							*(target+1) = -1*velocity;
-							*(target+2) = -1*velocity;
-							*(target+3) = -1*velocity;
-						break;
-
-						// Diag-Up-right
-						case 24:
-							*(target) = 1*velocity;
-							*(target+1) = 0*velocity;
-							*(target+2) = 1*velocity;
-							*(target+3) = 0*velocity;
-						break;
-
-						// Diag-Up-left
-						case 26:
-							*(target) = 0*velocity;
-							*(target+1) = 1*velocity;
-							*(target+2) = 0*velocity;
-							*(target+3) = 1*velocity;
-						break;
-
-						// Diag-Down-right
-						case 25:
-							*(target) = 0*velocity;
-							*(target+1) = -1*velocity;
-							*(target+2) = 0*velocity;
-							*(target+3) = -1*velocity;
-						break;
-
-						// Diag-Down-left
-						case 27:
-							*(target) = -1*velocity;
-							*(target+1) = 0*velocity;
-							*(target+2) = -1*velocity;
-							*(target+3) = 0*velocity;
-						break;
-
-						// Rotate Right
-						case 28:
-							*(target) = 1*velocity;
-							*(target+1) = -1*velocity;
-							*(target+2) = 1*velocity;
-							*(target+3) = -1*velocity;
-						break;
-
-						// Rotate Left
-						case 30:
-							*(target) = -1*velocity;
-							*(target+1) = 1*velocity;
-							*(target+2) = -1*velocity;
-							*(target+3) = 1*velocity;
-						break;
-
-						// Unpush Button
-						// Up
-						case 4:
-						// Right
-						case 6:
-						// Left
-						case 5:
-						// Down
-						case 7:
-						// Diag-Up-right
-						case 8:
-						// Diag-Up-left
-						case 10:
-						// Diag-Down-right
-						case 9:
-						// Diag-Down-left
-						case 11:
-						// Rotate Right
-						case 12:
-						// Rotate Left
-						case 14:
-						// stop
-						case 0:
-							*(target) = 0;
-							*(target+1) = 0;
-							*(target+2) = 0;
-							*(target+3) = 0;
-
-						break;
-
-						default:
-
-						break;
-
-					}
-				break;
-
-			}
-			count = 0;
-			mode = 0;
 			Reset_dat_init();
 		break;
 	}
@@ -413,19 +413,19 @@ void SendData(const Motor motorchoice[4]) {
 
 		uint32_t value = ver*ver + hor*hor;
 		value = (uint32_t) sqrt(value);
-		char tempdat[50];
+		char fulldat[50];
 		char dat_send[50];
 		int i = 0;
 
 		for (; i < 50; i++) {
-			tempdat[i] = value%10 + '0';
+			fulldat[i] = value%10 + '0';
 			value /= 10;
 			if (value == 0) break;
 		}
 
 		dat_send[i+1] = '\0';
 		for (int k = 0; k <= i ; k++) {
-			dat_send[k] = tempdat[i-k];
+			dat_send[k] = fulldat[i-k];
 		}
 //		tft_prints(0, 5, "%s  ", dat_send);
 //		tft_update(100);
