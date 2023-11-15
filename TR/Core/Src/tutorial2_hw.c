@@ -172,15 +172,15 @@ void gpio_classwork(void) {
 void tft_classwork(void) {
     /* Your code start here */
 	uint32_t Current_Time = HAL_GetTick();
-	tft_prints(0, 0, "%d", (Current_Time/600000) % 10 );
-	tft_prints(1, 0, "%d", (Current_Time/60000) % 10 );
-	tft_prints(2, 0, ":");
-	tft_prints(3, 0, "%d", (Current_Time%60000/10000) % 10);
-	tft_prints(4, 0, "%d", (Current_Time%60000/1000) % 10);
-	tft_prints(5, 0, ":");
-	tft_prints(6, 0, "%d", (Current_Time/100) % 10 );
-	tft_prints(7, 0, "%d", (Current_Time/10) % 10 );
-	tft_prints(8, 0, "%d", Current_Time % 10 );
+//	tft_prints(0, 0, "%d", (Current_Time/600000) % 10 );
+//	tft_prints(1, 0, "%d", (Current_Time/60000) % 10 );
+//	tft_prints(2, 0, ":");
+//	tft_prints(3, 0, "%d", (Current_Time%60000/10000) % 10);
+//	tft_prints(4, 0, "%d", (Current_Time%60000/1000) % 10);
+//	tft_prints(5, 0, ":");
+//	tft_prints(6, 0, "%d", (Current_Time/100) % 10 );
+//	tft_prints(7, 0, "%d", (Current_Time/10) % 10 );
+//	tft_prints(8, 0, "%d", Current_Time % 10 );
 	if (!(Current_Time%2000)) {
 		for (int i = 20; i <= 70; i++) {
 			for (int j = 0; j <= 50; j++) {

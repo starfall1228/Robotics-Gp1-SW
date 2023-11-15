@@ -26,7 +26,8 @@
 
 UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
-
+char dat[30];
+int count = 0;
 /* USART1 init function */
 
 void MX_USART1_UART_Init(void)
@@ -139,6 +140,18 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
   /* USER CODE END USART2_MspInit 1 */
   }
 }
+
+void Reset_dat_init() {
+	for (int i = 0; i < 10; i++) {
+		dat[i] = '\0';
+	}
+	return;
+}
+
+/* USER CODE BEGIN 1 */
+
+
+
 
 void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
 {

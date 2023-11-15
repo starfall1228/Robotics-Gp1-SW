@@ -224,7 +224,6 @@ int main(void) {
              if (HAL_GetTick() - last_mov <= 2000) {
             	upp_state_speed(setspeed,CAN1_MOTOR0, &pid0,&last_ticks);
 				upp_state_speed(setspeed,CAN2_MOTOR0, &pid1,&last_ticks);
-//				set_motor_current(CAN1_MOTOR0, PID_current_input2(1000,CAN1_MOTOR0, tim_dif));
             	 set_motor_current(CAN1_MOTOR0, pid0.current);
             	 set_motor_current(CAN2_MOTOR0, -pid1.current);
 	 //        	set_motor_current(CAN1_MOTOR1, PID_current_input(600,CAN1_MOTOR1));
@@ -234,7 +233,7 @@ int main(void) {
 				 init_PID(&pid1, setspeed,kp,ki, kd);
 				 set_motor_current(CAN1_MOTOR0, 0);
 				 set_motor_current(CAN2_MOTOR0, 0);
-	 //            set_motor_current(CAN1_MOTOR1, 0);
+
 			 }
 //             else if (!btn_read(BTN2)) {
 //				upp_state_speed(setspeed,CAN1_MOTOR0, &pid0,&last_ticks);

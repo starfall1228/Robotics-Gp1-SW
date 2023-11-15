@@ -146,139 +146,139 @@ uint16_t CCR_2 = 0;
 uint8_t direction = 0;
 void pwm_homework(void) {
 	/* Your code start here */
-
-	switch(btn_state()) {
-		case BTN2_ONLY:
-			if (single_count/2 > double_count) {
-				if (status == 0) {
-					TIM5->CCR1 = 2834; //40 degree
-					status = 1;
-				}
-				if (status == 1) {
-					if (HAL_GetTick() - last_ticks >= 2000) {
-						gpio_reset(LED1);
-						gpio_reset(LED2);
-						gpio_reset(LED3);
-						gpio_reset(LED4);
-					}
-
-					else if (HAL_GetTick() - last_ticks >= 1500) {
-						gpio_reset(LED1);
-						gpio_reset(LED2);
-						gpio_reset(LED3);
-						gpio_set(LED4);
-					}
-
-					else if (HAL_GetTick() - last_ticks >= 1000) {
-						gpio_reset(LED1);
-						gpio_reset(LED2);
-						gpio_set(LED3);
-						gpio_set(LED4);
-					}
-
-					else if (HAL_GetTick() - last_ticks >= 500) {
-						gpio_reset(LED1);
-						gpio_set(LED2);
-						gpio_set(LED3);
-						gpio_set(LED4);
-					}
-				}
-			}
-
-			break;
-
-		case BTN1_ONLY:
-			if (status == 0) status = 3;
-
-			if (status == 3) {
-				if (HAL_GetTick() - last_ticks >= 3000 && HAL_GetTick() - blink_ticks >= 100) {
-					blink_ticks = HAL_GetTick();
-					gpio_toggle(LED1);
-					gpio_toggle(LED2);
-					gpio_toggle(LED3);
-					gpio_toggle(LED4);
-				}
-			}
-
-			break;
-
-		case ALL_OFF:
-			gpio_set(LED1);
-			gpio_set(LED2);
-			gpio_set(LED3);
-			gpio_set(LED4);
-			switch (status) {
-				case 0: // General Cases
-					last_ticks = HAL_GetTick();
-					TIM5->CCR1 = 1499; // -90 degree
-					if (special_count >= 2) tft_prints(0, 0, "You did twice!");
-
-					break;
-
-				case 1: // double move
-					if (HAL_GetTick() - last_ticks >= 2000) {
-						TIM5->CCR1 = 7499; // 90 degree
-					} else {
-						TIM5->CCR1 = 7499; // 90 degree
-					}
-					last_ticks2 = HAL_GetTick();
-					status = 2;
-
-					break;
-
-				case 2: // reset double move
-					if (HAL_GetTick() - last_ticks2 >= 2000) {
-						double_count++;
-						status = 0;
-					} else if (HAL_GetTick() - last_ticks >= 2000 && HAL_GetTick() - last_ticks2 >= 1000) {
-						double_count++; double_fullcount++;
-						status = 0;
-					}
-
-					break;
-
-				case 3: // Determine Special or Single move
-					if (HAL_GetTick() - last_ticks >= 3000) {
-						CCR_1 = 1499; CCR_2 = 1799;
-						status = 4;
-					} else {
-						status = 5;
-					}
-					counter2 = 0;
-					last_ticks2 = HAL_GetTick();
-
-					break;
-
-				case 4: // Special Move
-					if (HAL_GetTick()-last_ticks2 >= 4000) {
-						special_count++;
-						status = 0;
-					} else if (HAL_GetTick()-last_ticks2 >= 200*counter2) {
-						counter2++;
-
-						if((counter2)%2 == 0) {
-							CCR_1 += 300;
-							TIM5->CCR1 = CCR_1;
-						} else {
-							CCR_2 += 300;
-							TIM5->CCR1 = CCR_2;
-						}
-					}
-
-					break;
-
-				case 5: // Single Move
-					if (HAL_GetTick()-last_ticks2 >= 3000) {
-						single_count++;
-						status = 0;
-					} else if (HAL_GetTick()-last_ticks2 >= 100*counter2) {
-						counter2++;
-						TIM5->CCR1 = 1499+(200*counter2);
-					}
-
-					break;
-
-				}
-	}
+//
+//	switch(btn_state()) {
+//		case BTN2_ONLY:
+//			if (single_count/2 > double_count) {
+//				if (status == 0) {
+//					TIM5->CCR1 = 2834; //40 degree
+//					status = 1;
+//				}
+//				if (status == 1) {
+//					if (HAL_GetTick() - last_ticks >= 2000) {
+//						gpio_reset(LED1);
+//						gpio_reset(LED2);
+//						gpio_reset(LED3);
+//						gpio_reset(LED4);
+//					}
+//
+//					else if (HAL_GetTick() - last_ticks >= 1500) {
+//						gpio_reset(LED1);
+//						gpio_reset(LED2);
+//						gpio_reset(LED3);
+//						gpio_set(LED4);
+//					}
+//
+//					else if (HAL_GetTick() - last_ticks >= 1000) {
+//						gpio_reset(LED1);
+//						gpio_reset(LED2);
+//						gpio_set(LED3);
+//						gpio_set(LED4);
+//					}
+//
+//					else if (HAL_GetTick() - last_ticks >= 500) {
+//						gpio_reset(LED1);
+//						gpio_set(LED2);
+//						gpio_set(LED3);
+//						gpio_set(LED4);
+//					}
+//				}
+//			}
+//
+//			break;
+//
+//		case BTN1_ONLY:
+//			if (status == 0) status = 3;
+//
+//			if (status == 3) {
+//				if (HAL_GetTick() - last_ticks >= 3000 && HAL_GetTick() - blink_ticks >= 100) {
+//					blink_ticks = HAL_GetTick();
+//					gpio_toggle(LED1);
+//					gpio_toggle(LED2);
+//					gpio_toggle(LED3);
+//					gpio_toggle(LED4);
+//				}
+//			}
+//
+//			break;
+//
+//		case ALL_OFF:
+//			gpio_set(LED1);
+//			gpio_set(LED2);
+//			gpio_set(LED3);
+//			gpio_set(LED4);
+//			switch (status) {
+//				case 0: // General Cases
+//					last_ticks = HAL_GetTick();
+//					TIM5->CCR1 = 1499; // -90 degree
+////					if (special_count >= 2) tft_prints(0, 0, "You did twice!");
+//
+//					break;
+//
+//				case 1: // double move
+//					if (HAL_GetTick() - last_ticks >= 2000) {
+//						TIM5->CCR1 = 7499; // 90 degree
+//					} else {
+//						TIM5->CCR1 = 7499; // 90 degree
+//					}
+//					last_ticks2 = HAL_GetTick();
+//					status = 2;
+//
+//					break;
+//
+//				case 2: // reset double move
+//					if (HAL_GetTick() - last_ticks2 >= 2000) {
+//						double_count++;
+//						status = 0;
+//					} else if (HAL_GetTick() - last_ticks >= 2000 && HAL_GetTick() - last_ticks2 >= 1000) {
+//						double_count++; double_fullcount++;
+//						status = 0;
+//					}
+//
+//					break;
+//
+//				case 3: // Determine Special or Single move
+//					if (HAL_GetTick() - last_ticks >= 3000) {
+//						CCR_1 = 1499; CCR_2 = 1799;
+//						status = 4;
+//					} else {
+//						status = 5;
+//					}
+//					counter2 = 0;
+//					last_ticks2 = HAL_GetTick();
+//
+//					break;
+//
+//				case 4: // Special Move
+//					if (HAL_GetTick()-last_ticks2 >= 4000) {
+//						special_count++;
+//						status = 0;
+//					} else if (HAL_GetTick()-last_ticks2 >= 200*counter2) {
+//						counter2++;
+//
+//						if((counter2)%2 == 0) {
+//							CCR_1 += 300;
+//							TIM5->CCR1 = CCR_1;
+//						} else {
+//							CCR_2 += 300;
+//							TIM5->CCR1 = CCR_2;
+//						}
+//					}
+//
+//					break;
+//
+//				case 5: // Single Move
+//					if (HAL_GetTick()-last_ticks2 >= 3000) {
+//						single_count++;
+//						status = 0;
+//					} else if (HAL_GetTick()-last_ticks2 >= 100*counter2) {
+//						counter2++;
+//						TIM5->CCR1 = 1499+(200*counter2);
+//					}
+//
+//					break;
+//
+//				}
+//	}
 	/* Your code end here*/
 }

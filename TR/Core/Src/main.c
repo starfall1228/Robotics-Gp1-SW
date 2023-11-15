@@ -128,14 +128,15 @@ int main(void) {
     Reset_dat_init();
 
 	// pre-define constant
-	const Motor motorchoice[] = {CAN1_MOTOR0, CAN1_MOTOR1, CAN1_MOTOR2, CAN1_MOTOR3};
+	const Motor motorchoice[] = {CAN1_MOTOR0, CAN1_MOTOR1, CAN2_MOTOR2, CAN2_MOTOR3};
 	const char text_k[6][20] = {"kp-up", "kp-down", "ki-up", "ki-down", "kd-up", "kd-down"};
-	const char test_m[5][20] = {"First Motor", "Second Motor", "Third Motor", "Fourth Motor", "Motor Status"};
+	const char test_m[3][20] = {"Speed Increase", "Speed Decrease", "Speed Test"};
 
 	// Status of each Btn
-	static int motornum = 1;
+	static int motornum = 2;
 	enum {kp_increase, kp_decrease, ki_increase, ki_decrease, kd_increase, kd_decrease} k_choice;
 	static int target_vel[4] = {0,0,0,0};
+	static int velocity = 1000;
 
 	//initialize
 	k_choice = kp_increase;
@@ -145,11 +146,13 @@ int main(void) {
 	static int Btn2_mode = 0;
 	static int Btn1_HoldTime = 0;
 	static int Btn2_HoldTime = 0;
+	static int deltatime = 0;
 
 	// varying constant
-	static double kp[4] = {20,20,20,20},
-				kd[4] = {-0.5,-0.6,-0.5,-0.5},
-				ki[4] = {0.001,0.001,0.001,0.001};
+	static double kp = 20,
+				kd = -0.5,
+				ki = 0.001;
+
 
     while (1) {
     	can_ctrl_loop();
@@ -157,10 +160,6 @@ int main(void) {
 			led_toggle(LED1);
 			last_ticks = HAL_GetTick();
 		}
-
-        tft_prints(0, 0, "VEL: %d          ", get_motor_feedback(motorchoice[motornum]).vel_rpm);
-        tft_prints(0, 1, "ENC: %d   ", get_motor_feedback(motorchoice[motornum]).encoder);
-        tft_prints(0, 2, "CUR: %0.3f   ", (double)get_motor_feedback(motorchoice[motornum]).actual_current);
 
     	switch(Btn1_mode) {
     	    // listening
@@ -176,21 +175,39 @@ int main(void) {
 				if (HAL_GetTick() - Btn1_HoldTime < 500) {
 					if (btn_read(BTN1)) Btn1_mode = 2;
 				}
-				else if (motornum < 4) Btn1_mode = 3;
+				else Btn1_mode = 3;
     	    break;
 
     	    //Clicking
     	    case (2):
-				motornum++; motornum %= 4;
+				motornum++; motornum %= 3;
     	    	Btn1_mode = 0;
     	    break;
 
     	    //Holding
     	    case (3):
-    	    	target_vel[motornum] = 1000;
-    	    	testing(motorchoice[motornum]);
+    	    	switch (motornum) {
+    	    		case 0:
+    	    			velocity += 50;
+    	    		break;
+
+    	    		case 1:
+    	    			velocity -= 50;
+    	    		break;
+
+    	    		case 2:
+    	    			if (HAL_GetTick() - deltatime > 100) {
+    	    				deltatime = HAL_GetTick();
+							for (int i = 0; i < 4; i++) {
+								target_vel[i] = velocity;
+							}
+    	    			}
+    	    		break;
+    	    	}
     	    	if (btn_read(BTN1)) {
-    	    		target_vel[motornum] = 0;
+    	    		for (int i = 0; i < 4; i++) {
+    	    			target_vel[i] = 0;
+    	    		}
     	    		Btn1_mode = 0;
     	    	}
 			break;
@@ -227,44 +244,46 @@ int main(void) {
 				if (HAL_GetTick() - last_ticks_inc >= 100) {
 					switch (k_choice) {
 						case (kp_increase):
-							kp[motornum] *= 1.1;
+							kp *= 1.1;
 						break;
 
 						case (kp_decrease):
-							kp[motornum] *= 0.9;
+							kp *= 0.9;
 						break;
 
 						case (ki_increase):
-							ki[motornum] *= 1.1;
+							ki *= 1.1;
 						break;
 
 						case (ki_decrease):
-							ki[motornum] *= 0.9;
+							ki *= 0.9;
 						break;
 
 						case (kd_increase):
-							kd[motornum] *= 1.1;
+							kd *= 1.1;
 						break;
 
 						case (kd_decrease):
-							kd[motornum] *= 0.9;
+							kd *= 0.9;
 						break;
 					}
 					last_ticks_inc = HAL_GetTick();
 				}
-				tft_prints(0, 7, "%0.5f", kp[motornum]);
-				tft_prints(0, 8, "%0.5f", ki[motornum]);
-				tft_prints(0, 9, "%0.5f", kd[motornum]);
+				tft_prints(0, 7, "%0.5f", kp);
+				tft_prints(0, 8, "%0.5f", ki);
+				tft_prints(0, 9, "%0.5f", kd);
 			break;
 		}
-    	ReceiveData(target_vel);
+		ReceiveData(target_vel);
     	for (int i = 0; i < 4; i++ ) {
-    		set_motor_speed(motorchoice[i],target_vel[i],kp[i],ki[i],kd[i]);
-    	    // tft_prints(0, 6+i, "%d", target_vel[i]);
+    		set_motor_speed(motorchoice[i], target_vel[i], kp, ki, kd, motorchoice);
     	}
 
-    	tft_prints(0, 3, "%s", test_m[motornum]);
-    	tft_prints(0, 4, "%s     ", text_k[k_choice]);
+    	testing(motorchoice);
+    	tft_prints(0, 1, "%s time: %d", test_m[motornum], (int) HAL_GetTick());
+    	tft_prints(0, 2, "%s %d", text_k[k_choice], velocity);
+    	tft_prints(0, 3, "tar: %d %d ", target_vel[0], target_vel[1]);
+    	tft_prints(0, 4, "tar: %d %d ", target_vel[2], target_vel[3]);
     	tft_update(100);
     	SendData(motorchoice);
         /* USER CODE BEGIN 3 */

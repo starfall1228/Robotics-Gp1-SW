@@ -283,8 +283,12 @@ Discarded input sections
  .text          0x0000000000000000        0x0 ./Core/Src/usart.o
  .data          0x0000000000000000        0x0 ./Core/Src/usart.o
  .bss           0x0000000000000000        0x0 ./Core/Src/usart.o
+ .text.Reset_dat_init
+                0x0000000000000000       0x10 ./Core/Src/usart.o
  .text.HAL_UART_MspDeInit
                 0x0000000000000000       0x44 ./Core/Src/usart.o
+ .bss.count     0x0000000000000000        0x4 ./Core/Src/usart.o
+ .bss.dat       0x0000000000000000       0x1e ./Core/Src/usart.o
  .text          0x0000000000000000       0x14 ./Core/Startup/startup_stm32f405rgtx.o
  .data          0x0000000000000000        0x0 ./Core/Startup/startup_stm32f405rgtx.o
  .bss           0x0000000000000000        0x0 ./Core/Startup/startup_stm32f405rgtx.o

@@ -437,9 +437,9 @@ void PID_variable_init() {
 //	indexes[i]
 //}
 
-void set_motor_speed(Motor tar_motor, int16_t tar_vel, const double kp, const double ki, const double kd) {
+void set_motor_speed(Motor tar_motor, int16_t tar_vel, const double kp, const double ki, const double kd, const Motor motorchoice[]) {
 	static double Cur_vel = 0;
-
+	tar_vel = (tar_motor == motorchoice[1] || tar_motor == motorchoice[2] ) ? -tar_vel: tar_vel;
 	// collect current velocity
 	Cur_vel = get_motor_feedback(tar_motor).vel_rpm;
 	error[tar_motor] = tar_vel - Cur_vel;
@@ -451,17 +451,26 @@ void set_motor_speed(Motor tar_motor, int16_t tar_vel, const double kp, const do
 	set_motor_current(tar_motor,tar_current[tar_motor]);
 
 	currents[tar_motor][indexes[tar_motor]++ % 500] = Cur_vel;
+	return;
 }
 
-void testing(Motor tar_motor) {
-	int maximum = max(currents[tar_motor]);
-	int minimum = min(currents[tar_motor]);
-//	tft_prints(0, 5, "%0.5f  ", HAL_GetTick() - last_ticks[tar_motor]);
-//	tft_prints(0, 5, " %0.5f   ", accu[tar_motor]);
-	tft_prints(0, 6, "   %d   ", maximum);
-	tft_prints(0, 7, "   %d   ", minimum);
-	tft_prints(0, 8, "   %d   ", maximum-minimum);
-	tft_prints(0, 9, "A: %0.5f  ", tar_current[tar_motor]);
+void testing(const Motor tar_motor[]) {
+	int maximum[4];
+	int minimum[4];
+	int range[4];
+
+	for (int i = 0; i < 4; i++) {
+		maximum[i] = max(currents[tar_motor[i]]);
+		minimum[i] = min(currents[tar_motor[i]]);
+		range[i] = maximum[i] - minimum[i];
+	}
+
+	tft_prints(0, 6, "%d %d %d %d ", maximum[0], maximum[1], maximum[2], maximum[3]);
+	tft_prints(0, 7, "%d %d %d %d ", minimum[0], minimum[1], minimum[2], minimum[3]);
+
+	tft_prints(0, 8, "1: %d 2: %d ", range[0], range[1]);
+	tft_prints(0, 9, "3: %d 4: %d ", range[2], range[3]);
+	return;
 }
 
 double averagespeed(Motor tar_motor) {
