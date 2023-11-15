@@ -1,10 +1,10 @@
-#!/usr/bin/env python3
+# !/usr/bin/env python3
 # -*- coding:utf-8 -*-
 import cv2
 import numpy as np
 from tkinter import Tk
-
-
+import serial as ps
+com = "COM5"
 # You should have no reason to modify this class
 class ColorDisplayWindow:
     def __init__(
@@ -115,25 +115,19 @@ class ColorDisplayWindow:
 
 
 if __name__ == "__main__":
-    # TODO: Change your team's name
     color_display_1 = ColorDisplayWindow(
         group_name="Isabella One",
     )
-
+    ser = ps.Serial(com)
+    
     color_detection_list = [[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]]
     
     cap = cv2.VideoCapture(0) # Change 0 if you have more than one camera.
+    RED = [0,0,255]
+    GREEN = [0,255,0]
+    BLUE = [255,0,0]
+    signal = []
     while True:
-        # TODO: You should constantly update the values of color_detection_list based on the BGR values you get
-        # color_detection_list[0][0] = (color_detection_list[0][0] + 1) % 255
-        # color_detection_list[1][1] = (color_detection_list[1][1] + 1) % 255
-        # color_detection_list[2][2] = (color_detection_list[2][2] + 1) % 255
-        # color_detection_list[3] = [
-        #     (color_detection_list[3][0] + 1) % 255,
-        #     0,
-        #     (color_detection_list[3][2] + 1) % 255,
-        # ]
-
         # Updates display
         _, frame = cap.read()
         hsv_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
@@ -158,21 +152,24 @@ if __name__ == "__main__":
             if hue_value < 5:
                 color[i] = "RED"
                 color_detection_list[i] = [0,0,255]
-            elif hue_value < 22:
-                color[i] = "ORANGE"
-                color_detection_list[i] = [0,165,255]
-            elif hue_value < 33:
-                color_detection_list[i] = [0,255,255]
-                color[i] = "YELLOW"
+                signal[i] = '0'
+            # elif hue_value < 22:
+            #     color[i] = "ORANGE"
+            #     color_detection_list[i] = [0,165,255]
+            # elif hue_value < 33:
+            #     color_detection_list[i] = [0,255,255]
+            #     color[i] = "YELLOW"
             elif hue_value < 78:
                 color[i] = "GREEN"
                 color_detection_list[i] = [0,255,0]
+                # signal[i] = '2'
             elif hue_value < 131:
                 color_detection_list[i] = [255,0,0]
                 color[i] = "BLUE"
-            elif hue_value < 170:
-                color_detection_list[i] = [228,130,238]
-                color[i] = "VIOLET"
+                # signal[i] = '1'
+            # elif hue_value < 170:
+            #     color_detection_list[i] = [228,130,238]
+            #     color[i] = "VIOLET"
             else:
                 color_detection_list[i] = [0,0,255]
                 color[i] = "RED"
@@ -184,13 +181,15 @@ if __name__ == "__main__":
             # cv2.putText(frame, color, (cx - 200, 100), 0, 3, (b, g, r), 5)
             # cv2.circle(frame, (cx, cy), 5, (25, 25, 25), 3)
         color_display_1.display(color_detection_list)
-        print(imgs[0])
+        # print(signal);
+        # ser.write(signal);
+        # print(imgs[0])
         # print(color)
-        # cv2.imshow('img1', imgs[0])
-        # cv2.imshow('img2', imgs[1])
-        # cv2.imshow('img3', imgs[2])
-        # cv2.imshow('img4', imgs[3])        
-
+        cv2.imshow('img1', imgs[0])
+        cv2.imshow('img2', imgs[1])
+        cv2.imshow('img3', imgs[2])
+        cv2.imshow('img4', imgs[3])        
+         
         key = cv2.waitKey(1)
         if key == 27:
             break

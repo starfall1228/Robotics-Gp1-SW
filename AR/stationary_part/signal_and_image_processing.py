@@ -1,7 +1,7 @@
 # Import the necessary modules
 import cv2
 import numpy as np
-
+import serial as ps
 # Define the lower and upper boundaries of the red color in the HSV color space
 
 # Define the lower and upper boundaries of the black color in the HSV color space
@@ -17,6 +17,8 @@ upper_blue = np.array([130, 255, 255])
 # Initialize the video capture object
 cap = cv2.VideoCapture(1)
 
+# initializing serial port
+ser = ps.Serial()
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
 # Loop until the user presses 'q' to quit
