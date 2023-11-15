@@ -188,7 +188,7 @@ int main(void) {
     can_init(); // initialize CAN
     cur_err = 500;
     // The rpm of the motor
-    double setspeed = 10000;
+    double setspeed = 2000;
     double kp = 0.5;
     double ki = 0.01;
     double kd = 0.01;
@@ -198,21 +198,30 @@ int main(void) {
     init_PID(&pid1, setspeed,kp,ki, kd);
     int last_ticks =HAL_GetTick();
     int temp = HAL_GetTick();
+    static const char dat[] = "GGGG";
+    uint8_t tim = 10;
+    char message[] = "xuys";
+    HAL_UART_Transmit(&huart1, (uint8_t*)&dat, sizeof(dat),tim);
+    bool rcv = 0;
+    int last_mov = HAL_GetTick();
     while(1){
         can_ctrl_loop(); // to continously send/receive data with CAN
+			if(!rcv) {
+				char message1[10] = {'\0'};
+				HAL_UART_Receive(&huart1,(uint8_t*)&message1, sizeof(message1), tim);
+				if(message1[0] != '\0') {
+					for(int i = 0;i < 4;i++) {
+						message[i] = message1[i];
+					}
+					rcv = 1;
+					last_mov = HAL_GetTick();
+				}
 
+			}
 //        uint32_t tim_dif = HAL_GetTick() - temp;
 //             tft_prints(0, 5, "Time dif: %d", HAL_GetTick() - last_ticks);
 			can_ctrl_loop(); // to continously send/receive data with CAN
-			if (HAL_GetTick() - temp >= 100) {
-				tft_prints(0, 0, "Hello World!");
-				led_toggle(LED1);
-				// led_toggle(LED2);
-				// led_toggle(LED3);
-				// led_toggle(LED4);
-				temp = HAL_GetTick();
-			}
-             if (!btn_read(BTN1)) {
+             if (HAL_GetTick() - last_mov <= 2000) {
             	upp_state_speed(setspeed,CAN1_MOTOR0, &pid0,&last_ticks);
 				upp_state_speed(setspeed,CAN2_MOTOR0, &pid1,&last_ticks);
 //				set_motor_current(CAN1_MOTOR0, PID_current_input2(1000,CAN1_MOTOR0, tim_dif));
@@ -220,35 +229,44 @@ int main(void) {
             	 set_motor_current(CAN2_MOTOR0, -pid1.current);
 	 //        	set_motor_current(CAN1_MOTOR1, PID_current_input(600,CAN1_MOTOR1));
 	 //            set_motor_current(CAN1_MOTOR0, 700);
-			 } else if (!btn_read(BTN2)) {
-				upp_state_speed(setspeed,CAN1_MOTOR0, &pid0,&last_ticks);
-				upp_state_speed(setspeed,CAN2_MOTOR0, &pid1,&last_ticks);
-				set_motor_current(CAN1_MOTOR0, -pid0.current);
-				set_motor_current(CAN2_MOTOR0, pid1.current);
-	 //        	set_motor_current(CAN1_MOTOR1, -PID_current_input(600,CAN1_MOTOR1));
-	 //            set_motor_current(CAN1_MOTOR0, -700);
-			 } else {
+			 }else {
 				 init_PID(&pid0, setspeed,kp,ki, kd);
 				 init_PID(&pid1, setspeed,kp,ki, kd);
 				 set_motor_current(CAN1_MOTOR0, 0);
 				 set_motor_current(CAN2_MOTOR0, 0);
 	 //            set_motor_current(CAN1_MOTOR1, 0);
 			 }
+//             else if (!btn_read(BTN2)) {
+//				upp_state_speed(setspeed,CAN1_MOTOR0, &pid0,&last_ticks);
+//				upp_state_speed(setspeed,CAN2_MOTOR0, &pid1,&last_ticks);
+//				set_motor_current(CAN1_MOTOR0, -pid0.current);
+//				set_motor_current(CAN2_MOTOR0, pid1.current);
+//	 //        	set_motor_current(CAN1_MOTOR1, -PID_current_input(600,CAN1_MOTOR1));
+//	 //            set_motor_current(CAN1_MOTOR0, -700);
+//			 } else {
+//				 init_PID(&pid0, setspeed,kp,ki, kd);
+//				 init_PID(&pid1, setspeed,kp,ki, kd);
+//				 set_motor_current(CAN1_MOTOR0, 0);
+//				 set_motor_current(CAN2_MOTOR0, 0);
+//	 //            set_motor_current(CAN1_MOTOR1, 0);
+//			 }
 //        }
         /* USER CODE END WHILE */
         /* USER CODE BEGIN 3 */
         tft_update(100);
         // printing feedback on TFT
         // should display 50 if implemented correctly
-        tft_prints(0, 0, "MOTOR1 VEL: %d", get_motor_feedback(CAN1_MOTOR0).vel_rpm/60);
-        tft_prints(0, 1, "MOTOR2 VEL: %d", get_motor_feedback(CAN2_MOTOR0).vel_rpm/60);
-//        tft_prints(0, 1, "MOTOR ENC: %d", get_motor_feedback(CAN1_MOTOR0).encoder);
+//        tft_prints(0, 0, "MOTOR1 VEL: %d", get_motor_feedback(CAN1_MOTOR0).vel_rpm/60);
+//        tft_prints(0, 1, "MOTOR2 VEL: %d", get_motor_feedback(CAN2_MOTOR0).vel_rpm/60);
+////        tft_prints(0, 1, "MOTOR ENC: %d", get_motor_feedback(CAN1_MOTOR0).encoder);
         tft_prints(0, 2, "MOTOR CUR: %0.3f", (double)get_motor_feedback(CAN1_MOTOR0).actual_current);
         tft_prints(0, 3, "MOTOR CUR: %0.3f", (double)get_motor_feedback(CAN1_MOTOR0).actual_current);
         tft_prints(0, 4, "pid0_cur: %f", pid0.current);
         tft_prints(0, 5, "pid1_cur: %f", pid1.current);
         tft_prints(0,6,"SS0: %0.3f", pid0.setspeed/60);
         tft_prints(0,7,"SS1: %0.3f", pid1.setspeed/60);
+        tft_prints(0,8, "%d", rcv);
+        tft_prints(0,9, message);
 //        tft_prints(0,4, "l")
 
 
