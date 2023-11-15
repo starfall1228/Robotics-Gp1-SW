@@ -196,6 +196,11 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
   }
 }
 
+void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
+{
+   // Happy void space
+}
+
 void Reset_dat_init() {
 	for (int i = 0; i < 30; i++) {
 		dat[i] = '\0';
@@ -208,20 +213,22 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 	int value = 0;
 	int temp = 16;
 
+
 	led_toggle(LED2);
-	tft_prints(0, 5, "%s        ", dat);
+//	tft_prints(0, 5, "%s %d %d", dat, count, value);
 	switch (dat[0]) {
 		case 's':
 			velocity = (velocity == 300)? 1000:300;
+			Reset_dat_init();
+			tft_prints(0, 5, "%s", "Shifting");
 		break;
-		case '0':
-		case '1':
-			for (int i = 0; i < 5; i++) {
+		case 'm':
+			for (int i = 1; i < 6; i++) {
 				if (dat[i] != '0' && dat[i] != '1'){Reset_dat_init(); return;}
 				value += (dat[i] - '0') * temp;
 				temp /= 2;
 			}
-			tft_prints(0, 6, "%d       ", value);
+			tft_prints(0, 5, "%s %d %d", dat, value, count);
 
 			Reset_dat_init();
 
@@ -277,18 +284,18 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 
 				// Diag-Down-right
 				case 25:
-					*(target) = -1*velocity;
-					*(target+1) = 0*velocity;
-					*(target+2) = -1*velocity;
-					*(target+3) = 0*velocity;
-				break;
-
-				// Diag-Down-left
-				case 27:
 					*(target) = 0*velocity;
 					*(target+1) = -1*velocity;
 					*(target+2) = 0*velocity;
 					*(target+3) = -1*velocity;
+				break;
+
+				// Diag-Down-left
+				case 27:
+					*(target) = -1*velocity;
+					*(target+1) = 0*velocity;
+					*(target+2) = -1*velocity;
+					*(target+3) = 0*velocity;
 				break;
 
 				// Rotate Right
@@ -344,21 +351,23 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 			}
 		break;
 
+		default:
+			int i = 1;
+			for (; i < 6; i++) {
+				if (i == 'm') break;
+			}
+			char tempdat = 6 - i + '0';
+			HAL_UART_Transmit_IT(*huart1, (uint8_t*)&tempdat, sizeof(char) * 6);
+		break;
 	}
-
-//	HAL_UART_Receive_IT(&huart1, (uint8_t*)&dat, sizeof(char) * 5);
 	return;
 }
 
-void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
-{
-   // Happy void space
-}
 
 /* USER CODE BEGIN 1 */
 void ReceiveData(int tar_vel[4]) {
 	target = tar_vel;
-	HAL_UART_Receive_IT(&huart1, (uint8_t*)&dat, sizeof(char) * 5);
+	HAL_UART_Receive_IT(&huart1, (uint8_t*)&dat, sizeof(char) * 6);
 	return;
 }
 

@@ -465,8 +465,8 @@ void testing(const Motor tar_motor[]) {
 		range[i] = maximum[i] - minimum[i];
 	}
 
-	tft_prints(0, 5, "%d %d %d %d ", maximum[0], maximum[1], maximum[2], maximum[3]);
-	tft_prints(0, 6, "%d %d %d %d ", minimum[0], minimum[1], minimum[2], minimum[3]);
+	tft_prints(0, 6, "%d %d %d %d ", maximum[0], maximum[1], maximum[2], maximum[3]);
+	tft_prints(0, 7, "%d %d %d %d ", minimum[0], minimum[1], minimum[2], minimum[3]);
 
 	tft_prints(0, 8, "%d %d ", range[0], range[1]);
 	tft_prints(0, 9, "%d %d ", range[2], range[3]);

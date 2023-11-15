@@ -3,7 +3,7 @@
 ../Core/Src/usart.c:94:6:HAL_UART_MspInit	56	static
 ../Core/Src/usart.c:154:6:HAL_UART_MspDeInit	16	static
 ../Core/Src/usart.c:199:6:Reset_dat_init	16	static
-../Core/Src/usart.c:206:6:HAL_UART_RxCpltCallback	32	static
-../Core/Src/usart.c:353:6:HAL_UART_TxCpltCallback	16	static
-../Core/Src/usart.c:359:6:ReceiveData	16	static
-../Core/Src/usart.c:365:6:SendData	192	static
+../Core/Src/usart.c:206:6:HAL_UART_RxCpltCallback	40	static
+../Core/Src/usart.c:357:6:HAL_UART_TxCpltCallback	16	static
+../Core/Src/usart.c:363:6:ReceiveData	16	static
+../Core/Src/usart.c:369:6:SendData	192	static
