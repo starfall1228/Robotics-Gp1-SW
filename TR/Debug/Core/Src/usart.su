@@ -4,5 +4,6 @@
 ../Core/Src/usart.c:154:6:HAL_UART_MspDeInit	16	static
 ../Core/Src/usart.c:199:6:Reset_dat_init	16	static
 ../Core/Src/usart.c:206:6:HAL_UART_RxCpltCallback	32	static
-../Core/Src/usart.c:355:6:ReceiveData	16	static
-../Core/Src/usart.c:361:6:SendData	192	static
+../Core/Src/usart.c:353:6:HAL_UART_TxCpltCallback	16	static
+../Core/Src/usart.c:359:6:ReceiveData	16	static
+../Core/Src/usart.c:365:6:SendData	192	static
