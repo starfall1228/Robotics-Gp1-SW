@@ -133,7 +133,7 @@ int main(void) {
 	const char test_m[3][20] = {"Speed Increase", "Speed Decrease", "Speed Test"};
 
 	// Status of each Btn
-	static int motornum = 0;
+	static int motornum = 2;
 	enum {kp_increase, kp_decrease, ki_increase, ki_decrease, kd_increase, kd_decrease} k_choice;
 	static int target_vel[4] = {0,0,0,0};
 	static int velocity = 1000;

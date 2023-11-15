@@ -46,9 +46,9 @@ void MX_USART1_UART_Init(void)
   /* USER CODE END USART1_Init 1 */
   huart1.Instance = USART1;
   huart1.Init.BaudRate = 9600;
-  huart1.Init.WordLength = UART_WORDLENGTH_7B;
+  huart1.Init.WordLength = UART_WORDLENGTH_8B;
   huart1.Init.StopBits = UART_STOPBITS_1;
-  huart1.Init.Parity = UART_PARITY_EVEN;
+  huart1.Init.Parity = UART_PARITY_NONE;
   huart1.Init.Mode = UART_MODE_TX_RX;
   huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
   huart1.Init.OverSampling = UART_OVERSAMPLING_16;
@@ -75,9 +75,9 @@ void MX_USART2_UART_Init(void)
   /* USER CODE END USART2_Init 1 */
   huart2.Instance = USART2;
   huart2.Init.BaudRate = 9600;
-  huart2.Init.WordLength = UART_WORDLENGTH_7B;
+  huart2.Init.WordLength = UART_WORDLENGTH_8B;
   huart2.Init.StopBits = UART_STOPBITS_1;
-  huart2.Init.Parity = UART_PARITY_EVEN;
+  huart2.Init.Parity = UART_PARITY_NONE;
   huart2.Init.Mode = UART_MODE_TX_RX;
   huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
   huart2.Init.OverSampling = UART_OVERSAMPLING_16;
@@ -229,7 +229,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 				value += (dat[i] - '0') * temp;
 				temp /= 2;
 			}
-			tft_prints(0, 5, "%s %d %d", dat, value, count);
+			tft_prints(0, 5, "%s %d ", dat, value);
 
 			Reset_dat_init();
 
@@ -368,7 +368,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 /* USER CODE BEGIN 1 */
 void ReceiveData(int tar_vel[4]) {
 	target = tar_vel;
-	HAL_UART_Receive_IT(&huart1, (uint8_t*)&dat, sizeof(char) * 6);
+	HAL_UART_Receive_IT(&huart1, (uint8_t*)&dat, sizeof(char) * 5);
 	return;
 }
 
