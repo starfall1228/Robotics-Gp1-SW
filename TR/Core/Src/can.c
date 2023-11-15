@@ -437,9 +437,9 @@ void PID_variable_init() {
 //	indexes[i]
 //}
 
-void set_motor_speed(Motor tar_motor, int16_t tar_vel, const double kp, const double ki, const double kd) {
+void set_motor_speed(Motor tar_motor, int16_t tar_vel, const double kp, const double ki, const double kd, Motor motorlist[]) {
 	static double Cur_vel = 0;
-	tar_vel = (tar_motor == CAN2_MOTOR2 || tar_motor == CAN1_MOTOR1 ) ? -tar_vel: tar_vel;
+	tar_vel = (tar_motor == motorlist[1] || tar_motor == motorlist[2] ) ? -tar_vel: tar_vel;
 	// collect current velocity
 	Cur_vel = get_motor_feedback(tar_motor).vel_rpm;
 	error[tar_motor] = tar_vel - Cur_vel;

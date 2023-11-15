@@ -24,9 +24,9 @@
 #include "math.h"
 
 /* USER CODE BEGIN 0 */
-char dat[10];
+char dat[30];
 int* target = NULL;
-int velocity = 3000;
+int velocity = 1000;
 /* USER CODE END 0 */
 
 UART_HandleTypeDef huart1;
@@ -197,7 +197,7 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
 }
 
 void Reset_dat_init() {
-	for (int i = 0; i < 10; i++) {
+	for (int i = 0; i < 30; i++) {
 		dat[i] = '\0';
 	}
 	return;
@@ -350,6 +350,10 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 	return;
 }
 
+void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
+{
+   // Happy void space
+}
 
 /* USER CODE BEGIN 1 */
 void ReceiveData(int tar_vel[4]) {
@@ -388,7 +392,7 @@ void SendData(const Motor motorchoice[4]) {
 //		tft_prints(0, 5, "%s  ", dat_send);
 //		tft_update(100);
 		last_Send_Time = HAL_GetTick();
-		HAL_UART_Transmit(&huart1, (uint8_t*)&dat_send, sizeof(char)*(i+1), 100);
+		HAL_UART_Transmit_IT(&huart1, (uint8_t*)&dat_send, sizeof(char)*(i+1));
 	}
 	return;
 }

@@ -148,7 +148,7 @@ int main(void) {
 
 	// varying constant
 	static double kp[4] = {20,20,20,20},
-				kd[4] = {-0.5,-0.6,-0.5,-0.5},
+				kd[4] = {-0.5,-0.5,-0.5,-0.5},
 				ki[4] = {0.001,0.001,0.001,0.001};
 
 	ReceiveData(target_vel);
@@ -260,13 +260,13 @@ int main(void) {
 			break;
 		}
     	for (int i = 0; i < 4; i++ ) {
-    		set_motor_speed(motorchoice[i],target_vel[i],kp[i],ki[i],kd[i]);
-    	    // tft_prints(0, 6+i, "%d", target_vel[i]);
+    		set_motor_speed(motorchoice[i], target_vel[i], kp[i], ki[i], kd[i], motorchoice);
     	}
 
-    	tft_prints(0, 3, "%s", test_m[motornum]);
-    	tft_prints(0, 4, "%s     ", text_k[k_choice]);
-    	tft_prints(0, 9, "%d", (int) HAL_GetTick());
+    	tft_prints(0, 3, "%s ", test_m[motornum]);
+    	tft_prints(0, 4, "%s ", text_k[k_choice]);
+    	tft_prints(0, 8, "%d %d %d %d", target_vel[0], target_vel[1], target_vel[2], target_vel[3]);
+    	tft_prints(0, 9, "%d ", (int) HAL_GetTick());
     	tft_update(100);
     	SendData(motorchoice);
         /* USER CODE BEGIN 3 */
