@@ -4,11 +4,7 @@ import cv2
 import numpy as np
 from tkinter import Tk
 import serial as ps
-<<<<<<< HEAD
 com = "COM8"
-=======
-com = "COM5"
->>>>>>> 24f7e6c70d46c6434b3aee4b9876024d1e0c2e36
 # You should have no reason to modify this class
 class ColorDisplayWindow:
     def __init__(
@@ -122,14 +118,9 @@ if __name__ == "__main__":
     color_display_1 = ColorDisplayWindow(
         group_name="Isabella One",
     )
-<<<<<<< HEAD
     ser = ps.Serial(com, 9600, timeout=0,parity=ps.PARITY_EVEN, rtscts=1)
     print(ser.name)         # check which port was really used
     # ser.write(b'huys')     # write a string 
-=======
-    ser = ps.Serial(com)
-    
->>>>>>> 24f7e6c70d46c6434b3aee4b9876024d1e0c2e36
     color_detection_list = [[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]]
     
     cap = cv2.VideoCapture(0) # Change 0 if you have more than one camera.
@@ -137,10 +128,7 @@ if __name__ == "__main__":
     GREEN = [0,255,0]
     BLUE = [255,0,0]
     signal = []
-<<<<<<< HEAD
     # print(ser.read(100))
-=======
->>>>>>> 24f7e6c70d46c6434b3aee4b9876024d1e0c2e36
     while True:
         # Updates display
         _, frame = cap.read()
@@ -150,11 +138,7 @@ if __name__ == "__main__":
         cury = 0
         part = int(width / 4)
         party = int(height/4)
-<<<<<<< HEAD
         color = [b"",b"",b"",b""]
-=======
-        color = ["","","",""]
->>>>>>> 24f7e6c70d46c6434b3aee4b9876024d1e0c2e36
         for i in range(4):
             nexy = min(cury + part,width)
             cropped1 = frame[0:height - 1, cury:nexy - 1]
@@ -162,7 +146,6 @@ if __name__ == "__main__":
             imgs.append(cropped1)
             cx = part // 2
             cy = height // 2
-<<<<<<< HEAD
 
             pixel_center = hsv_frame[cy, cx+part*i]
             hue_value = pixel_center[0]
@@ -219,58 +202,4 @@ if __name__ == "__main__":
         if cv2.waitKey(10) & 0xFF == ord("q"):  # waits for 'q' key to be pressed
             break
     ser.close()
-=======
-
-            pixel_center = hsv_frame[cy, cx+part*i]
-            hue_value = pixel_center[0]
-
-            # color = "Undefined"
-            if hue_value < 5:
-                color[i] = "RED"
-                color_detection_list[i] = [0,0,255]
-                signal[i] = '0'
-            # elif hue_value < 22:
-            #     color[i] = "ORANGE"
-            #     color_detection_list[i] = [0,165,255]
-            # elif hue_value < 33:
-            #     color_detection_list[i] = [0,255,255]
-            #     color[i] = "YELLOW"
-            elif hue_value < 78:
-                color[i] = "GREEN"
-                color_detection_list[i] = [0,255,0]
-                # signal[i] = '2'
-            elif hue_value < 131:
-                color_detection_list[i] = [255,0,0]
-                color[i] = "BLUE"
-                # signal[i] = '1'
-            # elif hue_value < 170:
-            #     color_detection_list[i] = [228,130,238]
-            #     color[i] = "VIOLET"
-            else:
-                color_detection_list[i] = [0,0,255]
-                color[i] = "RED"
-
-            pixel_center_bgr = frame[cy, cx]
-            b, g, r = int(pixel_center_bgr[0]), int(pixel_center_bgr[1]), int(pixel_center_bgr[2])
-
-            # cv2.rectangle(frame, (cx - 220, 10), (cx + 200, 120), (255, 255, 255), -1)
-            # cv2.putText(frame, color, (cx - 200, 100), 0, 3, (b, g, r), 5)
-            # cv2.circle(frame, (cx, cy), 5, (25, 25, 25), 3)
-        color_display_1.display(color_detection_list)
-        # print(signal);
-        # ser.write(signal);
-        # print(imgs[0])
-        # print(color)
-        cv2.imshow('img1', imgs[0])
-        cv2.imshow('img2', imgs[1])
-        cv2.imshow('img3', imgs[2])
-        cv2.imshow('img4', imgs[3])        
-         
-        key = cv2.waitKey(1)
-        if key == 27:
-            break
-        if cv2.waitKey(10) & 0xFF == ord("q"):  # waits for 'q' key to be pressed
-            break
-
->>>>>>> 24f7e6c70d46c6434b3aee4b9876024d1e0c2e36
     cv2.destroyAllWindows()
