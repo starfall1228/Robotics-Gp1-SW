@@ -146,6 +146,7 @@ int main(void) {
 	static int Btn2_mode = 0;
 	static int Btn1_HoldTime = 0;
 	static int Btn2_HoldTime = 0;
+	static int deltatime = 0;
 
 	// varying constant
 	static double kp = 20,
@@ -195,9 +196,12 @@ int main(void) {
     	    		break;
 
     	    		case 2:
-						for (int i = 0; i < 4; i++) {
-							target_vel[i] = velocity;
-						}
+    	    			if (HAL_GetTick() - deltatime > 100) {
+    	    				deltatime = HAL_GetTick();
+							for (int i = 0; i < 4; i++) {
+								target_vel[i] = velocity;
+							}
+    	    			}
     	    		break;
     	    	}
     	    	if (btn_read(BTN1)) {
@@ -277,7 +281,7 @@ int main(void) {
 
     	testing(motorchoice);
     	tft_prints(0, 1, "%s time: %d", test_m[motornum], (int) HAL_GetTick());
-    	tft_prints(0, 2, "%s vel: %d", text_k[k_choice], velocity);
+    	tft_prints(0, 2, "%s %d", text_k[k_choice], velocity);
     	tft_prints(0, 3, "tar: %d %d ", target_vel[0], target_vel[1]);
     	tft_prints(0, 4, "tar: %d %d ", target_vel[2], target_vel[3]);
     	tft_update(100);
