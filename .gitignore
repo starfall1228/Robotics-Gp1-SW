@@ -59,3 +59,8 @@ TR/Release/sw-tutorial.map
 *.prefs
 *.xml
 *.prefs
+TR/Debug/Core/Src/main.o
+TR/Debug/sw-tutorial.map
+TR/Debug/sw-tutorial.list
+TR/Debug/Core/Src/main.su
+TR/Debug/Core/Src/usart.su
