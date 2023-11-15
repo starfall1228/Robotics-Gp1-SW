@@ -201,7 +201,9 @@ int main(void) {
     	    		break;
     	    	}
     	    	if (btn_read(BTN1)) {
-    	    		target_vel[motornum] = 0;
+    	    		for (int i = 0; i < 4; i++) {
+    	    			target_vel[i] = 0;
+    	    		}
     	    		Btn1_mode = 0;
     	    	}
 			break;
