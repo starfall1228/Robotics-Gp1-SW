@@ -126,18 +126,86 @@ void init_PID(PID* pid, double setspeed,double kp, double ki, double kd){
 	pid->setspeed = setspeed;
 }
 
-void upp_state_speed(double setspeed,Motor motor, PID* pid, int* last_ticks){
+void upd_state_speed(double setspeed,Motor motor, PID* pid){
+	int last_ticks = HAL_GetTick();
 	double cur_vel = abs(get_motor_feedback(motor).vel_rpm);
     pid->setspeed = setspeed;
     pid->err = pid->setspeed - cur_vel;
     pid->integral += pid->err;
-    double dt = (HAL_GetTick() - *last_ticks)/1000;
-    *last_ticks = HAL_GetTick();
+    double dt = (HAL_GetTick() - last_ticks)/1000;
+    last_ticks = HAL_GetTick();
     pid->current = pid->kp*pid->err + pid->ki*pid->integral+pid->kd*(pid->err-pid->err_last);
     pid->err_last=pid->err;
 }
 
 //int last_ticks = HAL_GetTick();
+
+
+
+
+
+void print_data(PID pid0, PID pid1){
+    tft_update(100);
+     //printing feedback on TFT
+	tft_prints(0, 0, "MOTOR1 VEL: %d", get_motor_feedback(CAN1_MOTOR3).vel_rpm/60);
+	tft_prints(0, 1, "MOTOR2 VEL: %d", get_motor_feedback(CAN1_MOTOR1).vel_rpm/60);
+    tft_prints(0, 2, "MOTOR CUR: %0.3f", (double)get_motor_feedback(CAN1_MOTOR3).actual_current);
+    tft_prints(0, 3, "MOTOR CUR: %0.3f", (double)get_motor_feedback(CAN1_MOTOR1).actual_current);
+    tft_prints(0, 4, "pid0_cur: %f", pid0.current);
+    tft_prints(0, 5, "pid1_cur: %f", pid1.current);
+    tft_prints(0,6,"SS0: %0.3f", pid0.setspeed/60);
+    tft_prints(0,7,"SS1: %0.3f", pid1.setspeed/60);
+//    tft_prints(0,8, "%d", rcv);
+}
+
+void turning(PID* pid0, PID* pid1, int tim, double setspeed, char l_or_r){
+	int last_ticks = HAL_GetTick();
+	int sign = 0;
+
+	switch(l_or_r){
+	case 'l':
+		sign = 1;
+		break;
+	case 'r':
+		sign = -1;
+		break;
+	}
+	while(HAL_GetTick() - last_ticks <= tim){
+		can_ctrl_loop(); // to continously send/receive data with CAN
+		upd_state_speed(setspeed,CAN1_MOTOR3, pid0);
+		upd_state_speed(setspeed,CAN1_MOTOR1, pid1);
+		set_motor_current(CAN1_MOTOR3, sign*pid0->current);
+		set_motor_current(CAN1_MOTOR1, sign*pid1->current);
+		print_data(*pid0, *pid1);
+	}
+
+}
+
+void forward(PID* pid0, PID* pid1, int tim, double setspeed){
+	int last_ticks = HAL_GetTick();
+
+	while(HAL_GetTick() - last_ticks <= tim){
+		can_ctrl_loop(); // to continously send/receive data with CAN
+		upd_state_speed(setspeed,CAN1_MOTOR3, &(*pid0));
+		upd_state_speed(setspeed,CAN1_MOTOR1, &(*pid1));
+		set_motor_current(CAN1_MOTOR3, pid0->current);
+		set_motor_current(CAN1_MOTOR1, -pid1->current);
+		print_data(*pid0, *pid1);
+	}
+}
+
+void backward(PID* pid0, PID* pid1, int tim, double setspeed){
+	int last_ticks = HAL_GetTick();
+
+	while(HAL_GetTick() - last_ticks <= tim){
+		can_ctrl_loop(); // to continously send/receive data with CAN
+		upd_state_speed(setspeed,CAN1_MOTOR3, pid0);
+		upd_state_speed(setspeed,CAN1_MOTOR1, pid1);
+		set_motor_current(CAN1_MOTOR3, -pid0->current);
+		set_motor_current(CAN1_MOTOR1, pid1->current);
+		print_data(*pid0, *pid1);
+	}
+}
 int main(void) {
     /* USER CODE BEGIN 1 */
 
@@ -188,7 +256,7 @@ int main(void) {
     can_init(); // initialize CAN
     cur_err = 500;
     // The rpm of the motor
-    double setspeed = 3000;
+    double setspeed = 2000;
     double kp = 0.5;
     double ki = 0.01;
     double kd = 0.01;
@@ -198,59 +266,87 @@ int main(void) {
     init_PID(&pid1, setspeed,kp,ki, kd);
     int last_ticks =HAL_GetTick();
     int temp = HAL_GetTick();
-
-
-    // getting signal from the pyserial
-    char dat[4];
-
-
-    // to launch only after the signal's sent consistently for 5 seconds
-    while(1){
-    	// captures
-    }
+    static const char dat[] = "GGGG";
+    uint8_t tim = 10;
+    char message[] = "xuys";
+    HAL_UART_Transmit(&huart1, (uint8_t*)&dat, sizeof(dat),tim);
     bool rcv = 0;
-    while(1){
+    int last_mov = HAL_GetTick();
+
+    const int tim_start_to_junction = 5000;
+    const int tim_junction_to_bucket = 1000;
+    const int tim_turning[4]  = {1000,1000,000};
+
+
+    bool lanuched = false;
+    while(!lanuched){
         	can_ctrl_loop(); // to continously send/receive data with CAN
+//			if(!rcv) {
+//				char message1[10] = {'\0'};
+//				HAL_UART_Receive(&huart1,(uint8_t*)&message1, sizeof(message1), tim);
+//				if(message1[0] != '\0') {
+//					for(int i = 0;i < 4;i++) {
+//						message[i] = message1[i];
+//					}
+//					rcv = 1;
+//					last_mov = HAL_GetTick();
+//				}
+//			}
+			if(rcv || !gpio_read(BTN1)){
+			// forwards to the junction
+//				int last_ticks = HAL_GetTick();
 
-             if (!btn_read(BTN1)) {
-            	upp_state_speed(setspeed,CAN1_MOTOR0, &pid0,&last_ticks);
-				upp_state_speed(setspeed,CAN2_MOTOR0, &pid1,&last_ticks);
-            	 set_motor_current(CAN1_MOTOR0, pid0.current);
-            	 set_motor_current(CAN2_MOTOR0, -pid1.current);
+//				while(HAL_GetTick() - last_ticks <= 3000){
+//					can_ctrl_loop(); // to continously send/receive data with CAN
+//				    init_PID(&pid0, setspeed,kp,ki, kd);
+//				    init_PID(&pid1, setspeed,kp,ki, kd);
+//					upd_state_speed(setspeed,CAN1_MOTOR3, &pid0);
+//					upd_state_speed(setspeed, CAN1_MOTOR1, &pid1);
+//					set_motor_current(CAN1_MOTOR3, pid0.current);
+//					set_motor_current(CAN1_MOTOR1, -pid1.current);
 
-			 } else if (!btn_read(BTN2)) {
-				upp_state_speed(setspeed,CAN1_MOTOR0, &pid0,&last_ticks);
-				upp_state_speed(setspeed,CAN2_MOTOR0, &pid1,&last_ticks);
-				set_motor_current(CAN1_MOTOR0, -pid0.current);
-				set_motor_current(CAN2_MOTOR0, pid1.current);
+//				}
+//				set_motor_current(CAN1_MOTOR0, 0);
+//				set_motor_current(CAN2_MOTOR0, 0);
+//			    init_PID(&pid0, setspeed,kp,ki, kd);
+//			    init_PID(&pid1, setspeed,kp,ki, kd);
+//			forward(&pid0, &pid1, tim_start_to_junction, setspeed);
+//			set_motor_current(CAN1_MOTOR0, 0);
+//			set_motor_current(CAN1_MOTOR1, 0);
+			// Turning to the first bucket
 
-			 } else {
-				 init_PID(&pid0, setspeed,kp,ki, kd);
-				 init_PID(&pid1, setspeed,kp,ki, kd);
-				 set_motor_current(CAN1_MOTOR0, 0);
-				 set_motor_current(CAN2_MOTOR0, 0);
+//			turning(&pid0, &pid1, tim_turning[0],setspeed/2, 'l');
+//
+//			// forwards to the bucket
+			forward(&pid0, &pid1, tim_start_to_junction, setspeed);
+			turning(&pid0, &pid1, tim_turning[0], setspeed, 'l');
+			forward(&pid0, &pid1, tim_junction_to_bucket, setspeed);
+			turning(&pid0, &pid1, tim_turning[0]*2, setspeed, 'r');
+			backward(&pid0, &pid1,tim_junction_to_bucket , setspeed);
 
-			 }
-
-
-
-        /* USER CODE END WHILE */
-        /* USER CODE BEGIN 3 */
-        tft_update(100);
-        // printing feedback on TFT
-        // should display 50 if implemented correctly
-        tft_prints(0, 0, "MOTOR1 VEL: %d", get_motor_feedback(CAN1_MOTOR0).vel_rpm/60);
-        tft_prints(0, 1, "MOTOR2 VEL: %d", get_motor_feedback(CAN2_MOTOR0).vel_rpm/60);
-
-        tft_prints(0, 2, "MOTOR CUR: %0.3f", (double)get_motor_feedback(CAN1_MOTOR0).actual_current);
-        tft_prints(0, 3, "MOTOR CUR: %0.3f", (double)get_motor_feedback(CAN1_MOTOR0).actual_current);
-        tft_prints(0, 4, "pid0_cur: %f", pid0.current);
-        tft_prints(0, 5, "pid1_cur: %f", pid1.current);
-        tft_prints(0,6,"SS0: %0.3f", pid0.setspeed/60);
-        tft_prints(0,7,"SS1: %0.3f", pid1.setspeed/60);
+//			led_toggle(LED1);
+//
+//
+//			// backwards to the junction
+//			backward(&pid0, &pid1, tim_start_to_junction, setspeed);
+//
+//			// Turning
+//			turning(&pid0, &pid1, 2*tim_turning[0],setspeed/2, 'r');
+//
+//			// forwards to the second bucket
+//			forward(&pid0, &pid1, tim_junction_to_bucket, setspeed);
 
 
+//				while(HAL_GetTick() - last_ticks <= 3000){
 
+//				}
+//				set_motor_current(CAN2_MOTOR0, 0);
+//				set_motor_current(CAN2_MOTOR1, 0);
+//				lanuched = true;
+			}
+			set_motor_current(CAN1_MOTOR3, 0);
+			set_motor_current(CAN1_MOTOR1, 0);
+			print_data(pid0,pid1);
     }
 
 
