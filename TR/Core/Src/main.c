@@ -78,7 +78,13 @@ void pwm_homework(void);
  */
 int main(void) {
     /* USER CODE BEGIN 1 */
-
+    MX_GPIO_Init();
+    MX_CAN1_Init();
+    MX_CAN2_Init();
+    MX_USART1_UART_Init();
+    MX_DMA_Init();
+    MX_USART2_UART_Init();
+    MX_TIM5_Init();
     /* USER CODE END 1 */
 
     /* MCU Configuration--------------------------------------------------------*/
@@ -98,13 +104,6 @@ int main(void) {
     /* USER CODE END SysInit */
 
     /* Initialize all configured peripherals */
-    MX_GPIO_Init();
-    MX_CAN1_Init();
-    MX_CAN2_Init();
-    MX_USART1_UART_Init();
-    MX_DMA_Init();
-    MX_USART2_UART_Init();
-    MX_TIM5_Init();
     /* USER CODE BEGIN 2 */
     volatile uint32_t last_ticks = 0;
     volatile uint32_t last_ticks_inc = 0;

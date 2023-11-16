@@ -28,7 +28,11 @@ char dat[30];
 char fulldat[30];
 int count = 0;
 int* target = NULL;
-int velocity = 1000;
+int shifted = 0;
+int percent_vel = 100;
+const int max_velocity = 1000;
+
+int velocity = max_velocity;
 /* USER CODE END 0 */
 
 UART_HandleTypeDef huart1;
@@ -198,6 +202,7 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
   }
 }
 
+/* USER CODE BEGIN 1 */
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 {
    // Happy void space
@@ -208,6 +213,10 @@ void Reset_dat_init() {
 		dat[i] = '\0';
 	}
 	return;
+}
+
+void fast_track() {
+
 }
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
@@ -242,7 +251,8 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 				//--------------------
 				switch (fulldat[0]) {
 					case 's':
-						velocity = (velocity == 300)? 1000:300;
+						shifted = (shifted == 0)? 1:0;
+						velocity = max_velocity*((shifted == 0)? 1:0.5)*percent_vel;
 						Reset_dat_init();
 						tft_prints(0, 5, "%s", "Shifting");
 					break;
@@ -393,7 +403,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 }
 
 
-/* USER CODE BEGIN 1 */
 void ReceiveData(int tar_vel[4]) {
 	target = tar_vel;
 	HAL_UART_Receive_IT(&huart1, (uint8_t*)&dat, sizeof(char) * 1);
