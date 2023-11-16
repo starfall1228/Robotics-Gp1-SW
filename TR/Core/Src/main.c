@@ -97,16 +97,16 @@ int main(void)
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
-  MX_GPIO_Init();
-  MX_CAN1_Init();
-  MX_CAN2_Init();
-  MX_SPI1_Init();
-  MX_USART1_UART_Init();
-  MX_I2C2_Init();
-  MX_DMA_Init();
-  MX_USART2_UART_Init();
-  MX_TIM5_Init();
-  MX_TIM3_Init();
+	MX_GPIO_Init();
+	MX_CAN1_Init();
+	MX_CAN2_Init();
+	MX_SPI1_Init();
+	MX_USART1_UART_Init();
+	MX_I2C2_Init();
+	MX_DMA_Init();
+	MX_USART2_UART_Init();
+	MX_TIM5_Init();
+	MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
     volatile uint32_t last_ticks = 0;
     volatile uint32_t last_ticks_inc = 0;
@@ -120,10 +120,49 @@ int main(void)
     HAL_GPIO_WritePin(GPIOC, GPIO_PIN_3, GPIO_PIN_SET);
     pwm_init();
 
+
+    tft_force_clear();
+	can_init();
+	PID_variable_init();
+	Reset_dat_init();
+
+	// pre-define constant
+	const Motor motorchoice[] = {CAN1_MOTOR0, CAN1_MOTOR1, CAN2_MOTOR2, CAN2_MOTOR3};
+	const char pid_text[6][20] = {"kp-up", "kp-down", "ki-up", "ki-down", "kd-up", "kd-down"};
+	const char Btn1_text[4][20] = {"Speed Increase", "Speed Decrease", "Speed Test", "PWM test"};
+
+	// Status of each Btn
+	static int btn1_choice = 3;
+	enum {kp_increase, kp_decrease, ki_increase, ki_decrease, kd_increase, kd_decrease} k_choice;
+	static int target_vel[4] = {0,0,0,0};
+	static int velocity = 1000;
+
+	//initialize
+	k_choice = kp_increase;
+
+	// Hold&click Variable
+	static int Btn1_mode = 0;
+	static int Btn2_mode = 0;
+	static int Btn1_HoldTime = 0;
+	static int Btn2_HoldTime = 0;
+	static int deltatime = 0;
+
+	// varying constant
+	static double kp = 20,
+				kd = -0.5,
+				ki = 0.001;
+
+	static int angle = 90;
+	static int last_servo_time = 0;
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+
+
+
+
   while (1)
   {
     /* USER CODE END WHILE */
@@ -152,13 +191,13 @@ int main(void)
 
 	      	    //Clicking
 	      	    case (2):
-	  				motornum++; motornum %= 3;
+	  				btn1_choice++; btn1_choice %= 4;
 	      	    	Btn1_mode = 0;
 	      	    break;
 
 	      	    //Holding
 	      	    case (3):
-	      	    	switch (motornum) {
+	      	    	switch (btn1_choice) {
 	      	    		case 0:
 	      	    			velocity += 50;
 	      	    		break;
@@ -184,6 +223,18 @@ int main(void)
 	      	    		Btn1_mode = 0;
 	      	    	}
 	  			break;
+
+	  			case 4:
+	  				if (HAL_GetTick() - last_servo_time > 1000) {
+	  					last_servo_time = HAL_GetTick();
+	  					angle = (angle == 90)? 45:90;
+						pwm_angle(angle);
+	  				}
+	  				if (btn_read(BTN1)) {
+	  					Btn1_mode = 0;
+	  				}
+	  			break;
+
 	      	}
 
 	      	switch(Btn2_mode) {
@@ -254,8 +305,8 @@ int main(void)
 
 	      	testing(motorchoice);
 	      	tft_prints(0, 0, "time: %d", (int) HAL_GetTick());
-	      	tft_prints(0, 1, "%s     ", test_m[motornum]);
-	      	tft_prints(0, 2, "%s %d", text_k[k_choice], velocity);
+	      	tft_prints(0, 1, "%s     ", Btn1_text[btn1_choice]);
+	      	tft_prints(0, 2, "%s %d", pid_text[k_choice], velocity);
 	      	tft_prints(0, 3, "tar: %d %d ", target_vel[0], target_vel[1]);
 	      	tft_prints(0, 4, "tar: %d %d ", target_vel[2], target_vel[3]);
 	      	tft_update(100);
