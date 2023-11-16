@@ -55,16 +55,7 @@
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-void gpio_classwork(void);
-void tft_classwork(void);
-void tutorial2_homework(void);
-void tutorial2_homework2(void);
-void tutorial2_homework3(void);
-void Smileface_Init(void);
-void pwm_init(void);
-void pwm_classwork(void);
-void pwm_classwork2(void);
-void pwm_homework(void);
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/

@@ -28,7 +28,9 @@
 
 char dat[30];
 char fulldat[30];
+char tofdat[60];
 int count = 0;
+int count_tof = 0;
 int* target = NULL;
 int shifted = 0;
 int percent_vel = 100;
@@ -38,6 +40,8 @@ int prev_error = 0;
 int accu = 0;
 
 int velocity = max_velocity;
+
+
 /* USER CODE END 0 */
 
 UART_HandleTypeDef huart1;
@@ -220,6 +224,12 @@ void Reset_dat_init() {
 	return;
 }
 
+void Reset_tofdat_init() {
+	for (int i = 0; i < 60; i++) {
+		dat[i] = '\0';
+	}
+}
+
 void fast_track(int u1_d, int u2_d, int tof_d) {
 //	double theta = atan(5/(u1_d-u2_d));
 //	int omega = General_PID(theta-PI/2);
@@ -227,184 +237,174 @@ void fast_track(int u1_d, int u2_d, int tof_d) {
 
 }
 
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
-{
-	static int mode = 0;
-	switch (mode) {
-		// start bit??
-		case 0:
-			if (dat[0] == 'm') {
-				mode = 1;
-				Reset_dat_init();
-			}
+
+void shift() {
+	shifted = (shifted == 0)? 1:0;
+	velocity = max_velocity*((shifted == 0)? 1:0.5)*percent_vel;
+	Reset_dat_init();
+	tft_prints(0, 5, "%s", "Shifting");
+	return;
+}
+
+void set_tar_velocity(int v1, int v2, int v3, int v4) {
+	*(target+0) = v1*velocity;
+	*(target+1) = v2*velocity;
+	*(target+2) = v3*velocity;
+	*(target+3) = v4*velocity;
+	return;
+}
+
+void decode_command(int value) {
+	switch (value) {
+	// Push button
+		// Up
+		case 20:
+			set_tar_velocity(1	,1	,1	,1);
 		break;
 
-		// detecting...
-		case 1:
-			fulldat[count++] = dat[0];
-			if (dat[0] == 'n') {
-				fulldat[--count] = '\0';
-				if (count != 5) {
+		// Right
+		case 22:
+			set_tar_velocity(1	,-1	,1	,-1);
+		break;
+
+		// Left
+		case 21:
+			set_tar_velocity(-1	,1	,-1	,1);
+		break;
+
+		// Down
+		case 23:
+			set_tar_velocity(-1	,-1	,-1	,-1);
+		break;
+
+		// Diag-Up-right
+		case 24:
+			set_tar_velocity(1	,0	,1	,0);
+		break;
+
+		// Diag-Up-left
+		case 26:
+			set_tar_velocity(0	,1	,0	,1);
+		break;
+
+		// Diag-Down-right
+		case 25:
+			set_tar_velocity(0	,-1	,0	,-1);
+		break;
+
+		// Diag-Down-left
+		case 27:
+			set_tar_velocity(-1	,0	,-1	,0);
+		break;
+
+		// Rotate Right
+		case 28:
+			set_tar_velocity(1	,-1	,1	,-1);
+		break;
+
+		// Rotate Left
+		case 30:
+			set_tar_velocity(-1	,1	,-1	,1);
+		break;
+
+		// Unpush Button
+		// Up
+		case 4:
+		// Right
+		case 6:
+		// Left
+		case 5:
+		// Down
+		case 7:
+		// Diag-Up-right
+		case 8:
+		// Diag-Up-left
+		case 10:
+		// Diag-Down-right
+		case 9:
+		// Diag-Down-left
+		case 11:
+		// Rotate Right
+		case 12:
+		// Rotate Left
+		case 14:
+		// stop
+		case 0:
+			set_tar_velocity(0	,0	,0	,0);
+		break;
+	}
+}
+
+void end_bit() {
+	fulldat[--count] = '\0';
+	if (count != 5) {
+		count = 0;
+		mode = 0;
+		Reset_dat_init();
+		break;
+	}
+
+	int value = 0;
+	int temp = 16;
+
+	tft_prints(0, 5, "%s  %d   ", fulldat, value);
+	led_toggle(LED2);
+	//--------------------
+	switch (fulldat[0]) {
+		case 's':
+			shift();
+		break;
+		case '1':
+		case '0':
+			for (int i = 0; i < 5; i++) {
+				if (fulldat[i] != '0' && fulldat[i] != '1'){
+					Reset_dat_init();
 					count = 0;
 					mode = 0;
-					Reset_dat_init();
-					break;
+					return;
 				}
-
-				int value = 0;
-				int temp = 16;
-
-				tft_prints(0, 5, "%s  %d   ", fulldat, value);
-				led_toggle(LED2);
-				//--------------------
-				switch (fulldat[0]) {
-					case 's':
-						shifted = (shifted == 0)? 1:0;
-						velocity = max_velocity*((shifted == 0)? 1:0.5)*percent_vel;
-						Reset_dat_init();
-						tft_prints(0, 5, "%s", "Shifting");
-					break;
-					case '1':
-					case '0':
-						for (int i = 0; i < 5; i++) {
-							if (fulldat[i] != '0' && fulldat[i] != '1'){
-								Reset_dat_init();
-								count = 0;
-								mode = 0;
-								return;
-							}
-							value += (fulldat[i] - '0') * temp;
-							temp /= 2;
-						}
-						//tft_prints(0, 5, "%s %d succ ", fulldat,value);
-
-						Reset_dat_init();
-
-						switch (value) {
-						// Push button
-							// Up
-							case 20:
-								*(target) = 1*velocity;
-								*(target+1) = 1*velocity;
-								*(target+2) = 1*velocity;
-								*(target+3) = 1*velocity;
-							break;
-
-							// Right
-							case 22:
-								*(target) = 1*velocity;
-								*(target+1) = -1*velocity;
-								*(target+2) = 1*velocity;
-								*(target+3) = -1*velocity;
-							break;
-
-							// Left
-							case 21:
-								*(target) = -1*velocity;
-								*(target+1) = 1*velocity;
-								*(target+2) = -1*velocity;
-								*(target+3) = 1*velocity;
-							break;
-
-							// Down
-							case 23:
-								*(target) = -1*velocity;
-								*(target+1) = -1*velocity;
-								*(target+2) = -1*velocity;
-								*(target+3) = -1*velocity;
-							break;
-
-							// Diag-Up-right
-							case 24:
-								*(target) = 1*velocity;
-								*(target+1) = 0*velocity;
-								*(target+2) = 1*velocity;
-								*(target+3) = 0*velocity;
-							break;
-
-							// Diag-Up-left
-							case 26:
-								*(target) = 0*velocity;
-								*(target+1) = 1*velocity;
-								*(target+2) = 0*velocity;
-								*(target+3) = 1*velocity;
-							break;
-
-							// Diag-Down-right
-							case 25:
-								*(target) = 0*velocity;
-								*(target+1) = -1*velocity;
-								*(target+2) = 0*velocity;
-								*(target+3) = -1*velocity;
-							break;
-
-							// Diag-Down-left
-							case 27:
-								*(target) = -1*velocity;
-								*(target+1) = 0*velocity;
-								*(target+2) = -1*velocity;
-								*(target+3) = 0*velocity;
-							break;
-
-							// Rotate Right
-							case 28:
-								*(target) = 1*velocity;
-								*(target+1) = -1*velocity;
-								*(target+2) = 1*velocity;
-								*(target+3) = -1*velocity;
-							break;
-
-							// Rotate Left
-							case 30:
-								*(target) = -1*velocity;
-								*(target+1) = 1*velocity;
-								*(target+2) = -1*velocity;
-								*(target+3) = 1*velocity;
-							break;
-
-							// Unpush Button
-							// Up
-							case 4:
-							// Right
-							case 6:
-							// Left
-							case 5:
-							// Down
-							case 7:
-							// Diag-Up-right
-							case 8:
-							// Diag-Up-left
-							case 10:
-							// Diag-Down-right
-							case 9:
-							// Diag-Down-left
-							case 11:
-							// Rotate Right
-							case 12:
-							// Rotate Left
-							case 14:
-							// stop
-							case 0:
-								*(target) = 0;
-								*(target+1) = 0;
-								*(target+2) = 0;
-								*(target+3) = 0;
-
-							break;
-
-							default:
-
-							break;
-
-						}
-					break;
-
-				}
-				count = 0;
-				mode = 0;
+				value += (fulldat[i] - '0') * temp;
+				temp /= 2;
 			}
+
 			Reset_dat_init();
+
+			decode_command(value);
 		break;
+
+	}
+	count = 0;
+	mode = 0;
+}
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+	if (*huart == &huart1) {
+		static int mode1 = 0;
+		switch (mode1) {
+			// start bit??
+			case 0:
+				if (dat[0] == 'm') {
+					mode = 1;
+					Reset_dat_init();
+				}
+			break;
+
+			// detecting...
+			case 1:
+				fulldat[count++] = dat[0];
+				if (dat[0] == 'n') {
+					end_bit();
+				}
+				Reset_dat_init();
+			break;
+		}
+	} else if (*huart == &huart2) {
+		static int mode2 = 0;
+
+		tofdat[count_tof++] = dat[0];
+		Reset_dat_init();
+
 	}
 
 	return;
