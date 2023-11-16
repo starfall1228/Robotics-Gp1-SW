@@ -127,7 +127,7 @@ int main(void)
 	Reset_dat_init();
 
 	// pre-define constant
-	const Motor motorchoice[] = {CAN1_MOTOR0, CAN1_MOTOR1, CAN2_MOTOR5, CAN2_MOTOR3};
+	const Motor motorchoice[] = {CAN1_MOTOR0, CAN1_MOTOR1, CAN2_MOTOR2, CAN2_MOTOR3};
 	const char pid_text[6][20] = {"kp-up", "kp-down", "ki-up", "ki-down", "kd-up", "kd-down"};
 	const char Btn1_text[4][20] = {"Speed Increase", "Speed Decrease", "Speed Test", "PWM test"};
 
@@ -148,9 +148,9 @@ int main(void)
 	static int deltatime = 0;
 
 	// varying constant
-	static double kp = 20,
-				kd = -1.5,
-				ki = 0;
+	static double kp = 9,
+				kd = -0.013,
+				ki = 0.0003;
 
 	static int angle = 90;
 	static int last_servo_time = 0;
@@ -303,9 +303,10 @@ int main(void)
 		ReceiveData(target_vel);
 		for (int i = 0; i < 4; i++ ) {
 			set_motor_speed(motorchoice[i], target_vel[i], kp, ki, kd, motorchoice);
+			//set_motor_current(motorchoice[i], 700);
 		}
 
-		tft_prints(0, 0, "time: %d", (int) HAL_GetTick());
+		tft_prints(0, 0, "timee: %d", (int) HAL_GetTick());
 		tft_prints(0, 1, "%s     ", Btn1_text[btn1_choice]);
 		tft_prints(0, 2, "%s %d", pid_text[k_choice], velocity);
 		tft_prints(0, 3, "tar: %d %d ", target_vel[0], target_vel[1]);

@@ -421,7 +421,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 void ReceiveData(int tar_vel[4]) {
 	target = tar_vel;
 	HAL_UART_Receive_IT(&huart1, (uint8_t*)&dat, sizeof(char) * 1);
-	HAL_UART_Receive_IT(&huart2, (uint8_t*)&tofdat, sizeof(char) * 34);
+	//HAL_UART_Receive_IT(&huart2, (uint8_t*)&tofdat, sizeof(char) * 34);
 	return;
 }
 

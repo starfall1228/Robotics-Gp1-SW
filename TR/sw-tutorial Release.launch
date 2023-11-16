@@ -28,7 +28,7 @@
     <booleanAttribute key="com.st.stm32cube.ide.mcu.debug.openocd.CTI_SIGNAL_HALT" value="false"/>
     <booleanAttribute key="com.st.stm32cube.ide.mcu.debug.openocd.DBG_DEVICE_SHAREABLE_ALLOWED" value="false"/>
     <stringAttribute key="com.st.stm32cube.ide.mcu.debug.openocd.DBG_INTERFACE" value="Swd"/>
-    <stringAttribute key="com.st.stm32cube.ide.mcu.debug.openocd.DBG_INTERFACE_FREQUENCY" value="2.4E7"/>
+    <stringAttribute key="com.st.stm32cube.ide.mcu.debug.openocd.DBG_INTERFACE_FREQUENCY" value="8000000.0"/>
     <booleanAttribute key="com.st.stm32cube.ide.mcu.debug.openocd.DBG_LOW_POWER_MODE_ALLOWED" value="true"/>
     <stringAttribute key="com.st.stm32cube.ide.mcu.debug.openocd.DBG_RESET_MODE" value="soft"/>
     <booleanAttribute key="com.st.stm32cube.ide.mcu.debug.openocd.DBG_STOP_WATCHDOG_THEN_HALTED_ALLOWED" value="true"/>
