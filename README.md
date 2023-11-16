@@ -5,13 +5,13 @@ robotics things
 - [x] PID-distance code
 - [x] PID-speed code
 - [x] Image-Processing codes
-- [ ] Image-processing debugging
-- [ ] Signal sending codes
+- [x] Image-processing debugging
+- [x] Signal sending codes
 - [ ] Signal sending debugging
 - [x] PID-distance test
 - [x] PID-speed test
 - [ ] Movement functions
-- [ ] Bluetooth implementation
+- [x] Bluetooth implementation
 - [ ] Servo code
 - [ ] Servo code testing 
 
