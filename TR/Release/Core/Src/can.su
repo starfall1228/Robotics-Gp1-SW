@@ -15,6 +15,6 @@
 ../Core/Src/can.c:379:5:average	0	static
 ../Core/Src/can.c:396:9:General_PID	56	static
 ../Core/Src/can.c:425:6:PID_variable_init	8	static
-../Core/Src/can.c:440:6:set_motor_speed	96	static
+../Core/Src/can.c:440:6:set_motor_speed	80	static
 ../Core/Src/can.c:457:6:testing	104	static
 ../Core/Src/can.c:476:8:averagespeed	8	static

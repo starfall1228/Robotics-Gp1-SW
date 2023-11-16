@@ -24,6 +24,8 @@
 #include "math.h"
 
 /* USER CODE BEGIN 0 */
+#define PI 3.141592654
+
 char dat[30];
 char fulldat[30];
 int count = 0;
@@ -31,6 +33,9 @@ int* target = NULL;
 int shifted = 0;
 int percent_vel = 100;
 const int max_velocity = 1000;
+
+int prev_error = 0;
+int accu = 0;
 
 int velocity = max_velocity;
 /* USER CODE END 0 */
@@ -215,7 +220,10 @@ void Reset_dat_init() {
 	return;
 }
 
-void fast_track() {
+void fast_track(int u1_d, int u2_d, int tof_d) {
+//	double theta = atan(5/(u1_d-u2_d));
+//	int omega = General_PID(theta-PI/2);
+//
 
 }
 

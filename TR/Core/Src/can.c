@@ -393,7 +393,7 @@ static double accu[MAX_NUM_OF_MOTORS];
 static double tar_current[MAX_NUM_OF_MOTORS];
 //static double last_ticks[MAX_NUM_OF_MOTORS];
 
-int32_t General_PID(Motor cur_motor, int16_t error, int16_t prev_error, double* accu, const double kp, const double ki, const double kd) {
+int32_t General_PID(int16_t error, int16_t prev_error, double* accu, const double kp, const double ki, const double kd) {
 	// variable declaration
 //	double deltatime = HAL_GetTick()-last_ticks[cur_motor];
 	double P_Gain;
@@ -445,7 +445,7 @@ void set_motor_speed(Motor tar_motor, int16_t tar_vel, const double kp, const do
 	error[tar_motor] = tar_vel - Cur_vel;
 
 	// calculate error
-	tar_current[tar_motor] = General_PID(tar_motor, error[tar_motor], prev_error[tar_motor], accu+tar_motor,kp,ki,kd);
+	tar_current[tar_motor] = General_PID(error[tar_motor], prev_error[tar_motor], accu+tar_motor,kp,ki,kd);
 	prev_error[tar_motor] = error[tar_motor];
 
 	set_motor_current(tar_motor,tar_current[tar_motor]);
