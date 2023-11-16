@@ -26,6 +26,7 @@
 #include "string.h"
 #include "usart.h"
 #include "gpio.h"
+#include "pwm.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */

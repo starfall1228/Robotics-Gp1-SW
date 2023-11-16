@@ -11,4 +11,3 @@ void pwm_init(void) {
 	TIM5->CCR1 = 1499;
 	/* Your code end here */
 }
-

@@ -405,8 +405,14 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 //
 //		tofdat[count_tof++] = dat[0];
 //		Reset_dat_init();
-//
+
+		if (tofdat[0] != 'S') {
+			Reset_tofdat_init();
+			return;
+		};
+
 		tft_prints(0, 5, "%s ", tofdat);
+		Reset_tofdat_init();
 	}
 
 	return;
