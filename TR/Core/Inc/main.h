@@ -94,8 +94,6 @@ void Error_Handler(void);
 #define CAM_D0_GPIO_Port GPIOC
 #define CAM_D1_Pin GPIO_PIN_7
 #define CAM_D1_GPIO_Port GPIOC
-#define CAM_D2_Pin GPIO_PIN_8
-#define CAM_D2_GPIO_Port GPIOC
 #define CAM_D3_Pin GPIO_PIN_9
 #define CAM_D3_GPIO_Port GPIOC
 #define CAM_RRST_Pin GPIO_PIN_8
