@@ -64,3 +64,14 @@ TR/Debug/sw-tutorial.map
 TR/Debug/sw-tutorial.list
 TR/Debug/Core/Src/main.su
 TR/Debug/Core/Src/usart.su
+TR/.settings/stm32cubeide.project.prefs
+TR/Release/Core/Src/main.d
+TR/Release/Core/Src/pwm.d
+TR/Release/Core/Src/subdir.mk
+TR/Release/Core/Src/tutorial3_pwm.o
+TR/Release/Core/Src/tutorial3_pwm.su
+TR/Release/Core/Src/usart.o
+TR/Release/Core/Src/usart.su
+TR/Release/objects.list
+TR/Release/sw-tutorial.list
+TR/Release/sw-tutorial.map
