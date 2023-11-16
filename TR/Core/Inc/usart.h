@@ -27,12 +27,11 @@ extern "C" {
 
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+
+/* USER CODE BEGIN Includes */
 #include "can.h"
 #include "lcd/lcd.h"
 #include "math.h"
-
-/* USER CODE BEGIN Includes */
-
 /* USER CODE END Includes */
 
 extern UART_HandleTypeDef huart1;

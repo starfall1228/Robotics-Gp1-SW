@@ -19,10 +19,9 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "can.h"
-#include "lcd/lcd.h"
 
 /* USER CODE BEGIN 0 */
-
+#include "lcd/lcd.h"
 int16_t rm_ctrl_cmd[MAX_CAN_RM * NUM_OF_CAN] = {0};
 MotorStats rm_fb_cmd[MAX_CAN_RM * NUM_OF_CAN] = {0};
 

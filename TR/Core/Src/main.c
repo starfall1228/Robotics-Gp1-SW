@@ -25,11 +25,11 @@
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
-#include "string.h"
-#include "pwm.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "string.h"
+#include "pwm.h"
 #include "lcd/lcd.h"
 /* USER CODE END Includes */
 
@@ -97,16 +97,16 @@ int main(void)
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
-	MX_GPIO_Init();
-	MX_CAN1_Init();
-	MX_CAN2_Init();
-	MX_SPI1_Init();
-	MX_USART1_UART_Init();
-	MX_I2C2_Init();
-	MX_DMA_Init();
-	MX_USART2_UART_Init();
-	MX_TIM5_Init();
-	MX_TIM3_Init();
+  MX_GPIO_Init();
+  MX_CAN1_Init();
+  MX_CAN2_Init();
+  MX_SPI1_Init();
+  MX_USART1_UART_Init();
+  MX_I2C2_Init();
+  MX_DMA_Init();
+  MX_USART2_UART_Init();
+  MX_TIM5_Init();
+  MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
     volatile uint32_t last_ticks = 0;
     volatile uint32_t last_ticks_inc = 0;
@@ -165,155 +165,138 @@ int main(void)
 
   while (1)
   {
-    /* USER CODE END WHILE */
-	  can_ctrl_loop();
-		if (HAL_GetTick() - last_ticks >= 100) {
-			led_toggle(LED1);
-			last_ticks = HAL_GetTick();
-		}
 
-		testing(motorchoice);
-		switch(Btn1_mode) {
-			// listening
-			case (0):
-				if (!btn_read(BTN1)) {
-					Btn1_mode++;
-					Btn1_HoldTime = HAL_GetTick();
+	can_ctrl_loop();
+	if (HAL_GetTick() - last_ticks >= 100) {
+		led_toggle(LED1);
+		last_ticks = HAL_GetTick();
+	}
+	testing(motorchoice);
+	switch(Btn1_mode) {
+		// listening
+		case (0):
+			if (!btn_read(BTN1)) {
+				Btn1_mode++;
+				Btn1_HoldTime = HAL_GetTick();
+			}
+		break;
+		// Holding
+		case (1):
+			if (HAL_GetTick() - Btn1_HoldTime < 500) {
+				if (btn_read(BTN1)) Btn1_mode = 2;
+			}
+			else Btn1_mode = 3;
+		break;
+		//Clicking
+		case (2):
+			btn1_choice++; btn1_choice %= 4;
+			Btn1_mode = 0;
+		break;
+		//Holding
+		case (3):
+			switch (btn1_choice) {
+				case 0:
+					velocity += 50;
+				break;
+				case 1:
+					velocity -= 50;
+				break;
+				case 2:
+					if (HAL_GetTick() - deltatime > 100) {
+						deltatime = HAL_GetTick();
+						//target_vel[2] = velocity;
+						PID_variable_init();
+						for (int i = 0; i < 4; i++) {
+							target_vel[i] = velocity;
+						}
+					}
+				break;
+				case 3:
+					if (HAL_GetTick() - last_servo_time > 1000) {
+						last_servo_time = HAL_GetTick();
+						angle = (angle == -90)? 0:-90;
+						pwm_angle(angle);
+					}
+				break;
+			}
+			if (btn_read(BTN1)) {
+				for (int i = 0; i < 4; i++) {
+					target_vel[i] = 0;
 				}
-			break;
-
-			// Holding
-			case (1):
-				if (HAL_GetTick() - Btn1_HoldTime < 500) {
-					if (btn_read(BTN1)) Btn1_mode = 2;
-				}
-				else Btn1_mode = 3;
-			break;
-
-			//Clicking
-			case (2):
-				btn1_choice++; btn1_choice %= 4;
 				Btn1_mode = 0;
-			break;
-
-			//Holding
-			case (3):
-				switch (btn1_choice) {
-					case 0:
-						velocity += 50;
+			}
+		break;
+	}
+	switch(Btn2_mode) {
+		// listening
+		case (0):
+			if (!btn_read(BTN2)) {
+				Btn2_mode++;
+				Btn2_HoldTime = HAL_GetTick();
+			}
+		break;
+		// Holding
+		case (1):
+			if (HAL_GetTick() - Btn2_HoldTime < 500) {
+				if (btn_read(BTN2)) Btn2_mode = 2;
+			}
+			else Btn2_mode = 3;
+		break;
+		//Clicking
+		case (2):
+			k_choice++; k_choice %= 6;
+			Btn2_mode = 0;
+		break;
+		//Holding
+		case (3):
+			if (btn_read(BTN2)) Btn2_mode = 0;
+			if (HAL_GetTick() - last_ticks_inc >= 100) {
+				switch (k_choice) {
+					case (kp_increase):
+						kp *= 1.1;
 					break;
-
-					case 1:
-						velocity -= 50;
+					case (kp_decrease):
+						kp *= 0.9;
 					break;
-
-					case 2:
-						if (HAL_GetTick() - deltatime > 100) {
-							deltatime = HAL_GetTick();
-							//target_vel[2] = velocity;
-							PID_variable_init();
-							for (int i = 0; i < 4; i++) {
-								target_vel[i] = velocity;
-							}
-						}
+					case (ki_increase):
+						ki *= 1.1;
 					break;
-
-					case 3:
-						if (HAL_GetTick() - last_servo_time > 1000) {
-							last_servo_time = HAL_GetTick();
-							angle = (angle == -90)? 0:-90;
-							pwm_angle(angle);
-						}
+					case (ki_decrease):
+						ki *= 0.9;
 					break;
-
+					case (kd_increase):
+						kd *= 1.1;
+					break;
+					case (kd_decrease):
+						kd *= 0.9;
+					break;
 				}
+				last_ticks_inc = HAL_GetTick();
+			}
+			tft_prints(0, 7, "%0.5f", kp);
+			tft_prints(0, 8, "%0.5f", ki);
+			tft_prints(0, 9, "%0.5f", kd);
+		break;
+	}
+	ReceiveData(target_vel);
+	for (int i = 0; i < 4; i++ ) {
+		set_motor_speed(motorchoice[i], target_vel[i], kp, ki, kd, motorchoice);
+		//set_motor_current(motorchoice[i], 700);
+	}
+	tft_prints(0, 0, "timee: %d", (int) HAL_GetTick());
+	tft_prints(0, 1, "%s     ", Btn1_text[btn1_choice]);
+	tft_prints(0, 2, "%s %d", pid_text[k_choice], velocity);
+	tft_prints(0, 3, "tar: %d %d ", target_vel[0], target_vel[1]);
+	tft_prints(0, 4, "tar: %d %d ", target_vel[2], target_vel[3]);
+	tft_update(100);
+	SendData(motorchoice);
 
-				if (btn_read(BTN1)) {
-					for (int i = 0; i < 4; i++) {
-						target_vel[i] = 0;
-					}
-					Btn1_mode = 0;
-				}
 
-			break;
 
-		}
+    /* USER CODE END WHILE */
 
-		switch(Btn2_mode) {
-			// listening
-			case (0):
-				if (!btn_read(BTN2)) {
-					Btn2_mode++;
-					Btn2_HoldTime = HAL_GetTick();
-				}
-			break;
-
-			// Holding
-			case (1):
-				if (HAL_GetTick() - Btn2_HoldTime < 500) {
-					if (btn_read(BTN2)) Btn2_mode = 2;
-				}
-				else Btn2_mode = 3;
-			break;
-
-			//Clicking
-			case (2):
-				k_choice++; k_choice %= 6;
-
-				Btn2_mode = 0;
-			break;
-
-			//Holding
-			case (3):
-				if (btn_read(BTN2)) Btn2_mode = 0;
-
-				if (HAL_GetTick() - last_ticks_inc >= 100) {
-					switch (k_choice) {
-						case (kp_increase):
-							kp *= 1.1;
-						break;
-
-						case (kp_decrease):
-							kp *= 0.9;
-						break;
-
-						case (ki_increase):
-							ki *= 1.1;
-						break;
-
-						case (ki_decrease):
-							ki *= 0.9;
-						break;
-
-						case (kd_increase):
-							kd *= 1.1;
-						break;
-
-						case (kd_decrease):
-							kd *= 0.9;
-						break;
-					}
-					last_ticks_inc = HAL_GetTick();
-				}
-				tft_prints(0, 7, "%0.5f", kp);
-				tft_prints(0, 8, "%0.5f", ki);
-				tft_prints(0, 9, "%0.5f", kd);
-			break;
-		}
-		ReceiveData(target_vel);
-		for (int i = 0; i < 4; i++ ) {
-			set_motor_speed(motorchoice[i], target_vel[i], kp, ki, kd, motorchoice);
-			//set_motor_current(motorchoice[i], 700);
-		}
-
-		tft_prints(0, 0, "timee: %d", (int) HAL_GetTick());
-		tft_prints(0, 1, "%s     ", Btn1_text[btn1_choice]);
-		tft_prints(0, 2, "%s %d", pid_text[k_choice], velocity);
-		tft_prints(0, 3, "tar: %d %d ", target_vel[0], target_vel[1]);
-		tft_prints(0, 4, "tar: %d %d ", target_vel[2], target_vel[3]);
-		tft_update(100);
-		SendData(motorchoice);
     /* USER CODE BEGIN 3 */
+
     }
   /* USER CODE END 3 */
 }

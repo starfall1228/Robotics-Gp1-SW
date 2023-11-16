@@ -16,12 +16,13 @@
   *
   ******************************************************************************
   */
-/* USER CODE END Header */
-/* Includes ------------------------------------------------------------------*/
-#include "usart.h"
 #include "can.h"
 #include "lcd/lcd.h"
 #include "math.h"
+#include "gpio.h"
+/* USER CODE END Header */
+/* Includes ------------------------------------------------------------------*/
+#include "usart.h"
 
 /* USER CODE BEGIN 0 */
 #define PI 3.141592654
