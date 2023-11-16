@@ -26,6 +26,8 @@
 /* USER CODE BEGIN 0 */
 #define PI 3.141592654
 
+int mode1 = 0;
+
 char dat[30];
 char fulldat[30];
 char tofdat[60];
@@ -226,7 +228,7 @@ void Reset_dat_init() {
 
 void Reset_tofdat_init() {
 	for (int i = 0; i < 60; i++) {
-		dat[i] = '\0';
+		tofdat[i] = '\0';
 	}
 }
 
@@ -339,9 +341,9 @@ void end_bit() {
 	fulldat[--count] = '\0';
 	if (count != 5) {
 		count = 0;
-		mode = 0;
+		mode1 = 0;
 		Reset_dat_init();
-		break;
+		return;
 	}
 
 	int value = 0;
@@ -360,7 +362,7 @@ void end_bit() {
 				if (fulldat[i] != '0' && fulldat[i] != '1'){
 					Reset_dat_init();
 					count = 0;
-					mode = 0;
+					mode1 = 0;
 					return;
 				}
 				value += (fulldat[i] - '0') * temp;
@@ -374,18 +376,17 @@ void end_bit() {
 
 	}
 	count = 0;
-	mode = 0;
+	mode1 = 0;
 }
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-	if (*huart == &huart1) {
-		static int mode1 = 0;
+	if (huart == &huart1) {
 		switch (mode1) {
 			// start bit??
 			case 0:
 				if (dat[0] == 'm') {
-					mode = 1;
+					mode1 = 1;
 					Reset_dat_init();
 				}
 			break;
@@ -399,12 +400,13 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 				Reset_dat_init();
 			break;
 		}
-	} else if (*huart == &huart2) {
-		static int mode2 = 0;
-
-		tofdat[count_tof++] = dat[0];
-		Reset_dat_init();
-
+	} else if (huart == &huart2) {
+//		static int mode2 = 0;
+//
+//		tofdat[count_tof++] = dat[0];
+//		Reset_dat_init();
+//
+		tft_prints(0, 5, "%s ", tofdat);
 	}
 
 	return;
@@ -414,6 +416,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 void ReceiveData(int tar_vel[4]) {
 	target = tar_vel;
 	HAL_UART_Receive_IT(&huart1, (uint8_t*)&dat, sizeof(char) * 1);
+	HAL_UART_Receive_IT(&huart2, (uint8_t*)&tofdat, sizeof(char) * 34);
 	return;
 }
 
