@@ -232,23 +232,22 @@ void Reset_tofdat_init() {
 	}
 }
 
+// 800 - 1550 - 4600 - 5450 (total 3050)
 void fast_track(int u1_d, int u2_d, int tof_d) {
-//	double theta = atan(5/(u1_d-u2_d));
-//	int omega = General_PID(theta-PI/2);
-//
 
 }
 
 
 void shift() {
 	shifted = (shifted == 0)? 1:0;
-	velocity = max_velocity*((shifted == 0)? 1:0.5)*percent_vel;
+	velocity = max_velocity*((shifted == 0)? 1:0.5)*percent_vel/100;
 	Reset_dat_init();
 	tft_prints(0, 5, "%s", "Shifting");
 	return;
 }
 
 void set_tar_velocity(int v1, int v2, int v3, int v4) {
+	PID_variable_init();
 	*(target+0) = v1*velocity;
 	*(target+1) = v2*velocity;
 	*(target+2) = v3*velocity;
@@ -349,7 +348,7 @@ void end_bit() {
 	int value = 0;
 	int temp = 16;
 
-	tft_prints(0, 5, "%s  %d   ", fulldat, value);
+	tft_prints(0, 5, "%s  %d   ", fulldat, velocity);
 	led_toggle(LED2);
 	//--------------------
 	switch (fulldat[0]) {

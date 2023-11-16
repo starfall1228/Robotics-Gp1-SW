@@ -215,24 +215,24 @@ int main(void)
 	  							}
 	      	    			}
 	      	    		break;
+
+	      	    		case 3:
+							if (HAL_GetTick() - last_servo_time > 1000) {
+								last_servo_time = HAL_GetTick();
+								angle = (angle == -90)? 0:-90;
+								pwm_angle(angle);
+							}
+						break;
+
 	      	    	}
+
 	      	    	if (btn_read(BTN1)) {
 	      	    		for (int i = 0; i < 4; i++) {
 	      	    			target_vel[i] = 0;
 	      	    		}
 	      	    		Btn1_mode = 0;
 	      	    	}
-	  			break;
 
-	  			case 4:
-	  				if (HAL_GetTick() - last_servo_time > 1000) {
-	  					last_servo_time = HAL_GetTick();
-	  					angle = (angle == 90)? 45:90;
-						pwm_angle(angle);
-	  				}
-	  				if (btn_read(BTN1)) {
-	  					Btn1_mode = 0;
-	  				}
 	  			break;
 
 	      	}
