@@ -127,7 +127,7 @@ int main(void)
 	Reset_dat_init();
 
 	// pre-define constant
-	const Motor motorchoice[] = {CAN1_MOTOR0, CAN1_MOTOR1, CAN2_MOTOR2, CAN2_MOTOR3};
+	const Motor motorchoice[] = {CAN1_MOTOR0, CAN1_MOTOR1, CAN1_MOTOR2, CAN1_MOTOR3};
 	const char pid_text[6][20] = {"kp-up", "kp-down", "ki-up", "ki-down", "kd-up", "kd-down"};
 	const char Btn1_text[4][20] = {"Speed Increase", "Speed Decrease", "Speed Test", "PWM test"};
 
