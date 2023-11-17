@@ -20,6 +20,7 @@
 #include "lcd/lcd.h"
 #include "math.h"
 #include "gpio.h"
+#include "pwm.h"
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "usart.h"
@@ -240,7 +241,7 @@ void fast_track(int u1_d, int u2_d, int tof_d) {
 
 
 void shift() {
-	shifted = (shifted == 0)? 1:0;
+	shifted = fulldat[2] - '0';
 	velocity = max_velocity*((shifted == 0)? 1:0.5)*percent_vel/100;
 	Reset_dat_init();
 	tft_prints(0, 5, "%s", "Shifting");
@@ -301,12 +302,12 @@ void decode_command(int value) {
 
 		// Rotate Right
 		case 28:
-			set_tar_velocity(1	,-1	,1	,-1);
+			set_tar_velocity(1	,-1	,-1	,1);
 		break;
 
 		// Rotate Left
 		case 30:
-			set_tar_velocity(-1	,1	,-1	,1);
+			set_tar_velocity(-1	,1	,1	,-1);
 		break;
 
 		// Unpush Button
@@ -334,6 +335,26 @@ void decode_command(int value) {
 		case 0:
 			set_tar_velocity(0	,0	,0	,0);
 		break;
+
+		// Lift UP
+		case 29:
+			gpio_on(GPIOC,PIN1);
+		break;
+
+		// LIFT DOWN
+		case 13:
+
+		break;
+
+		// clamp on
+		case 31:
+
+		break;
+
+		//clamp off
+		case 15:
+
+		break
 	}
 }
 
@@ -355,6 +376,9 @@ void end_bit() {
 	switch (fulldat[0]) {
 		case 's':
 			shift();
+		break;
+		case 'p':
+			pwm_angle(-90*(1-(fulldat[2]-'0')));
 		break;
 		case '1':
 		case '0':

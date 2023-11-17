@@ -121,7 +121,7 @@ void set_motor_current(Motor tar_motor, int16_t tar_current);
 
 // TODO: implement this (Tips: see PID notes)
 void set_motor_speed(Motor tar_motor, int16_t tar_vel, const double kp, const double ki, const double kd, const Motor motorchoice[]);
-int32_t General_PID(int16_t, int16_t, double*, const double, const double, const double);
+int32_t General_PID(int64_t, int64_t, int64_t*, const double, const double, const double);
 void testing(const Motor motorchoice[4]);
 void PID_variable_init();
 double averagespeed(Motor);

@@ -129,6 +129,8 @@ void Error_Handler(void);
 #define led_off(led) gpio_set(led)
 #define led_toggle(led) gpio_toggle(led)
 #define btn_read(btn) gpio_read(btn)
+#define gpio_on(gpio) gpio_reset(gpio)
+#define gpio_off(gpio) gpio_set(gpio)
 
 #define __forceinline __attribute__((__always_inline__)) inline
 
