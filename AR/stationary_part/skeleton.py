@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 from tkinter import Tk
 import serial as ps
-com = "COM8"
+com = "COM6"
 # You should have no reason to modify this class
 class ColorDisplayWindow:
     def __init__(
@@ -181,12 +181,13 @@ if __name__ == "__main__":
             # cv2.rectangle(frame, (cx - 220, 10), (cx + 200, 120), (255, 255, 255), -1)
             # cv2.putText(frame, color, (cx - 200, 100), 0, 3, (b, g, r), 5)
             # cv2.circle(frame, (cx, cy), 5, (25, 25, 25), 3)
-        # color_display_1.display(color_detection_list)
+        color_display_1.display(color_detection_list)
         message = b''
         for i in color: 
             message += i
-        print(message)
+        # print(ser.read())
         ser.write(message)
+        print(message)
         # print(signal);
         # ser.write(signal);
         # print(imgs[0])

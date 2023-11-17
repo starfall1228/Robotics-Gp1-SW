@@ -6,6 +6,8 @@
 ../Core/Src/main.c:161:6:turning	176	static
 ../Core/Src/main.c:184:6:forward	176	static
 ../Core/Src/main.c:197:6:backward	176	static
-../Core/Src/main.c:361:6:SystemClock_Config	88	static,ignoring_inline_asm
-../Core/Src/main.c:209:5:main	296	static
-../Core/Src/main.c:407:6:Error_Handler	0	static,ignoring_inline_asm
+../Core/Src/main.c:210:6:reset	160	static
+../Core/Src/main.c:227:8:time_for_travelling	24	static
+../Core/Src/main.c:374:6:SystemClock_Config	88	static,ignoring_inline_asm
+../Core/Src/main.c:233:5:main	336	static
+../Core/Src/main.c:420:6:Error_Handler	0	static,ignoring_inline_asm

@@ -158,7 +158,7 @@ void print_data(PID pid0, PID pid1){
 //    tft_prints(0,8, "%d", rcv);
 }
 
-void turning(PID* pid0, PID* pid1, int tim, double setspeed, char l_or_r){
+void turning(PID* pid0, PID* pid1, double tim, double setspeed, char l_or_r){
 	int last_ticks = HAL_GetTick();
 	int sign = 0;
 
@@ -205,6 +205,30 @@ void backward(PID* pid0, PID* pid1, int tim, double setspeed){
 		set_motor_current(CAN1_MOTOR1, pid1->current);
 		print_data(*pid0, *pid1);
 	}
+}
+
+void reset(PID* pid0, PID* pid1, int reset_tim){
+	int temp = HAL_GetTick();
+    while(HAL_GetTick()- temp <= reset_tim*1000){
+    	can_ctrl_loop(); // to continously send/receive data with CAN
+//				upd_state_speed(0,CAN1_MOTOR3, &pid0);
+//				upd_state_speed(0,CAN1_MOTOR1, &pid1);
+		set_motor_current(CAN1_MOTOR3, 0);
+		set_motor_current(CAN1_MOTOR1, 0);
+//				init_PID(&pid0, 0,0.1,0.001, 0.1);
+//				init_PID(&pid1, 0,0.1,0.001, 0.1);
+		print_data(*pid0, *pid1);
+    }
+}
+
+
+
+// radius and length both in mil-meters, time in seconds
+double time_for_travelling(double length, double radius, double rpm){
+	const double PI = 3.141516;
+	double speed = radius*2*PI*(rpm/60);
+	double time = length/(radius * 2 * PI * rpm/60);
+	return time;
 }
 int main(void) {
     /* USER CODE BEGIN 1 */
@@ -256,7 +280,7 @@ int main(void) {
     can_init(); // initialize CAN
     cur_err = 500;
     // The rpm of the motor
-    double setspeed = 2000;
+    double setspeed = 3000;
     double kp = 0.5;
     double ki = 0.01;
     double kd = 0.01;
@@ -275,11 +299,11 @@ int main(void) {
 
     const int tim_start_to_junction = 5000;
     const int tim_junction_to_bucket = 1000;
-    const int tim_turning[4]  = {1000,1000,000};
+    const int tim_turning[4]  = {500,500,500};
 
 
     bool lanuched = false;
-    while(!lanuched){
+    while(1){
         	can_ctrl_loop(); // to continously send/receive data with CAN
 //			if(!rcv) {
 //				char message1[10] = {'\0'};
@@ -293,63 +317,52 @@ int main(void) {
 //				}
 //			}
 			if(rcv || !gpio_read(BTN1)){
-			// forwards to the junction
-//				int last_ticks = HAL_GetTick();
 
-//				while(HAL_GetTick() - last_ticks <= 3000){
-//					can_ctrl_loop(); // to continously send/receive data with CAN
-//				    init_PID(&pid0, setspeed,kp,ki, kd);
-//				    init_PID(&pid1, setspeed,kp,ki, kd);
-//					upd_state_speed(setspeed,CAN1_MOTOR3, &pid0);
-//					upd_state_speed(setspeed, CAN1_MOTOR1, &pid1);
-//					set_motor_current(CAN1_MOTOR3, pid0.current);
-//					set_motor_current(CAN1_MOTOR1, -pid1.current);
-
-//				}
-//				set_motor_current(CAN1_MOTOR0, 0);
-//				set_motor_current(CAN2_MOTOR0, 0);
-//			    init_PID(&pid0, setspeed,kp,ki, kd);
-//			    init_PID(&pid1, setspeed,kp,ki, kd);
-//			forward(&pid0, &pid1, tim_start_to_junction, setspeed);
-//			set_motor_current(CAN1_MOTOR0, 0);
-//			set_motor_current(CAN1_MOTOR1, 0);
-			// Turning to the first bucket
-
-//			turning(&pid0, &pid1, tim_turning[0],setspeed/2, 'l');
-//
-//			// forwards to the bucket
-			forward(&pid0, &pid1, tim_start_to_junction, setspeed);
-			turning(&pid0, &pid1, tim_turning[0], setspeed, 'l');
-			forward(&pid0, &pid1, tim_junction_to_bucket, setspeed);
-			turning(&pid0, &pid1, tim_turning[0]*2, setspeed, 'r');
-			backward(&pid0, &pid1,tim_junction_to_bucket , setspeed);
-
-//			led_toggle(LED1);
-//
-//
-//			// backwards to the junction
-//			backward(&pid0, &pid1, tim_start_to_junction, setspeed);
-//
-//			// Turning
-//			turning(&pid0, &pid1, 2*tim_turning[0],setspeed/2, 'r');
-//
-//			// forwards to the second bucket
-//			forward(&pid0, &pid1, tim_junction_to_bucket, setspeed);
+			forward(&pid0, &pid1, 5000, setspeed);
 
 
-//				while(HAL_GetTick() - last_ticks <= 3000){
 
-//				}
-//				set_motor_current(CAN2_MOTOR0, 0);
-//				set_motor_current(CAN2_MOTOR1, 0);
-//				lanuched = true;
+			init_PID(&pid0, 0,kp,ki, kd);
+			init_PID(&pid1, 0,kp,ki, kd);
+			reset(&pid0, &pid1,1);
+
+
+			// Making the first turn to the the first bucket
+			init_PID(&pid0, setspeed/2,kp,ki, kd);
+			init_PID(&pid1, setspeed/2,kp,ki, kd);
+			turning(&pid0, &pid1, 450, setspeed/4, 'l');
+
+
+			// reseting to zero rpm
+			reset(&pid0, &pid1,1);
+
+
+			// forwards to the first bucket
+			init_PID(&pid0, setspeed,kp,ki, kd);
+			init_PID(&pid1, setspeed,kp,ki, kd);
+		    forward(&pid0, &pid1, 1000, setspeed);
+
+		    reset(&pid0, &pid1,1);
+		    // backwards to the junction
+		    backward(&pid0, &pid1, 1000, setspeed);
+
+		    reset(&pid0, &pid1,1);
+		    // Turing to the second bucket
+		    turning(&pid0, &pid1, 900, setspeed/4, 'r');
+
+		    reset(&pid0, &pid1,1);
+		    // Forwards to the second bucket
+		    forward(&pid0, &pid1, 1000, setspeed);
+		    reset(&pid0, &pid1,1);
 			}
 			set_motor_current(CAN1_MOTOR3, 0);
 			set_motor_current(CAN1_MOTOR1, 0);
 			print_data(pid0,pid1);
+//			rcv = true;
+//			lanuched = true;
     }
 
-
+    print_data(pid0, pid1);
 
     /* USER CODE END 3 */
 }
