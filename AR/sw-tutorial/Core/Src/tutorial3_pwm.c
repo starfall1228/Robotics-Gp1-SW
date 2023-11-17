@@ -58,10 +58,9 @@ uint8_t tft_update(uint32_t period);
 void pwm_init(void) {
 	// init the pwm prescaler value and auto-reload value and start the pwm
 	/* Your code start here */
-	TIM5->ARR = 39;    //set the timer1 auto-reload counter
-	TIM5->PSC = 41999;    //set the timer1 prescaler value
+	TIM5->ARR = 999;    //set the timer1 auto-reload counter
+	TIM5->PSC = 1679;    //set the timer1 prescaler value
 	HAL_TIM_PWM_Start(&htim5, TIM_CHANNEL_1);
-
 	/* Your code end here */
 }
 
@@ -103,6 +102,27 @@ void pwm_classwork(void) {
 	/* Your code end here */
 }
 
+//const double PI =3.141592654;
+volatile uint32_t CCRForAngle(double new_angle, double full_cycle) {
+    double need = new_angle / 180.0;
+    double time = 0.5 + need * (full_cycle / 10.0);
+    // time * 1000.0 / 20.0
+    return (uint32_t)(time * (1000.0 / full_cycle));
+}
+
+
+double full_cycle = 20; // should be outside of the loop
+double cur_angle = 0; //should be outside of the loop
+
+void servo_turn( ) {
+//    double full_cycle = 20; // should be outside of the loop
+//    double cur_angle = 0; //should be outside of the loop
+    double new_angle = (cur_angle == 0 ? 180 : 0);
+    htim5.Instance->CCR1 = CCRForAngle(new_angle, full_cycle);
+    cur_angle = new_angle;
+}
+
+
 void single_move(void){
 
 	// It starts at 0deg, moves towards the target and ends at 180deg (of the opposite side).
@@ -113,7 +133,6 @@ void single_move(void){
 		TIM5->CCR1 = 1;
 		HAL_Delay(1000);
 	}
-
 
 }
 

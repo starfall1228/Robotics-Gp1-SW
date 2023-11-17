@@ -1,5 +1,7 @@
 ../Core/Src/tutorial3_pwm.c:58:6:pwm_init	0	static
-../Core/Src/tutorial3_pwm.c:68:6:pwm_classwork	8	static
-../Core/Src/tutorial3_pwm.c:106:6:single_move	0	static
-../Core/Src/tutorial3_pwm.c:179:6:special_move	24	static
-../Core/Src/tutorial3_pwm.c:202:6:pwm_homework	56	static
+../Core/Src/tutorial3_pwm.c:67:6:pwm_classwork	8	static
+../Core/Src/tutorial3_pwm.c:106:19:CCRForAngle	32	static
+../Core/Src/tutorial3_pwm.c:117:6:servo_turn	24	static
+../Core/Src/tutorial3_pwm.c:126:6:single_move	0	static
+../Core/Src/tutorial3_pwm.c:198:6:special_move	24	static
+../Core/Src/tutorial3_pwm.c:221:6:pwm_homework	56	static

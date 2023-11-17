@@ -59,6 +59,8 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define CAM_D7_Pin GPIO_PIN_13
 #define CAM_D7_GPIO_Port GPIOC
+#define PWM1_Pin GPIO_PIN_0
+#define PWM1_GPIO_Port GPIOA
 #define CAM_HREF_Pin GPIO_PIN_1
 #define CAM_HREF_GPIO_Port GPIOA
 #define CAM_WRST_Pin GPIO_PIN_4
@@ -79,10 +81,10 @@ void Error_Handler(void);
 #define CAM_WEN_GPIO_Port GPIOB
 #define Boot1_Pin GPIO_PIN_2
 #define Boot1_GPIO_Port GPIOB
-#define CAM_SCL_Pin GPIO_PIN_10
-#define CAM_SCL_GPIO_Port GPIOB
-#define CAM_SDA_Pin GPIO_PIN_11
-#define CAM_SDA_GPIO_Port GPIOB
+#define SENSOR_1_Pin GPIO_PIN_10
+#define SENSOR_1_GPIO_Port GPIOB
+#define SENSOR_2_Pin GPIO_PIN_11
+#define SENSOR_2_GPIO_Port GPIOB
 #define CAM_VSYNC_Pin GPIO_PIN_14
 #define CAM_VSYNC_GPIO_Port GPIOB
 #define CAM_VSYNC_EXTI_IRQn EXTI15_10_IRQn
@@ -90,6 +92,8 @@ void Error_Handler(void);
 #define CAM_RCLK_GPIO_Port GPIOB
 #define CAM_D0_Pin GPIO_PIN_6
 #define CAM_D0_GPIO_Port GPIOC
+#define CAM_D1_Pin GPIO_PIN_7
+#define CAM_D1_GPIO_Port GPIOC
 #define CAM_D2_Pin GPIO_PIN_8
 #define CAM_D2_GPIO_Port GPIOC
 #define CAM_D3_Pin GPIO_PIN_9
@@ -100,8 +104,8 @@ void Error_Handler(void);
 #define CAM_OE_GPIO_Port GPIOA
 #define CAM_D4_Pin GPIO_PIN_10
 #define CAM_D4_GPIO_Port GPIOC
-#define CAM_D5_Pin GPIO_PIN_11
-#define CAM_D5_GPIO_Port GPIOC
+#define SENSOR_3_Pin GPIO_PIN_11
+#define SENSOR_3_GPIO_Port GPIOC
 #define CAM_D6_Pin GPIO_PIN_12
 #define CAM_D6_GPIO_Port GPIOC
 #define BTN2_Pin GPIO_PIN_2
@@ -116,6 +120,8 @@ void Error_Handler(void);
 #define LED2_GPIO_Port GPIOB
 #define LED1_Pin GPIO_PIN_7
 #define LED1_GPIO_Port GPIOB
+#define SENSOR_4_Pin GPIO_PIN_9
+#define SENSOR_4_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
 #define gpio_set(gpio) HAL_GPIO_WritePin(gpio##_GPIO_Port, gpio##_Pin, GPIO_PIN_SET)

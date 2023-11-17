@@ -26,8 +26,7 @@
 
 UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
-char dat[30];
-int count = 0;
+
 /* USART1 init function */
 
 void MX_USART1_UART_Init(void)
@@ -141,18 +140,6 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
   }
 }
 
-void Reset_dat_init() {
-	for (int i = 0; i < 10; i++) {
-		dat[i] = '\0';
-	}
-	return;
-}
-
-/* USER CODE BEGIN 1 */
-
-
-
-
 void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
 {
 
@@ -193,6 +180,52 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
   /* USER CODE END USART2_MspDeInit 1 */
   }
 }
+
+/* USER CODE BEGIN 1 */
+
+
+
+
+//void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
+//{
+//
+//  if(uartHandle->Instance==USART1)
+//  {
+//  /* USER CODE BEGIN USART1_MspDeInit 0 */
+//
+//  /* USER CODE END USART1_MspDeInit 0 */
+//    /* Peripheral clock disable */
+//    __HAL_RCC_USART1_CLK_DISABLE();
+//
+//    /**USART1 GPIO Configuration
+//    PA9     ------> USART1_TX
+//    PA10     ------> USART1_RX
+//    */
+//    HAL_GPIO_DeInit(GPIOA, GPIO_PIN_9|GPIO_PIN_10);
+//
+//  /* USER CODE BEGIN USART1_MspDeInit 1 */
+//
+//  /* USER CODE END USART1_MspDeInit 1 */
+//  }
+//  else if(uartHandle->Instance==USART2)
+//  {
+//  /* USER CODE BEGIN USART2_MspDeInit 0 */
+//
+//  /* USER CODE END USART2_MspDeInit 0 */
+//    /* Peripheral clock disable */
+//    __HAL_RCC_USART2_CLK_DISABLE();
+//
+//    /**USART2 GPIO Configuration
+//    PA2     ------> USART2_TX
+//    PA3     ------> USART2_RX
+//    */
+//    HAL_GPIO_DeInit(GPIOA, GPIO_PIN_2|GPIO_PIN_3);
+//
+//  /* USER CODE BEGIN USART2_MspDeInit 1 */
+//
+//  /* USER CODE END USART2_MspDeInit 1 */
+//  }
+//}
 
 /* USER CODE BEGIN 1 */
 

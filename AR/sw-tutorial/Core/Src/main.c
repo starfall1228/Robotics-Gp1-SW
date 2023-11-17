@@ -20,7 +20,6 @@
 #include "main.h"
 #include "can.h"
 #include "dma.h"
-#include "i2c.h"
 #include "spi.h"
 #include "tim.h"
 #include "usart.h"
@@ -60,17 +59,17 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+void pwm_init(void); //add this line!
+void pwm_classwork(void); //add this line!
+void pwm_homework(void); //add this line!
 
-/* USER CODE END 0 */
 
 /**
  * @brief  The application entry point.
  * @retval int
  */
 
-void pwm_init(void); //add this line!
-void pwm_classwork(void); //add this line!
-void pwm_homework(void); //add this line!
+
 
 typedef struct PID {
 	double kp;
@@ -230,36 +229,48 @@ double time_for_travelling(double length, double radius, double rpm){
 	double time = length/(radius * 2 * PI * rpm/60);
 	return time;
 }
-int main(void) {
-    /* USER CODE BEGIN 1 */
 
-    /* USER CODE END 1 */
+// Implementing servo motor
+void servo_turn();
 
-    /* MCU Configuration--------------------------------------------------------*/
+/* USER CODE END 0 */
 
-    /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-    HAL_Init();
+/**
+  * @brief  The application entry point.
+  * @retval int
+  */
+int main(void)
+{
+  /* USER CODE BEGIN 1 */
 
-    /* USER CODE BEGIN Init */
+  /* USER CODE END 1 */
 
-    /* USER CODE END Init */
+  /* MCU Configuration--------------------------------------------------------*/
 
-    /* Configure the system clock */
-    SystemClock_Config();
+  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+  HAL_Init();
 
-    /* USER CODE BEGIN SysInit */
+  /* USER CODE BEGIN Init */
 
-    /* USER CODE END SysInit */
+  /* USER CODE END Init */
 
-    /* Initialize all configured peripherals */
-    MX_GPIO_Init();
-    MX_CAN1_Init();
-    MX_CAN2_Init();
-    MX_USART1_UART_Init();
-    MX_DMA_Init();
-    MX_USART2_UART_Init();
-    MX_TIM5_Init();
-    /* USER CODE BEGIN 2 */
+  /* Configure the system clock */
+  SystemClock_Config();
+
+  /* USER CODE BEGIN SysInit */
+
+  /* USER CODE END SysInit */
+
+  /* Initialize all configured peripherals */
+  MX_GPIO_Init();
+  MX_CAN1_Init();
+//  MX_SPI1_Init();
+  MX_USART1_UART_Init();
+  MX_DMA_Init();
+  MX_USART2_UART_Init();
+  MX_TIM5_Init();
+  MX_TIM1_Init();
+  /* USER CODE BEGIN 2 */
 //    volatile uint32_t last_ticks = 0;
 
     // we turn off all the led first
@@ -270,10 +281,10 @@ int main(void) {
     tft_init(PIN_ON_TOP, BLACK, WHITE, YELLOW, DARK_GREEN);
     HAL_GPIO_WritePin(GPIOC, GPIO_PIN_3, GPIO_PIN_SET);
 
-    /* USER CODE END 2 */
+  /* USER CODE END 2 */
 
-    /* Infinite loop */
-    /* USER CODE BEGIN WHILE */
+  /* Infinite loop */
+  /* USER CODE BEGIN WHILE */
 //    tft_force_clear();
 
     pwm_init();
@@ -302,21 +313,89 @@ int main(void) {
     const int tim_turning[4]  = {500,500,500};
 
 
+//    while(HAL_GetTick() - last_mov <= 5000){
+//    	char message1[10] = {'\0'};
+//    	HAL_UART_Receive(&huart1,(uint8_t*)&message1, sizeof(message1), tim);
+//    	if(message1[0] != '\0'){
+//    		if(message[0] != '\0'){
+//    			for(int i = 0; i < 4; i++){
+//    				if(message[i] != message1[i]){
+//    					last_mov = HAL_GetTick();
+//    				}
+//    				message[i] = message1[i];
+//    			}
+//
+//    		}else{
+//       			for(int i = 0; i < 4; i++){
+//						message[i] = message1[i];
+//       			}
+//    		}
+//    	}else{
+//    		last_mov = HAL_GetTick();
+//    	}
+//
+//    }
+
     bool lanuched = false;
     while(1){
         	can_ctrl_loop(); // to continously send/receive data with CAN
-//			if(!rcv) {
-//				char message1[10] = {'\0'};
-//				HAL_UART_Receive(&huart1,(uint8_t*)&message1, sizeof(message1), tim);
-//				if(message1[0] != '\0') {
-//					for(int i = 0;i < 4;i++) {
-//						message[i] = message1[i];
-//					}
-//					rcv = 1;
-//					last_mov = HAL_GetTick();
-//				}
-//			}
-			if(rcv || !gpio_read(BTN1)){
+			if(!rcv) {
+				char message1[10] = {'\0'};
+				HAL_UART_Receive(&huart1,(uint8_t*)&message1, sizeof(message1), tim);
+				if(message1[0] != '\0') {
+					for(int i = 0;i < 4;i++) {
+						message[i] = message1[i];
+					}
+					rcv = 1;
+					last_mov = HAL_GetTick();
+				}
+			}
+
+
+
+
+			if(message[1] == 'G' || !gpio_read(BTN1)){
+
+			forward(&pid0, &pid1, 5000, setspeed);
+
+
+
+			init_PID(&pid0, 0,kp,ki, kd);
+			init_PID(&pid1, 0,kp,ki, kd);
+			reset(&pid0, &pid1,1);
+
+
+			// Making the first turn to the the first bucket
+			init_PID(&pid0, setspeed/2,kp,ki, kd);
+			init_PID(&pid1, setspeed/2,kp,ki, kd);
+			turning(&pid0, &pid1, 450, setspeed/4, 'l');
+
+
+			// reseting to zero rpm
+			reset(&pid0, &pid1,1);
+
+
+			// forwards to the first bucket
+			init_PID(&pid0, setspeed,kp,ki, kd);
+			init_PID(&pid1, setspeed,kp,ki, kd);
+		    forward(&pid0, &pid1, 1000, setspeed);
+		    reset(&pid0, &pid1,1);
+		    // backwards to the junction
+		    backward(&pid0, &pid1, 1000, setspeed);
+
+		    reset(&pid0, &pid1,1);
+		    // Turing to the second bucket
+		    turning(&pid0, &pid1, 900, setspeed/4, 'r');
+
+		    reset(&pid0, &pid1,1);
+		    // Forwards to the second bucket
+		    forward(&pid0, &pid1, 1000, setspeed);
+		    reset(&pid0, &pid1,1);
+		    break;
+			}
+
+			if(message[1] == 'B' || !gpio_read(BTN2)){
+
 
 			forward(&pid0, &pid1, 5000, setspeed);
 
@@ -342,6 +421,7 @@ int main(void) {
 			init_PID(&pid1, setspeed,kp,ki, kd);
 		    forward(&pid0, &pid1, 1000, setspeed);
 
+
 		    reset(&pid0, &pid1,1);
 		    // backwards to the junction
 		    backward(&pid0, &pid1, 1000, setspeed);
@@ -353,60 +433,70 @@ int main(void) {
 		    reset(&pid0, &pid1,1);
 		    // Forwards to the second bucket
 		    forward(&pid0, &pid1, 1000, setspeed);
+
 		    reset(&pid0, &pid1,1);
+
+		    break;
 			}
 			set_motor_current(CAN1_MOTOR3, 0);
 			set_motor_current(CAN1_MOTOR1, 0);
 			print_data(pid0,pid1);
-//			rcv = true;
-//			lanuched = true;
+
+
+			print_data(pid0, pid1);
     }
 
-    print_data(pid0, pid1);
 
-    /* USER CODE END 3 */
+    /* USER CODE END WHILE */
+
+    /* USER CODE BEGIN 3 */
+
+  /* USER CODE END 3 */
 }
 
 /**
- * @brief System Clock Configuration
- * @retval None
- */
-void SystemClock_Config(void) {
-    RCC_OscInitTypeDef RCC_OscInitStruct = { 0 };
-    RCC_ClkInitTypeDef RCC_ClkInitStruct = { 0 };
+  * @brief System Clock Configuration
+  * @retval None
+  */
+void SystemClock_Config(void)
+{
+  RCC_OscInitTypeDef RCC_OscInitStruct = {0};
+  RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
 
-    /** Configure the main internal regulator output voltage
-     */
-    __HAL_RCC_PWR_CLK_ENABLE();
-    __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
+  /** Configure the main internal regulator output voltage
+  */
+  __HAL_RCC_PWR_CLK_ENABLE();
+  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
 
-    /** Initializes the RCC Oscillators according to the specified parameters
-     * in the RCC_OscInitTypeDef structure.
-     */
-    RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
-    RCC_OscInitStruct.HSEState = RCC_HSE_ON;
-    RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-    RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-    RCC_OscInitStruct.PLL.PLLM = 4;
-    RCC_OscInitStruct.PLL.PLLN = 168;
-    RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
-    RCC_OscInitStruct.PLL.PLLQ = 4;
-    if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK) {
-        Error_Handler();
-    }
+  /** Initializes the RCC Oscillators according to the specified parameters
+  * in the RCC_OscInitTypeDef structure.
+  */
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+  RCC_OscInitStruct.PLL.PLLM = 4;
+  RCC_OscInitStruct.PLL.PLLN = 168;
+  RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
+  RCC_OscInitStruct.PLL.PLLQ = 4;
+  if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
+  {
+    Error_Handler();
+  }
 
-    /** Initializes the CPU, AHB and APB buses clocks
-     */
-    RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK
-            | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
-    RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
-    RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-    RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
-    RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
+  /** Initializes the CPU, AHB and APB buses clocks
+  */
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
+                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
+  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
+  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
 
-    if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5) != HAL_OK) {
-        Error_Handler();
-    }
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5) != HAL_OK)
+  {
+    Error_Handler();
+  }
 }
 
 /* USER CODE BEGIN 4 */
@@ -414,16 +504,17 @@ void SystemClock_Config(void) {
 /* USER CODE END 4 */
 
 /**
- * @brief  This function is executed in case of error occurrence.
- * @retval None
- */
-void Error_Handler(void) {
-    /* USER CODE BEGIN Error_Handler_Debug */
+  * @brief  This function is executed in case of error occurrence.
+  * @retval None
+  */
+void Error_Handler(void)
+{
+  /* USER CODE BEGIN Error_Handler_Debug */
     /* User can add his own implementation to report the HAL error return state */
     __disable_irq();
     while (1) {
     }
-    /* USER CODE END Error_Handler_Debug */
+  /* USER CODE END Error_Handler_Debug */
 }
 
 #ifdef  USE_FULL_ASSERT

@@ -61,10 +61,10 @@ void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOB, TFT_BL_Pin|CAM_WEN_Pin|CAM_RCLK_Pin|LED4_Pin
                           |LED3_Pin|LED2_Pin|LED1_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pins : PCPin PCPin PC7 PCPin
+  /*Configure GPIO pins : PCPin PCPin PCPin PCPin
                            PCPin PCPin PCPin PCPin */
-  GPIO_InitStruct.Pin = CAM_D7_Pin|CAM_D0_Pin|GPIO_PIN_7|CAM_D2_Pin
-                          |CAM_D3_Pin|CAM_D4_Pin|CAM_D5_Pin|CAM_D6_Pin;
+  GPIO_InitStruct.Pin = CAM_D7_Pin|CAM_D0_Pin|CAM_D1_Pin|CAM_D2_Pin
+                          |CAM_D3_Pin|CAM_D4_Pin|SENSOR_3_Pin|CAM_D6_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
@@ -98,11 +98,11 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : PtPin */
-  GPIO_InitStruct.Pin = Boot1_Pin;
+  /*Configure GPIO pins : PBPin PBPin PBPin PBPin */
+  GPIO_InitStruct.Pin = Boot1_Pin|SENSOR_1_Pin|SENSOR_2_Pin|SENSOR_4_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(Boot1_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /*Configure GPIO pin : PtPin */
   GPIO_InitStruct.Pin = CAM_VSYNC_Pin;

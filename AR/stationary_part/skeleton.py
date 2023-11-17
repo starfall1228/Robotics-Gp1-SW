@@ -181,7 +181,7 @@ if __name__ == "__main__":
             # cv2.rectangle(frame, (cx - 220, 10), (cx + 200, 120), (255, 255, 255), -1)
             # cv2.putText(frame, color, (cx - 200, 100), 0, 3, (b, g, r), 5)
             # cv2.circle(frame, (cx, cy), 5, (25, 25, 25), 3)
-        color_display_1.display(color_detection_list)
+        # color_display_1.display(color_detection_list)
         message = b''
         for i in color: 
             message += i

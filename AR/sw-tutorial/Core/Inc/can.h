@@ -34,8 +34,6 @@ extern "C" {
 
 extern CAN_HandleTypeDef hcan1;
 
-extern CAN_HandleTypeDef hcan2;
-
 /* USER CODE BEGIN Private defines */
 
 typedef enum {
@@ -93,8 +91,8 @@ typedef struct {
 #define CAN1_RX_ID_START 0x201
 #define MOTOR_ID		 2
 /* USER CODE END Private defines */
+
 void MX_CAN1_Init(void);
-void MX_CAN2_Init(void);
 
 /* USER CODE BEGIN Prototypes */
 void can_filter_enable(CAN_HandleTypeDef *hcan);
@@ -128,3 +126,4 @@ void set_motor_speed(Motor tar_motor, int16_t tar_vel);
 #endif
 
 #endif /* __CAN_H__ */
+
