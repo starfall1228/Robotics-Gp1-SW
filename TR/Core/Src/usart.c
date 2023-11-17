@@ -244,7 +244,7 @@ void Reset_tofdat_init() {
 
 void shift() {
 	shifted = fulldat[2] - '0';
-	velocity = max_velocity*((shifted == 0)? 1:0.5)*percent_vel/100;
+	velocity = max_velocity*((shifted == 0)? 1:0.3)*percent_vel/100;
 	Reset_dat_init();
 	tft_prints(0, 5, "%s", "Shifting");
 	return;
@@ -378,7 +378,7 @@ void decode_command(int value) {
 
 void end_bit() {
 	fulldat[--count] = '\0';
-	if (count != 5) {
+	if (count != 5 || !(count == 6 && fulldat[0] == 'v')) {
 		count = 0;
 		mode1 = 0;
 		Reset_dat_init();
@@ -398,6 +398,15 @@ void end_bit() {
 		case 'p':
 			gpio_toggle(SIDE_CYL);
 			Reset_dat_init();
+		break;
+		case 'v':
+			tempvalue = 0;
+			tempmulti = 100;
+			for (int i = 3; i < 6; i++) {
+				tempvalue += tempmulti * (fulldat-'0');
+				tempmulti /= 10;
+			}
+			percent_vel = tempvalue;
 		break;
 		case '1':
 		case '0':
