@@ -259,7 +259,7 @@ void set_tar_velocity(int v1, int v2, int v3, int v4) {
 
 // 800 - 1550 - 4600 - 5450 (total 3100) r = 6.5 cm
 void fast_track() {
-	static fast_track
+	static fast_track;
 }
 
 void decode_command(int value) {

@@ -116,9 +116,9 @@ int main(void)
     led_off(LED2);
     led_off(LED3);
     led_off(LED4);
-    gpio.set(GRIPPER);
-    gpio.set(ELEVATING);
-    gpio.set(SIDE_CYL);
+    gpio_set(GRIPPER);
+    gpio_set(ELEVATING);
+    gpio_set(SIDE_CYL);
     tft_init(PIN_ON_TOP, BLACK, WHITE, YELLOW, DARK_GREEN);
     HAL_GPIO_WritePin(GPIOC, GPIO_PIN_3, GPIO_PIN_SET);
     pwm_init();
@@ -149,6 +149,7 @@ int main(void)
 	static int Btn1_HoldTime = 0;
 	static int Btn2_HoldTime = 0;
 	static int deltatime = 0;
+	static int last_cyl_time = 0;
 
 	// varying constant
 	static double kp = 9,
@@ -212,17 +213,17 @@ int main(void)
 					}
 				break;
 				case 3:
-					if (HAL_GetTick() - last_servo_time > 1000) {
-						gpio_toggle(SIDE_SYL);
+					if (HAL_GetTick() - last_cyl_time > 1000) {
+						gpio_toggle(SIDE_CYL);
 					}
 				break;
 				case 4:
-					if (HAL_GetTick() - last_servo_time > 1000) {
+					if (HAL_GetTick() - last_cyl_time > 1000) {
 						gpio_toggle(GRIPPER);
 					}
 				break;
 				case 5:
-					if (HAL_GetTick() - last_servo_time > 1000) {
+					if (HAL_GetTick() - last_cyl_time > 1000) {
 						gpio_toggle(ELEVATING);
 					}
 				break;
