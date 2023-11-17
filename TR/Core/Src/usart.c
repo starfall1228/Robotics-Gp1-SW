@@ -38,6 +38,8 @@ char tofdat[60];
 int count = 0;
 int count_tof = 0;
 int* target = NULL;
+const Motor* motorchoice = NULL;
+int value_Time = 0;
 int shifted = 0;
 int percent_vel = 100;
 const int max_velocity = 1000;
@@ -259,7 +261,18 @@ void set_tar_velocity(int v1, int v2, int v3, int v4) {
 
 // 800 - 1550 - 4600 - 5450 (total 3100) r = 6.5 cm
 void fast_track() {
-	static fast_track;
+	static const int fast_track_time = 2000;
+	const double kp = 9, ki = 0.001, kd = -0.03;
+	int CurrentTime = HAL_GetTick();
+
+	led_on(LED3);
+	while (HAL_GetTick() - CurrentTime > fast_track_time ) {
+		for (int i = 0; i < 4; i++ ) {
+			set_motor_speed(*(motorchoice+i), 0 , kp, ki, kd, motorchoice);
+		}
+
+	}
+	led_off(LED3);
 }
 
 void decode_command(int value) {
@@ -287,22 +300,22 @@ void decode_command(int value) {
 
 		// Diag-Up-right
 		case 24:
-			set_tar_velocity(1	,0	,1	,0);
+			set_tar_velocity(2	,0	,2	,0);
 		break;
 
 		// Diag-Up-left
 		case 26:
-			set_tar_velocity(0	,1	,0	,1);
+			set_tar_velocity(0	,2	,0	,2);
 		break;
 
 		// Diag-Down-right
 		case 25:
-			set_tar_velocity(0	,-1	,0	,-1);
+			set_tar_velocity(0	,-2	,0	,-2);
 		break;
 
 		// Diag-Down-left
 		case 27:
-			set_tar_velocity(-1	,0	,-1	,0);
+			set_tar_velocity(-2	,0	,-2	,0);
 		break;
 
 		// Rotate Right
@@ -412,6 +425,10 @@ void end_bit() {
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
+	if (dat[0] == 't')  {
+		valuetime = HAL_GetTick();
+		Reset_dat_init();
+	}
 	if (huart == &huart1) {
 		switch (mode1) {
 			// start bit??
@@ -452,6 +469,11 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 
 void ReceiveData(int tar_vel[4]) {
 	target = tar_vel;
+	if (HAL_GetTick() - value_Time > 5000) {
+		for (int i = 0; i < 4; i++) set_motor_current(motorchoice[i], 0);
+		HAL_UART_Receive(&huart1,(uint8_t*)&dat, sizeof(char) * 1,0xFFFF);
+		Reset_dat_init();
+	}
 	HAL_UART_Receive_IT(&huart1, (uint8_t*)&dat, sizeof(char) * 1);
 	//HAL_UART_Receive_IT(&huart2, (uint8_t*)&tofdat, sizeof(char) * 34);
 //	if (HAL_GetTick()-updateTime > 2000) HAL_UART_Receive(&huart1, (uint8_t*)&dat, sizeof(char) * 1)
