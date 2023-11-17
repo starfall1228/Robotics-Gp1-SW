@@ -61,6 +61,8 @@ void Error_Handler(void);
 #define CAM_D7_GPIO_Port GPIOC
 #define ELEVATING_Pin GPIO_PIN_1
 #define ELEVATING_GPIO_Port GPIOC
+#define SIDE_CYL_Pin GPIO_PIN_2
+#define SIDE_CYL_GPIO_Port GPIOC
 #define GRIPPER_Pin GPIO_PIN_3
 #define GRIPPER_GPIO_Port GPIOC
 #define PWM1_Pin GPIO_PIN_0

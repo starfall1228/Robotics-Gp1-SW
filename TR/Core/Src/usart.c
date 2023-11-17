@@ -44,6 +44,7 @@ const int max_velocity = 1000;
 
 int prev_error = 0;
 int accu = 0;
+int side_cyl_on = 0;
 
 int velocity = max_velocity;
 
@@ -236,9 +237,9 @@ void Reset_tofdat_init() {
 	}
 }
 
-// 800 - 1550 - 4600 - 5450 (total 3050)
-void fast_track(int u1_d, int u2_d, int tof_d) {
-
+// 800 - 1550 - 4600 - 5450 (total 3100) 6.5 cm
+void fast_track() {
+	set_motor_speed
 }
 
 
@@ -380,7 +381,7 @@ void end_bit() {
 			shift();
 		break;
 		case 'p':
-			pwm_angle(-90*(1-(fulldat[2]-'0')));
+			gpio_toggle(SIDE_CYL);
 			Reset_dat_init();
 		break;
 		case '1':

@@ -111,11 +111,14 @@ int main(void)
     volatile uint32_t last_ticks = 0;
     volatile uint32_t last_ticks_inc = 0;
 
-    // we turn off all the led first
+    // we turn off all the led & cylinder first
     led_off(LED1);
     led_off(LED2);
     led_off(LED3);
     led_off(LED4);
+    gpio.set(GRIPPER);
+    gpio.set(ELEVATING);
+    gpio.set(SIDE_CYL);
     tft_init(PIN_ON_TOP, BLACK, WHITE, YELLOW, DARK_GREEN);
     HAL_GPIO_WritePin(GPIOC, GPIO_PIN_3, GPIO_PIN_SET);
     pwm_init();
