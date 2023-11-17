@@ -58,9 +58,10 @@ uint8_t tft_update(uint32_t period);
 void pwm_init(void) {
 	// init the pwm prescaler value and auto-reload value and start the pwm
 	/* Your code start here */
-	TIM5->ARR = 999;    //set the timer1 auto-reload counter
-	TIM5->PSC = 1679;    //set the timer1 prescaler value
 	HAL_TIM_PWM_Start(&htim5, TIM_CHANNEL_1);
+	TIM5->ARR = 59999;
+	TIM5->PSC = 27;
+//	TIM5->CCR1 = 1499;
 	/* Your code end here */
 }
 
@@ -114,12 +115,53 @@ volatile uint32_t CCRForAngle(double new_angle, double full_cycle) {
 double full_cycle = 20; // should be outside of the loop
 double cur_angle = 0; //should be outside of the loop
 
+void reset_servo(){
+	if(TIM5->CCR1 <=  4499){
+		int temp = TIM5->CCR1;
+		for(int i = temp; i< 4499; i+=10){
+			TIM5->CCR1 = i;
+//			HAL_Delay(10);
+		}
+	}else{
+		int temp = TIM5->CCR1;
+		for(int i = temp; i >= 4499; i-=10){
+			TIM5->CCR1 = i;
+
+		}
+	}
+}
 void servo_turn( ) {
 //    double full_cycle = 20; // should be outside of the loop
 //    double cur_angle = 0; //should be outside of the loop
-    double new_angle = (cur_angle == 0 ? 180 : 0);
-    htim5.Instance->CCR1 = CCRForAngle(new_angle, full_cycle);
-    cur_angle = new_angle;
+//	switch (counter++) {
+//	case 0:
+//		gpio_reset(LED1);
+//		gpio_set(LED2);
+//		gpio_set(LED3);
+//		TIM5->CCR1 = 1499; // -90
+//		break;
+//
+//	case 1:
+//		gpio_set(LED1);
+//		gpio_reset(LED2);
+//		gpio_set(LED3);
+//		TIM5->CCR1 = 4499; // 0
+//		break;
+//
+//	case 2:
+//		gpio_set(LED1);
+//		gpio_set(LED2);
+//		gpio_reset(LED3);
+//		TIM5->CCR1 = 7499; // 90
+//		break;
+//
+//	default:
+//		gpio_set(LED1);
+//		gpio_set(LED2);
+//		gpio_set(LED3);
+//		counter = 0;
+//	}
+
 }
 
 
