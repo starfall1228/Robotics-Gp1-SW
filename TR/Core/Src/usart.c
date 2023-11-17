@@ -338,23 +338,23 @@ void decode_command(int value) {
 
 		// Lift UP
 		case 29:
-			gpio_on(GPIOC,PIN1);
+			gpio_on(ELEVATING);
 		break;
 
 		// LIFT DOWN
 		case 13:
-
+			gpio_off(ELEVATING);
 		break;
 
 		// clamp on
 		case 31:
-
+			gpio_on(GRIPPER);
 		break;
 
 		//clamp off
 		case 15:
-
-		break
+			gpio_off(GRIPPER);
+		break;
 	}
 }
 
