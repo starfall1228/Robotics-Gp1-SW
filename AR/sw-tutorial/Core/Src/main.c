@@ -409,7 +409,7 @@ int main(void)
 			// Making the first turn to the the first bucket
 			init_PID(&pid0, setspeed/2,kp,ki, kd);
 			init_PID(&pid1, setspeed/2,kp,ki, kd);
-			turning(&pid0, &pid1, 450, setspeed/4, 'l');
+			turning(&pid0, &pid1, 450, setspeed/8, 'l');
 
 
 			// reseting to zero rpm
@@ -428,7 +428,7 @@ int main(void)
 
 		    reset(&pid0, &pid1,1);
 		    // Turing to the second bucket
-		    turning(&pid0, &pid1, 900, setspeed/4, 'r');
+		    turning(&pid0, &pid1, 900, setspeed/8, 'r');
 
 		    reset(&pid0, &pid1,1);
 		    // Forwards to the second bucket
