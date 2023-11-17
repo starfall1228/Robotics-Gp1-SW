@@ -132,7 +132,7 @@ int main(void)
 	// pre-define constant
 	const Motor motorchoice[] = {CAN1_MOTOR0, CAN1_MOTOR1, CAN1_MOTOR2, CAN1_MOTOR3};
 	const char pid_text[6][20] = {"kp-up", "kp-down", "ki-up", "ki-down", "kd-up", "kd-down"};
-	const char Btn1_text[4][20] = {"Speed Increase", "Speed Decrease", "Speed Test", "PWM test"};
+	const char Btn1_text[6][20] = {"Speed Increase", "Speed Decrease", "Speed Test", "Side CYL", "Gripper", "Elevator"};
 
 	// Status of each Btn
 	static int btn1_choice = 2;
@@ -154,9 +154,6 @@ int main(void)
 	static double kp = 9,
 				kd = -0.013,
 				ki = 0.0003;
-
-	static int angle = 90;
-	static int last_servo_time = 0;
 
   /* USER CODE END 2 */
 
@@ -192,7 +189,7 @@ int main(void)
 		break;
 		//Clicking
 		case (2):
-			btn1_choice++; btn1_choice %= 4;
+			btn1_choice++; btn1_choice %= 6;
 			Btn1_mode = 0;
 		break;
 		//Holding
@@ -216,9 +213,17 @@ int main(void)
 				break;
 				case 3:
 					if (HAL_GetTick() - last_servo_time > 1000) {
-						last_servo_time = HAL_GetTick();
-						angle = (angle == -90)? 0:-90;
-						pwm_angle(angle);
+						gpio_toggle(SIDE_SYL);
+					}
+				break;
+				case 4:
+					if (HAL_GetTick() - last_servo_time > 1000) {
+						gpio_toggle(GRIPPER);
+					}
+				break;
+				case 5:
+					if (HAL_GetTick() - last_servo_time > 1000) {
+						gpio_toggle(ELEVATING);
 					}
 				break;
 			}
