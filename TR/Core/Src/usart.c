@@ -30,6 +30,8 @@
 
 int mode1 = 0;
 
+uint32_t updateTime = 0;
+
 char dat[30];
 char fulldat[30];
 char tofdat[60];
@@ -370,7 +372,7 @@ void end_bit() {
 	int value = 0;
 	int temp = 16;
 
-	tft_prints(0, 5, "%s  %d   ", fulldat, velocity);
+	tft_prints(0, 5, "%s ", fulldat);
 	led_toggle(LED2);
 	//--------------------
 	switch (fulldat[0]) {
@@ -379,6 +381,7 @@ void end_bit() {
 		break;
 		case 'p':
 			pwm_angle(-90*(1-(fulldat[2]-'0')));
+			Reset_dat_init();
 		break;
 		case '1':
 		case '0':
@@ -393,6 +396,7 @@ void end_bit() {
 				temp /= 2;
 			}
 
+			tft_prints(0, 5, "%s  %d   ", fulldat, value);
 			Reset_dat_init();
 
 			decode_command(value);
@@ -447,6 +451,7 @@ void ReceiveData(int tar_vel[4]) {
 	target = tar_vel;
 	HAL_UART_Receive_IT(&huart1, (uint8_t*)&dat, sizeof(char) * 1);
 	//HAL_UART_Receive_IT(&huart2, (uint8_t*)&tofdat, sizeof(char) * 34);
+//	if (HAL_GetTick()-updateTime > 2000) HAL_UART_Receive(&huart1, (uint8_t*)&dat, sizeof(char) * 1)
 	return;
 }
 
