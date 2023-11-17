@@ -304,12 +304,12 @@ void decode_command(int value) {
 
 		// Rotate Right
 		case 28:
-			set_tar_velocity(1	,-1	,-1	,1);
+			set_tar_velocity(-1	,1	,1	,-1);
 		break;
 
 		// Rotate Left
 		case 30:
-			set_tar_velocity(-1	,1	,1	,-1);
+      set_tar_velocity(1	,-1	,-1	,1);
 		break;
 
 		// Unpush Button
