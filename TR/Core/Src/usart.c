@@ -41,6 +41,7 @@ int* target = NULL;
 int shifted = 0;
 int percent_vel = 100;
 const int max_velocity = 1000;
+const int fast_track_time = 2000;
 
 int prev_error = 0;
 int accu = 0;
@@ -237,10 +238,6 @@ void Reset_tofdat_init() {
 	}
 }
 
-// 800 - 1550 - 4600 - 5450 (total 3100) 6.5 cm
-void fast_track() {
-	set_motor_speed
-}
 
 
 void shift() {
@@ -258,6 +255,11 @@ void set_tar_velocity(int v1, int v2, int v3, int v4) {
 	*(target+2) = v3*velocity;
 	*(target+3) = v4*velocity;
 	return;
+}
+
+// 800 - 1550 - 4600 - 5450 (total 3100) r = 6.5 cm
+void fast_track() {
+	static fast_track
 }
 
 void decode_command(int value) {

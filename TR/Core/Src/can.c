@@ -386,13 +386,13 @@ int average (int currents[]) {
 
 int currents[MAX_NUM_OF_MOTORS][500] = {};
 static int indexes[MAX_NUM_OF_MOTORS];
-static int64_t error[MAX_NUM_OF_MOTORS];
-static int64_t prev_error[MAX_NUM_OF_MOTORS];
-static int64_t accu[MAX_NUM_OF_MOTORS];
+static double error[MAX_NUM_OF_MOTORS];
+static double prev_error[MAX_NUM_OF_MOTORS];
+static double accu[MAX_NUM_OF_MOTORS];
 static double tar_current[MAX_NUM_OF_MOTORS];
 //static double last_ticks[MAX_NUM_OF_MOTORS];
 
-int32_t General_PID(int64_t error, int64_t prev_error, int64_t* accu, const double kp, const double ki, const double kd) {
+int32_t General_PID(double error, double prev_error, double* accu, const double kp, const double ki, const double kd) {
 	// variable declaration
 //	double deltatime = HAL_GetTick()-last_ticks[cur_motor];
 	double P_Gain;
