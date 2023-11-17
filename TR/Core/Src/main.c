@@ -214,16 +214,19 @@ int main(void)
 				break;
 				case 3:
 					if (HAL_GetTick() - last_cyl_time > 1000) {
+						last_cyl_time = HAL_GetTick();
 						gpio_toggle(SIDE_CYL);
 					}
 				break;
 				case 4:
 					if (HAL_GetTick() - last_cyl_time > 1000) {
+						last_cyl_time = HAL_GetTick();
 						gpio_toggle(GRIPPER);
 					}
 				break;
 				case 5:
 					if (HAL_GetTick() - last_cyl_time > 1000) {
+						last_cyl_time = HAL_GetTick();
 						gpio_toggle(ELEVATING);
 					}
 				break;
