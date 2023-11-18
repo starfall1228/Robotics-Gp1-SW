@@ -11,6 +11,5 @@
 ../Core/Src/stm32f4xx_it.c:223:6:SPI1_IRQHandler	0	static
 ../Core/Src/stm32f4xx_it.c:237:6:USART1_IRQHandler	0	static
 ../Core/Src/stm32f4xx_it.c:251:6:USART2_IRQHandler	0	static
-../Core/Src/stm32f4xx_it.c:265:6:EXTI15_10_IRQHandler	0	static
-../Core/Src/stm32f4xx_it.c:279:6:TIM5_IRQHandler	0	static
-../Core/Src/stm32f4xx_it.c:293:6:DMA2_Stream3_IRQHandler	0	static
+../Core/Src/stm32f4xx_it.c:265:6:TIM5_IRQHandler	0	static
+../Core/Src/stm32f4xx_it.c:279:6:DMA2_Stream3_IRQHandler	0	static
