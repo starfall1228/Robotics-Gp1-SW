@@ -320,12 +320,12 @@ void decode_command(int value) {
 
 		// Rotate Right
 		case 28:
-			set_tar_velocity(1	,-1	,-1	,1);
+			set_tar_velocity(-1	,1	,1	,-1);
 		break;
 
 		// Rotate Left
 		case 30:
-			set_tar_velocity(-1	,1	,1	,-1);
+			set_tar_velocity(1	,-1	,-1	,1);
 		break;
 
 		// Unpush Button
@@ -378,8 +378,8 @@ void decode_command(int value) {
 
 void end_bit() {
 	fulldat[--count] = '\0';
-	tft_prints(0, 5, "%s  ", fulldat);
-	if (count != 5 || !(count == 6 && fulldat[0] == 'v')) {
+//	tft_prints(0, 5, "%s  ", fulldat);
+	if (count != 5) {
 		count = 0;
 		mode1 = 0;
 		Reset_dat_init();
@@ -480,8 +480,8 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 
 void ReceiveData(int tar_vel[4]) {
 	target = tar_vel;
+//	tft_prints(0, 5, "%d", HAL_GetTick() - value_Time);
 	HAL_UART_Receive_IT(&huart1, (uint8_t*)&dat, sizeof(char) * 1);
-	tft_prints(0, 5, "%d", HAL_GetTick() - value_Time);
 	if (HAL_GetTick() - value_Time > 5000) {
 		for (int i = 0; i < 4; i++) tar_vel[i] = 0;
 		gpio_reset(LED4);
