@@ -38,11 +38,11 @@ char tofdat[60];
 int count = 0;
 int count_tof = 0;
 int* target = NULL;
-const Motor* motorchoice = NULL;
+const Motor* motor_choice = NULL;
 int value_Time = 0;
 int shifted = 0;
 int percent_vel = 100;
-const int max_velocity = 1000;
+const int max_velocity = 1500;
 const int fast_track_time = 2000;
 
 int prev_error = 0;
@@ -259,21 +259,28 @@ void set_tar_velocity(int v1, int v2, int v3, int v4) {
 	return;
 }
 
-// 800 - 1550 - 4600 - 5450 (total 3100) r = 6.5 cm
-void fast_track() {
-	static const int fast_track_time = 2000;
-	const double kp = 9, ki = 0.001, kd = -0.03;
-	int CurrentTime = HAL_GetTick();
-
-	led_on(LED3);
-	while (HAL_GetTick() - CurrentTime > fast_track_time ) {
-		for (int i = 0; i < 4; i++ ) {
-			set_motor_speed(*(motorchoice+i), 0 , kp, ki, kd, motorchoice);
-		}
-
-	}
-	led_off(LED3);
+void init_fast_track(const Motor* motorchoice, int* targetvel) {
+	motor_choice = motorchoice;
+	target = targetvel;
 }
+
+// 800 - 1550 - 4600 - 5450 (total 3100) r = 6.5 cm
+//void fast_track() {
+//
+//	static const int fast_track_time = 500;
+//	const double kp = 9, ki = 0.001, kd = -0.03;
+//	int initalTime = HAL_GetTick();
+//
+//	led_on(LED3);
+//	if(HAL_GetTick() - initalTime < fast_track_time ) {
+//		for (int i = 0; i < 4; i++ ) {
+//			set_motor_speed(*(motor_choice+i), 1000 , kp, ki, kd, motor_choice);
+//		}
+//
+//	}
+//	set_tar_velocity(0,0,0,0);
+//	led_off(LED3);
+//}
 
 void decode_command(int value) {
 	switch (value) {
@@ -352,6 +359,7 @@ void decode_command(int value) {
 		// stop
 		case 0:
 			set_tar_velocity(0	,0	,0	,0);
+			Re
 		break;
 
 		// Lift UP
@@ -378,7 +386,7 @@ void decode_command(int value) {
 
 void end_bit() {
 	fulldat[--count] = '\0';
-//	tft_prints(0, 5, "%s  ", fulldat);
+
 	if (count != 5) {
 		count = 0;
 		mode1 = 0;
@@ -453,6 +461,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 			// detecting...
 			case 1:
 				fulldat[count++] = dat[0];
+				tft_prints(0, 5, "%s  ", fulldat);
 				if (dat[0] == 'n') {
 					end_bit();
 				}
@@ -482,18 +491,19 @@ void ReceiveData(int tar_vel[4]) {
 	target = tar_vel;
 //	tft_prints(0, 5, "%d", HAL_GetTick() - value_Time);
 	HAL_UART_Receive_IT(&huart1, (uint8_t*)&dat, sizeof(char) * 1);
-	if (HAL_GetTick() - value_Time > 5000) {
+	if (HAL_GetTick() - value_Time > 1500) {
 		for (int i = 0; i < 4; i++) tar_vel[i] = 0;
 		gpio_reset(LED4);
 	} else {
 		gpio_set(LED4);
 	}
-	//HAL_UART_Receive_IT(&huart2, (uint8_t*)&tofdat, sizeof(char) * 34);
+//	HAL_UART_Receive_IT(&huart2, (uint8_t*)&tofdat, sizeof(char) * 34);
 //	if (HAL_GetTick()-updateTime > 2000) HAL_UART_Receive(&huart1, (uint8_t*)&dat, sizeof(char) * 1)
 	return;
 }
 
 void SendData(const Motor motorchoice[4]) {
+	motor_choice = motorchoice;
 	static uint32_t last_Send_Time = 0;
 	if (HAL_GetTick() - last_Send_Time > 1000) {
 		double avg_M1 = averagespeed(motorchoice[0]);

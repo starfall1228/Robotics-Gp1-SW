@@ -49,6 +49,8 @@ void MX_USART2_UART_Init(void);
 void ReceiveData(int tar_vel[4]);
 void SendData(const Motor motorchoice[4]);
 void Reset_dat_init();
+void fast_track();
+void init_fast_track(const Motor* motorchoice, int* targetvel);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

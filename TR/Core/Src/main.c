@@ -126,22 +126,23 @@ int main(void)
 
     tft_force_clear();
 	can_init();
-	PID_variable_init();
-	Reset_dat_init();
 
 	// pre-define constant
 	const Motor motorchoice[] = {CAN1_MOTOR0, CAN1_MOTOR1, CAN1_MOTOR2, CAN1_MOTOR3};
 	const char pid_text[6][20] = {"kp-up", "kp-down", "ki-up", "ki-down", "kd-up", "kd-down"};
-	const char Btn1_text[6][20] = {"Speed Increase", "Speed Decrease", "Speed Test", "Side CYL", "Gripper", "Elevator"};
+	const char Btn1_text[7][20] = {"Speed Increase", "Speed Decrease", "Speed Test", "Side CYL", "Gripper", "Elevator","Fast Track"};
 
 	// Status of each Btn
-	static int btn1_choice = 2;
+	static int btn1_choice = 6;
 	enum {kp_increase, kp_decrease, ki_increase, ki_decrease, kd_increase, kd_decrease} k_choice;
 	static int target_vel[4] = {0,0,0,0};
 	static int velocity = 500;
 
 	//initialize
 	k_choice = kp_increase;
+	//init_fast_track(motorchoice, target_vel);
+	PID_variable_init();
+	Reset_dat_init();
 
 	// Hold&click Variable
 	static int Btn1_mode = 0;
@@ -150,10 +151,11 @@ int main(void)
 	static int Btn2_HoldTime = 0;
 	static int deltatime = 0;
 	static int last_cyl_time = 0;
+	static int fast_track_time = 0;
 
 	// varying constant
 	static double kp = 9,
-				kd = -0.013,
+				kd = -0.0153,
 				ki = 0.0003;
 
   /* USER CODE END 2 */
@@ -190,7 +192,7 @@ int main(void)
 		break;
 		//Clicking
 		case (2):
-			btn1_choice++; btn1_choice %= 6;
+			btn1_choice++; btn1_choice %= 7;
 			Btn1_mode = 0;
 		break;
 		//Holding
@@ -230,8 +232,27 @@ int main(void)
 						gpio_toggle(ELEVATING);
 					}
 				break;
+				case 6:
+					Btn1_mode = 4;
+					fast_track_time = HAL_GetTick();
+				break;
 			}
 			if (btn_read(BTN1)) {
+				for (int i = 0; i < 4; i++) {
+					target_vel[i] = 0;
+				}
+				Btn1_mode = 0;
+			}
+		break;
+
+		case (4):
+			last_cyl_time = HAL_GetTick();
+
+			for (int i = 0; i < 4; i++) {
+				target_vel[i] = 2000;
+			}
+
+			if (HAL_GetTick() - fast_track_time > 4500) {
 				for (int i = 0; i < 4; i++) {
 					target_vel[i] = 0;
 				}

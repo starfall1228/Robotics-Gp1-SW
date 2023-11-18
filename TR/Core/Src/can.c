@@ -393,8 +393,7 @@ static double tar_current[MAX_NUM_OF_MOTORS];
 //static double last_ticks[MAX_NUM_OF_MOTORS];
 
 int32_t General_PID(double error, double prev_error, double* accu, const double kp, const double ki, const double kd) {
-	// variable declaration
-//	double deltatime = HAL_GetTick()-last_ticks[cur_motor];
+	// variable declarations
 	double P_Gain;
 	double I_Gain;
 	double D_Gain;
@@ -414,8 +413,14 @@ int32_t General_PID(double error, double prev_error, double* accu, const double 
 	D_Gain = kd * (error - prev_error) ;
 
 //	last_ticks[cur_motor] = HAL_GetTick();
+	double totalOutput = (P_Gain + I_Gain + D_Gain);
+	if(totalOutput>=7500){ // Prevent Hum Lun Speed
+		PID_variable_init();
+		totalOutput = 7500;
+	}
 
-	return (P_Gain + I_Gain + D_Gain);
+
+	return totalOutput;
 
 }
 
