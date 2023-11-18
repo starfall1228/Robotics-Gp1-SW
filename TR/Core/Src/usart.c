@@ -50,6 +50,8 @@ int accu = 0;
 int side_cyl_on = 0;
 
 int velocity = max_velocity;
+int isMoving = 1;
+int isAutoTrack = 0;
 
 
 /* USER CODE END 0 */
@@ -220,6 +222,23 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
   /* USER CODE END USART2_MspDeInit 1 */
   }
 }
+// 800 - 1550 - 4600 - 5450 (total 3100) r = 6.5 cm
+//void fast_track() {
+//
+//	static const int fast_track_time = 500;
+//	const double kp = 9, ki = 0.001, kd = -0.03;
+//	int initalTime = HAL_GetTick();
+//
+//	led_on(LED3);
+//	if(HAL_GetTick() - initalTime < fast_track_time ) {
+//		for (int i = 0; i < 4; i++ ) {
+//			set_motor_speed(*(motor_choice+i), 1000 , kp, ki, kd, motor_choice);
+//		}
+//
+//	}
+//	set_tar_velocity(0,0,0,0);
+//	led_off(LED3);
+//}
 
 /* USER CODE BEGIN 1 */
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
@@ -252,10 +271,10 @@ void shift() {
 
 void set_tar_velocity(int v1, int v2, int v3, int v4) {
 	PID_variable_init();
-	*(target+0) = v1*velocity;
-	*(target+1) = v2*velocity;
-	*(target+2) = v3*velocity;
-	*(target+3) = v4*velocity;
+	*(target+0) = v1*velocity*isMoving;
+	*(target+1) = v2*velocity*isMoving;
+	*(target+2) = v3*velocity*isMoving;
+	*(target+3) = v4*velocity*isMoving;
 	return;
 }
 
@@ -264,23 +283,6 @@ void init_fast_track(const Motor* motorchoice, int* targetvel) {
 	target = targetvel;
 }
 
-// 800 - 1550 - 4600 - 5450 (total 3100) r = 6.5 cm
-//void fast_track() {
-//
-//	static const int fast_track_time = 500;
-//	const double kp = 9, ki = 0.001, kd = -0.03;
-//	int initalTime = HAL_GetTick();
-//
-//	led_on(LED3);
-//	if(HAL_GetTick() - initalTime < fast_track_time ) {
-//		for (int i = 0; i < 4; i++ ) {
-//			set_motor_speed(*(motor_choice+i), 1000 , kp, ki, kd, motor_choice);
-//		}
-//
-//	}
-//	set_tar_velocity(0,0,0,0);
-//	led_off(LED3);
-//}
 
 void decode_command(int value) {
 	switch (value) {
@@ -307,22 +309,22 @@ void decode_command(int value) {
 
 		// Diag-Up-right
 		case 24:
-			set_tar_velocity(2	,0	,2	,0);
+			set_tar_velocity(1.5	,0	,1.5	,0);
 		break;
 
 		// Diag-Up-left
 		case 26:
-			set_tar_velocity(0	,2	,0	,2);
+			set_tar_velocity(0	,1.5	,0	,1.5);
 		break;
 
 		// Diag-Down-right
 		case 25:
-			set_tar_velocity(0	,-2	,0	,-2);
+			set_tar_velocity(0	,-1.5	,0	,-1.5);
 		break;
 
 		// Diag-Down-left
 		case 27:
-			set_tar_velocity(-2	,0	,-2	,0);
+			set_tar_velocity(-1.5	,0	,-1.5	,0);
 		break;
 
 		// Rotate Right
@@ -335,7 +337,14 @@ void decode_command(int value) {
 			set_tar_velocity(1	,-1	,-1	,1);
 		break;
 
-		// Unpush Button
+		// Release Button
+
+		// Decrease me there stop
+		case 16:
+			isMoving = 1;
+		break;
+		case 0:
+		isMoving = 0;
 		// Up
 		case 4:
 		// Right
@@ -356,10 +365,7 @@ void decode_command(int value) {
 		case 12:
 		// Rotate Left
 		case 14:
-		// stop
-		case 0:
 			set_tar_velocity(0	,0	,0	,0);
-			Re
 		break;
 
 		// Lift UP
@@ -411,11 +417,15 @@ void end_bit() {
 			Reset_dat_init();
 		break;
 		case 'v':
-			for (int i = 3; i < 6; i++) {
-				tempvalue += tempmulti * (fulldat[0]-'0');
+			for (int i = 2; i < 5; i++) {
+				tempvalue += tempmulti * (fulldat[i]-'0');
 				tempmulti /= 10;
 			}
 			percent_vel = tempvalue;
+			velocity = (max_velocity*percent_vel*((shifted == 0)? 1:0.3))/100;
+		break;
+		case 'a':
+			isAutoTrack = 1;
 		break;
 		case '1':
 		case '0':
@@ -439,6 +449,17 @@ void end_bit() {
 	}
 	count = 0;
 	mode1 = 0;
+}
+
+void autotrack(uint32_t fast_track_time){
+
+	set_tar_velocity(1.25,1.25,1.25,1.25);
+	if (HAL_GetTick() - fast_track_time > 4500) {
+		set_tar_velocity(0,0,0,0);
+		isAutoTrack = 0;
+	}
+
+	return;
 }
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
@@ -493,9 +514,9 @@ void ReceiveData(int tar_vel[4]) {
 	HAL_UART_Receive_IT(&huart1, (uint8_t*)&dat, sizeof(char) * 1);
 	if (HAL_GetTick() - value_Time > 1500) {
 		for (int i = 0; i < 4; i++) tar_vel[i] = 0;
-		gpio_reset(LED4);
+		led_on(LED4);
 	} else {
-		gpio_set(LED4);
+		led_off(LED4);
 	}
 //	HAL_UART_Receive_IT(&huart2, (uint8_t*)&tofdat, sizeof(char) * 34);
 //	if (HAL_GetTick()-updateTime > 2000) HAL_UART_Receive(&huart1, (uint8_t*)&dat, sizeof(char) * 1)

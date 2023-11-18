@@ -39,7 +39,7 @@ extern UART_HandleTypeDef huart1;
 extern UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN Private defines */
-
+extern int isAutoTrack;
 /* USER CODE END Private defines */
 
 void MX_USART1_UART_Init(void);
@@ -51,6 +51,7 @@ void SendData(const Motor motorchoice[4]);
 void Reset_dat_init();
 void fast_track();
 void init_fast_track(const Motor* motorchoice, int* targetvel);
+void autotrack(uint32_t fast_track_time);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

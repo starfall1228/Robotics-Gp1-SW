@@ -158,6 +158,7 @@ int main(void)
 				kd = -0.0153,
 				ki = 0.0003;
 
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -312,9 +313,15 @@ int main(void)
 		break;
 	}
 	ReceiveData(target_vel);
+	if(!isAutoTrack) fast_track_time = HAL_GetTick();
+	if(isAutoTrack){
+		tft_prints(0, 5, "Autotracking");
+		autotrack(fast_track_time);
+	}
 	for (int i = 0; i < 4; i++ ) {
 		set_motor_speed(motorchoice[i], target_vel[i], kp, ki, kd, motorchoice);
 		//set_motor_current(motorchoice[i], 700);
+
 	}
 	tft_prints(0, 0, "timee: %d", (int) HAL_GetTick());
 	tft_prints(0, 1, "%s     ", Btn1_text[btn1_choice]);
@@ -380,7 +387,6 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-
 /* USER CODE END 4 */
 
 /**
