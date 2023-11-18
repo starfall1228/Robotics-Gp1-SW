@@ -5,9 +5,10 @@
 ../Core/Src/main.c:146:6:print_data	64	static
 ../Core/Src/main.c:160:6:turning	176	static
 ../Core/Src/main.c:183:6:forward	176	static
-../Core/Src/main.c:196:6:backward	176	static
-../Core/Src/main.c:209:6:reset	160	static
-../Core/Src/main.c:226:8:time_for_travelling	24	static
-../Core/Src/main.c:470:6:SystemClock_Config	88	static,ignoring_inline_asm
-../Core/Src/main.c:242:5:main	368	static
-../Core/Src/main.c:519:6:Error_Handler	0	static,ignoring_inline_asm
+../Core/Src/main.c:196:6:forward_line_track	184	static
+../Core/Src/main.c:224:6:backward	176	static
+../Core/Src/main.c:237:6:reset	160	static
+../Core/Src/main.c:254:8:time_for_travelling	24	static
+../Core/Src/main.c:498:6:SystemClock_Config	88	static,ignoring_inline_asm
+../Core/Src/main.c:270:5:main	368	static
+../Core/Src/main.c:547:6:Error_Handler	0	static,ignoring_inline_asm

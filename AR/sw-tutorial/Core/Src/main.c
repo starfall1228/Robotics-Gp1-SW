@@ -193,6 +193,34 @@ void forward(PID* pid0, PID* pid1, int tim, double setspeed){
 	}
 }
 
+void forward_line_track(PID* pid0, PID* pid1, int tim, double setspeed){
+	int last_ticks = HAL_GetTick();
+	int sensor_left = gpio_read(SENSOR_3);
+	int sensor_right = gpio_read(SENSOR_4);
+
+	while(HAL_GetTick() - last_ticks <= tim){
+		can_ctrl_loop(); // to continously send/receive data with CAN
+		if(sensor_left){
+			upd_state_speed(setspeed*1.03,CAN1_MOTOR3, &(*pid0));
+			upd_state_speed(setspeed,CAN1_MOTOR1, &(*pid1));
+			set_motor_current(CAN1_MOTOR3, pid0->current);
+			set_motor_current(CAN1_MOTOR1, -pid1->current);
+		}else if(sensor_right){
+			upd_state_speed(setspeed,CAN1_MOTOR3, &(*pid0));
+			upd_state_speed(setspeed,CAN1_MOTOR1, &(*pid1));
+			set_motor_current(CAN1_MOTOR3, pid0->current);
+			set_motor_current(CAN1_MOTOR1, -pid1->current);
+		}else{
+			upd_state_speed(setspeed,CAN1_MOTOR3, &(*pid0));
+			upd_state_speed(setspeed,CAN1_MOTOR1, &(*pid1));
+			set_motor_current(CAN1_MOTOR3, pid0->current);
+			set_motor_current(CAN1_MOTOR1, -pid1->current);
+		}
+
+		print_data(*pid0, *pid1);
+	}
+}
+
 void backward(PID* pid0, PID* pid1, int tim, double setspeed){
 	int last_ticks = HAL_GetTick();
 
