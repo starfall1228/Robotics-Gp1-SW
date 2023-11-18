@@ -62,9 +62,11 @@ void MX_GPIO_Init(void)
                           |LED3_Pin|LED2_Pin|LED1_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pins : PCPin PCPin PCPin PCPin
-                           PCPin PCPin PCPin PCPin */
-  GPIO_InitStruct.Pin = CAM_D7_Pin|CAM_D0_Pin|CAM_D1_Pin|CAM_D2_Pin
-                          |CAM_D3_Pin|CAM_D4_Pin|SENSOR_3_Pin|CAM_D6_Pin;
+                           PCPin PCPin PCPin PCPin
+                           PCPin */
+  GPIO_InitStruct.Pin = CAM_D7_Pin|SENSOR_PC14_Pin|CAM_D0_Pin|CAM_D1_Pin
+                          |CAM_D2_Pin|CAM_D3_Pin|SENSOR_PC10_Pin|SENSOR_PC11_Pin
+                          |CAM_D6_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);

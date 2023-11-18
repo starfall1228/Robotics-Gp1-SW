@@ -61,7 +61,7 @@ void pwm_init(void) {
 	HAL_TIM_PWM_Start(&htim5, TIM_CHANNEL_1);
 	TIM5->ARR = 59999;
 	TIM5->PSC = 27;
-//	TIM5->CCR1 = 1499;
+	TIM5->CCR1 = 1499;
 	/* Your code end here */
 }
 
@@ -117,17 +117,11 @@ double cur_angle = 0; //should be outside of the loop
 
 void reset_servo(){
 	if(TIM5->CCR1 <=  4499){
-		int temp = TIM5->CCR1;
-		for(int i = temp; i< 4499; i+=10){
-			TIM5->CCR1 = i;
-//			HAL_Delay(10);
-		}
-	}else{
-		int temp = TIM5->CCR1;
-		for(int i = temp; i >= 4499; i-=10){
-			TIM5->CCR1 = i;
 
-		}
+			TIM5->CCR1 = 4499;
+
+	}else{
+			TIM5->CCR1 = 1499;
 	}
 }
 void servo_turn( ) {

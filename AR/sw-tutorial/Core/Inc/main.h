@@ -59,6 +59,8 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define CAM_D7_Pin GPIO_PIN_13
 #define CAM_D7_GPIO_Port GPIOC
+#define SENSOR_PC14_Pin GPIO_PIN_14
+#define SENSOR_PC14_GPIO_Port GPIOC
 #define PWM1_Pin GPIO_PIN_0
 #define PWM1_GPIO_Port GPIOA
 #define CAM_HREF_Pin GPIO_PIN_1
@@ -102,10 +104,10 @@ void Error_Handler(void);
 #define CAM_RRST_GPIO_Port GPIOA
 #define CAM_OE_Pin GPIO_PIN_15
 #define CAM_OE_GPIO_Port GPIOA
-#define CAM_D4_Pin GPIO_PIN_10
-#define CAM_D4_GPIO_Port GPIOC
-#define SENSOR_3_Pin GPIO_PIN_11
-#define SENSOR_3_GPIO_Port GPIOC
+#define SENSOR_PC10_Pin GPIO_PIN_10
+#define SENSOR_PC10_GPIO_Port GPIOC
+#define SENSOR_PC11_Pin GPIO_PIN_11
+#define SENSOR_PC11_GPIO_Port GPIOC
 #define CAM_D6_Pin GPIO_PIN_12
 #define CAM_D6_GPIO_Port GPIOC
 #define BTN2_Pin GPIO_PIN_2
