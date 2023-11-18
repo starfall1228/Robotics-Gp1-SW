@@ -186,10 +186,12 @@ if __name__ == "__main__":
         for i in color: 
             message += i
         # print(ser.read())
-        ser.write(message)
+        
+        if cv2.waitKey(10) & 0xFF == ord("s"):  # waits for 'q' key to be pressed
+            ser.write(message)
         print(message)
         # print(signal);
-        # ser.write(signal);
+        ser.write(signal);
         # print(imgs[0])
         # print(color)
         cv2.imshow('img1', imgs[0])

@@ -59,9 +59,12 @@ void pwm_init(void) {
 	// init the pwm prescaler value and auto-reload value and start the pwm
 	/* Your code start here */
 	HAL_TIM_PWM_Start(&htim5, TIM_CHANNEL_1);
-	TIM5->ARR = 59999;
-	TIM5->PSC = 27;
-	TIM5->CCR1 = 1499;
+//	TIM5->ARR = 59999;
+//	TIM5->PSC = 27;
+	TIM5->ARR = 999;
+	TIM5->PSC = 1679;
+	TIM5->CCR1 = 25;
+//	TIM5->CCR1 = 1499;
 	/* Your code end here */
 }
 
@@ -115,48 +118,48 @@ volatile uint32_t CCRForAngle(double new_angle, double full_cycle) {
 double full_cycle = 20; // should be outside of the loop
 double cur_angle = 0; //should be outside of the loop
 
-void reset_servo(){
-	if(TIM5->CCR1 <=  4499){
-
-			TIM5->CCR1 = 4499;
-
-	}else{
-			TIM5->CCR1 = 1499;
-	}
-}
-void servo_turn( ) {
-//    double full_cycle = 20; // should be outside of the loop
-//    double cur_angle = 0; //should be outside of the loop
-//	switch (counter++) {
-//	case 0:
-//		gpio_reset(LED1);
-//		gpio_set(LED2);
-//		gpio_set(LED3);
-//		TIM5->CCR1 = 1499; // -90
-//		break;
+//void reset_servo(){
+//	if(TIM5->CCR1 <=  4499){
 //
-//	case 1:
-//		gpio_set(LED1);
-//		gpio_reset(LED2);
-//		gpio_set(LED3);
-//		TIM5->CCR1 = 4499; // 0
-//		break;
+//			TIM5->CCR1 = 4499;
 //
-//	case 2:
-//		gpio_set(LED1);
-//		gpio_set(LED2);
-//		gpio_reset(LED3);
-//		TIM5->CCR1 = 7499; // 90
-//		break;
-//
-//	default:
-//		gpio_set(LED1);
-//		gpio_set(LED2);
-//		gpio_set(LED3);
-//		counter = 0;
+//	}else{
+//			TIM5->CCR1 = 1499;
 //	}
-
-}
+//}
+//void servo_turn( ) {
+////    double full_cycle = 20; // should be outside of the loop
+////    double cur_angle = 0; //should be outside of the loop
+////	switch (counter++) {
+////	case 0:
+////		gpio_reset(LED1);
+////		gpio_set(LED2);
+////		gpio_set(LED3);
+////		TIM5->CCR1 = 1499; // -90
+////		break;
+////
+////	case 1:
+////		gpio_set(LED1);
+////		gpio_reset(LED2);
+////		gpio_set(LED3);
+////		TIM5->CCR1 = 4499; // 0
+////		break;
+////
+////	case 2:
+////		gpio_set(LED1);
+////		gpio_set(LED2);
+////		gpio_reset(LED3);
+////		TIM5->CCR1 = 7499; // 90
+////		break;
+////
+////	default:
+////		gpio_set(LED1);
+////		gpio_set(LED2);
+////		gpio_set(LED3);
+////		counter = 0;
+////	}
+//
+//}
 
 
 void single_move(void){
