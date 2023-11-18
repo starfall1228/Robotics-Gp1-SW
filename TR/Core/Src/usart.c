@@ -52,6 +52,8 @@ int side_cyl_on = 0;
 int velocity = max_velocity;
 int isMoving = 1;
 int isAutoTrack = 0;
+int directionAT = 1;
+int lastVelocity;
 
 
 /* USER CODE END 0 */
@@ -341,7 +343,7 @@ void decode_command(int value) {
 
 		// Decrease me there stop
 		case 16:
-			isMoving = 1;
+		isMoving = 1;
 		break;
 		case 0:
 		isMoving = 0;
@@ -426,6 +428,11 @@ void end_bit() {
 		break;
 		case 'a':
 			isAutoTrack = 1;
+			if(fulldat[1]){
+				directionAT = 1;
+			}else{
+				directionAT = -1;
+			}
 		break;
 		case '1':
 		case '0':
@@ -453,11 +460,16 @@ void end_bit() {
 
 void autotrack(uint32_t fast_track_time){
 
-	set_tar_velocity(1.25,1.25,1.25,1.25);
+	lastVelocity = velocity;
+	velocity = max_velocity;
+	set_tar_velocity(directionAT*1.25,directionAT*1.25,directionAT*1.25,directionAT*1.25);
 	if (HAL_GetTick() - fast_track_time > 4500) {
 		set_tar_velocity(0,0,0,0);
 		isAutoTrack = 0;
+		velocity = lastVelocity;
 	}
+
+
 
 	return;
 }
