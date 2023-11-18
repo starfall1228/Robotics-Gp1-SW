@@ -116,9 +116,9 @@ int main(void)
     led_off(LED2);
     led_off(LED3);
     led_off(LED4);
-    gpio_set(GRIPPER);
-    gpio_set(ELEVATING);
-    gpio_set(SIDE_CYL);
+    gpio_reset(GRIPPER);
+    gpio_reset(ELEVATING);
+    gpio_reset(SIDE_CYL);
     tft_init(PIN_ON_TOP, BLACK, WHITE, YELLOW, DARK_GREEN);
     HAL_GPIO_WritePin(GPIOC, GPIO_PIN_3, GPIO_PIN_SET);
     pwm_init();
