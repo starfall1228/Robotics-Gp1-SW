@@ -59,6 +59,10 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define CAM_D7_Pin GPIO_PIN_13
 #define CAM_D7_GPIO_Port GPIOC
+#define PC14_Pin GPIO_PIN_14
+#define PC14_GPIO_Port GPIOC
+#define PC15_Pin GPIO_PIN_15
+#define PC15_GPIO_Port GPIOC
 #define ELEVATING_Pin GPIO_PIN_1
 #define ELEVATING_GPIO_Port GPIOC
 #define GRIPPER_Pin GPIO_PIN_3
@@ -89,9 +93,6 @@ void Error_Handler(void);
 #define CAM_SCL_GPIO_Port GPIOB
 #define CAM_SDA_Pin GPIO_PIN_11
 #define CAM_SDA_GPIO_Port GPIOB
-#define CAM_VSYNC_Pin GPIO_PIN_14
-#define CAM_VSYNC_GPIO_Port GPIOB
-#define CAM_VSYNC_EXTI_IRQn EXTI15_10_IRQn
 #define CAM_RCLK_Pin GPIO_PIN_15
 #define CAM_RCLK_GPIO_Port GPIOB
 #define CAM_D0_Pin GPIO_PIN_6

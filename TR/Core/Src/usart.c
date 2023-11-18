@@ -32,7 +32,7 @@ int mode1 = 0;
 
 uint32_t updateTime = 0;
 
-char dat[30];
+uint8_t dat[30];
 char fulldat[30];
 char tofdat[60];
 int count = 0;
@@ -387,6 +387,8 @@ void end_bit() {
 
 	int value = 0;
 	int temp = 16;
+	int tempvalue = 0;
+	int tempmulti = 100;
 
 	tft_prints(0, 5, "%s ", fulldat);
 	led_toggle(LED2);
@@ -400,10 +402,8 @@ void end_bit() {
 			Reset_dat_init();
 		break;
 		case 'v':
-			tempvalue = 0;
-			tempmulti = 100;
 			for (int i = 3; i < 6; i++) {
-				tempvalue += tempmulti * (fulldat-'0');
+				tempvalue += tempmulti * (fulldat[0]-'0');
 				tempmulti /= 10;
 			}
 			percent_vel = tempvalue;
@@ -435,8 +435,9 @@ void end_bit() {
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
 	if (dat[0] == 't')  {
-		valuetime = HAL_GetTick();
+		value_Time = HAL_GetTick();
 		Reset_dat_init();
+		return;
 	}
 	if (huart == &huart1) {
 		switch (mode1) {
@@ -478,12 +479,13 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 
 void ReceiveData(int tar_vel[4]) {
 	target = tar_vel;
+	HAL_UART_Receive_IT(&huart1, (uint8_t*)&dat, sizeof(char) * 1);
 	if (HAL_GetTick() - value_Time > 5000) {
 		for (int i = 0; i < 4; i++) set_motor_current(motorchoice[i], 0);
-		HAL_UART_Receive(&huart1,(uint8_t*)&dat, sizeof(char) * 1,0xFFFF);
-		Reset_dat_init();
+		gpio_reset(LED4);
+	} else {
+		gpio_set(LED4);
 	}
-	HAL_UART_Receive_IT(&huart1, (uint8_t*)&dat, sizeof(char) * 1);
 	//HAL_UART_Receive_IT(&huart2, (uint8_t*)&tofdat, sizeof(char) * 34);
 //	if (HAL_GetTick()-updateTime > 2000) HAL_UART_Receive(&huart1, (uint8_t*)&dat, sizeof(char) * 1)
 	return;
