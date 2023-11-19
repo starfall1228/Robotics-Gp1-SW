@@ -123,24 +123,26 @@ if __name__ == "__main__":
     # ser.write(b'huys')     # write a string 
     color_detection_list = [[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]]
     
-
-    cap = cv2.VideoCapture(0) # Change 0 if you have more than one camera.
     RED = [0,0,255]
     GREEN = [0,255,0]
     BLUE = [255,0,0]
-    signal = []
+
+    colors = [b"",b"",b"",b""]
     # print(ser.read(100))
+    print(ser.name)         # check which port was really used
+
+    cap = cv2.VideoCapture(0) # Change 0 if you have more than one camera.
     while True:
+
         # Updates display
-        
         _, frame = cap.read()
-        hsv_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+        
         height, width, _ = frame.shape
         imgs = []
         cury = 0
         part = int(width / 4)
         party = int(height/4)
-        color = [b"",b"",b"",b""]
+        colors = [b"",b"",b"",b""]
         for i in range(4):
             nexy = min(cury + part,width)
             cropped1 = frame[0:height - 1, cury:nexy - 1]
@@ -148,57 +150,30 @@ if __name__ == "__main__":
             imgs.append(cropped1)
             cx = part // 2
             cy = height // 2
-
-            pixel_center = hsv_frame[cy, cx+part*i]
-            hue_value = pixel_center[0]
-
-            # color = "Undefined"
-            if hue_value < 5:
-                color[i] = b"R"
-                color_detection_list[i] = [0,0,255]
-            # elif hue_value < 22:
-            #     color[i] = "ORANGE"
-            #     color_detection_list[i] = [0,165,255]
-            # elif hue_value < 33:
-            #     color_detection_list[i] = [0,255,255]
-            #     color[i] = "YELLOW"
-            elif hue_value < 78:
-                color[i] = b"G"
-                color_detection_list[i] = [0,255,0]
-                # signal[i] = '2'
-            elif hue_value < 131:
+            color = np.average(np.average(cropped1, axis=0), axis=0)
+            c=max(color)
+            if c==color[0]:
+                colors[i] = b'B'
                 color_detection_list[i] = [255,0,0]
-                color[i] = b"B"
-                # signal[i] = '1'
-            # elif hue_value < 170:
-            #     color_detection_list[i] = [228,130,238]
-            #     color[i] = "VIOLET"
+            elif c==color[1] :
+                colors[i] = b'G'
+                color_detection_list[i] = [0,255,0]
             else:
+                colors[i] = b'R'
                 color_detection_list[i] = [0,0,255]
-                color[i] = b"R"
-
-            pixel_center_bgr = frame[cy, cx]
-            b, g, r = int(pixel_center_bgr[0]), int(pixel_center_bgr[1]), int(pixel_center_bgr[2])
-
-            # cv2.rectangle(frame, (cx - 220, 10), (cx + 200, 120), (255, 255, 255), -1)
-            # cv2.putText(frame, color, (cx - 200, 100), 0, 3, (b, g, r), 5)
-            # cv2.circle(frame, (cx, cy), 5, (25, 25, 25), 3)
-        color_display_1.display(color_detection_list)
         message = b''
-        for i in color: 
+        for i in colors: 
             message += i
-        # print(ser.read())
-        
-        # if cv2.waitKey(100) & 0xFF == ord("s"):  # waits for 'q' key to be pressed
-        #     while True:
-        #         ser.write(message)
-        #         if cv2.waitKey(100) & 0xFF == ord("q"):
-        #             break;
-
+        color_display_1.display(color_detection_list)
         print(message)
-        # print(signal);
-        # print(imgs[0])
-        # print(color)
+        
+        if cv2.waitKey(10) & 0xFF == ord("s"):  # waits for 'q' key to be pressed
+            while True:
+                ser.write(message)
+                if cv2.waitKey(10) & 0xFF == ord("q"):  # waits for 'q' key to be pressed
+                    break
+
+
         # cv2.imshow('img1', imgs[0])
         # cv2.imshow('img2', imgs[1])
         # cv2.imshow('img3', imgs[2])
@@ -209,5 +184,5 @@ if __name__ == "__main__":
             break
         if cv2.waitKey(10) & 0xFF == ord("q"):  # waits for 'q' key to be pressed
             break
-    # ser.close()
+    ser.close()
     cv2.destroyAllWindows()

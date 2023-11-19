@@ -233,8 +233,8 @@ void forward_line_track(PID* pid0, PID* pid1, int tim, double setspeed){
 
 	while(HAL_GetTick() - last_ticks <= tim){
 		can_ctrl_loop(); // to continously send/receive data with CAN
-		int sensor_right = gpio_read(SENSOR_PC11);
-		int sensor_left = gpio_read(SENSOR_PC14);
+		int sensor_right = 1-gpio_read(SENSOR_PC11);
+		int sensor_left = 1-gpio_read(SENSOR_PC14);
 		if(sensor_left && sensor_right) break;
 		if(sensor_left){
 			upd_state_speed(setspeed,CAN1_MOTOR3, &(*pid0));
@@ -249,8 +249,8 @@ void forward_line_track(PID* pid0, PID* pid1, int tim, double setspeed){
 		}else{
 			upd_state_speed(setspeed,CAN1_MOTOR3, &(*pid0));
 			upd_state_speed(setspeed,CAN1_MOTOR1, &(*pid1));
-			set_motor_current(CAN1_MOTOR3, 750);
-			set_motor_current(CAN1_MOTOR1, -750);
+			set_motor_current(CAN1_MOTOR3, pid0->current);
+			set_motor_current(CAN1_MOTOR1, -pid1->current);
 		}
 
 		print_data(*pid0, *pid1);
@@ -263,8 +263,8 @@ void forward_line_track_v2(PID* pid0, PID* pid1, int tim, double setspeed){
 	while(1){
 //	while(HAL_GetTick() - last_ticks <= tim){
 		can_ctrl_loop(); // to continously send/receive data with CAN
-		int sensor_right = gpio_read(SENSOR_PC11);
-		int sensor_left = gpio_read(SENSOR_PC14);
+		int sensor_right = 1-gpio_read(SENSOR_PC11);
+		int sensor_left = 1-gpio_read(SENSOR_PC14);
 		if(sensor_left && sensor_right) break;
 		if(sensor_left){
 //			upd_state_speed(setspeed,CAN1_MOTOR3, &(*pid0));
@@ -455,14 +455,7 @@ int main(void)
 		}
 
 	}
-//    message[0] = 'G';
-//    message[3] = 'G';
-//      message[1]= 'G';
-//      message[2] = 'G';
-    //	char rv_m[] = message;
-    //	for(int i = 0;i < 4;i++) {
-    //		message[i] = rv_m[3 - i];
-    //	}
+
 	int launched = 0;
 	int led_ticks = 0;
 	uint8_t curb = 0;
@@ -477,76 +470,96 @@ int main(void)
 		}
 		tft_prints(0,8, "Colors: %s", message);
 		can_ctrl_loop(); // to continously send/receive data with CAN
-		if(launched >= 2) {
-			reset(&pid0,&pid1, 1);
-//			set_motor_current(CAN1_MOTOR3, 0);
-//			set_motor_current(CAN1_MOTOR1, 0);
-			print_data(pid0,pid1);
-			print_data(pid0, pid1);
-			continue;
-		}
-		launched++;
 
 		// go to junction
 //		init_PID(&pid0, 0,kp,ki, kd);
 //		init_PID(&pid1, 0,kp,ki, kd);
 		reset(&pid0, &pid1, 1);
 
-		if(launched == 1)forward_line_track_v2(&pid0, &pid1, 7000, setspeed);
+//		forward(&pid0, &pid1, 5000, setspeed);
+		forward_line_track_v2(&pid0, &pid1, 500, setspeed);
 
-		init_PID(&pid0, 0,kp,ki, kd);
-		init_PID(&pid1, 0,kp,ki, kd);
 		reset(&pid0, &pid1,1);
 
 
 		// Making the first turn to the the first bucket
-		init_PID(&pid0, setspeed/2,kp,ki, kd);
-		init_PID(&pid1, setspeed/2,kp,ki, kd);
-		turning(&pid0, &pid1, 450, setspeed/4, (launched == 1 ? 'l' : 'r'));
+
+		turning(&pid0, &pid1, 150, setspeed/4, 'l');
 
 
 		// reseting to zero rpm
 		reset(&pid0, &pid1,1);
-
-
 		// forwards to the first bucket
 		init_PID(&pid0, setspeed,kp,ki, kd);
 		init_PID(&pid1, setspeed,kp,ki, kd);
-		forward(&pid0, &pid1, (launched == 1 ? 1250 : 1100), setspeed);
+		forward(&pid0, &pid1, 1100, setspeed);
 		reset(&pid0, &pid1,1);
-		if(message[curb] != 'G') {
+		if(message[0] != 'G') {
 			cur_angle -= 90;
 //			cur_angle = min(cur_angle, 120.0);
 			servo_turn(cur_angle);
 			HAL_Delay(1000);
 		}
-		curb++;
 		// backwards to the junction
-		backward(&pid0, &pid1, 1000, setspeed);
+		backward(&pid0, &pid1, 1100, setspeed);
 
 		reset(&pid0, &pid1,1);
 		// Turing to the second bucket
-		turning(&pid0, &pid1, (launched == 1 ? 200 : 225), setspeed/4, (launched == 1 ? 'r' : 'l'));
+		turning(&pid0, &pid1, 100, setspeed/4,  'r');
 
 		reset(&pid0, &pid1,1);
 		// Forwards to the second bucket
-		forward(&pid0, &pid1, (launched == 1 ? 900 : 900), setspeed);
+		forward(&pid0, &pid1,  900, setspeed);
 		reset(&pid0, &pid1,1);
-		if(message[curb] != 'G') {
+		if(message[1] != 'G') {
 			cur_angle -= 90;
 //			cur_angle = min(cur_angle, 120.0);
 			servo_turn(cur_angle);
 			HAL_Delay(1000);
 		}
-		curb++;
 		// backwards to the junction
-		backward(&pid0, &pid1, (launched == 1 ? 1100 : 900), setspeed);
-
+		backward(&pid0, &pid1,  900, setspeed);
 		reset(&pid0, &pid1,1);
+
+		// Turing to the third bucket
+		turning(&pid0, &pid1, 100, setspeed/4,  'r');
+		reset(&pid0, &pid1,1);
+
+		// forwards to the third bucket
+		forward(&pid0, &pid1,  900, setspeed);
+		reset(&pid0, &pid1,1);
+
+		if(message[2] != 'G') {
+			cur_angle -= 90;
+//			cur_angle = min(cur_angle, 120.0);
+			servo_turn(cur_angle);
+			HAL_Delay(1000);
+		}
+
+		// backwards to the junction
+		backward(&pid0, &pid1,  900, setspeed);
+		reset(&pid0, &pid1,1);
+
+
+		// Turning to the fourth bucket
+		turning(&pid0, &pid1, 125, setspeed/4,  'r');
+		reset(&pid0, &pid1,1);
+
+		// forwards to the fourth bucket
+		forward(&pid0, &pid1,  900, setspeed);
+		reset(&pid0, &pid1,1);
+
+		if(message[3] != 'G') {
+			cur_angle -= 90;
+//			cur_angle = min(cur_angle, 120.0);
+			servo_turn(cur_angle);
+			HAL_Delay(1000);
+		}
 
 		set_motor_current(CAN1_MOTOR3, 0);
 		set_motor_current(CAN1_MOTOR1, 0);
 		print_data(pid0,pid1);
+		break;
 
 	}
 //
