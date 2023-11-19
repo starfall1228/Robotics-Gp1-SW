@@ -224,23 +224,6 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
   /* USER CODE END USART2_MspDeInit 1 */
   }
 }
-// 800 - 1550 - 4600 - 5450 (total 3100) r = 6.5 cm
-//void fast_track() {
-//
-//	static const int fast_track_time = 500;
-//	const double kp = 9, ki = 0.001, kd = -0.03;
-//	int initalTime = HAL_GetTick();
-//
-//	led_on(LED3);
-//	if(HAL_GetTick() - initalTime < fast_track_time ) {
-//		for (int i = 0; i < 4; i++ ) {
-//			set_motor_speed(*(motor_choice+i), 1000 , kp, ki, kd, motor_choice);
-//		}
-//
-//	}
-//	set_tar_velocity(0,0,0,0);
-//	led_off(LED3);
-//}
 
 /* USER CODE BEGIN 1 */
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)

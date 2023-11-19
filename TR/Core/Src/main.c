@@ -201,19 +201,20 @@ int main(void)
 		case (3):
 			switch (btn1_choice) {
 				case 0:
-					velocity += 50;
-				break;
-				case 1:
-					velocity -= 50;
-				break;
-				case 2:
 					if (HAL_GetTick() - deltatime > 100) {
 						deltatime = HAL_GetTick();
-						//target_vel[2] = velocity;
-						PID_variable_init();
-						for (int i = 0; i < 4; i++) {
-							target_vel[i] = velocity;
-						}
+						velocity += 50;
+					}
+				break;
+				case 1:
+					if (HAL_GetTick() - deltatime > 100) {
+						deltatime = HAL_GetTick();
+						velocity -= 50;
+					}
+				break;
+				case 2:
+					for (int i = 0; i < 4; i++) {
+						target_vel[i] = velocity;
 					}
 				break;
 				case 3:
