@@ -7,7 +7,7 @@
 ../Core/Src/main.c:184:6:turningS	176	static
 ../Core/Src/main.c:206:6:forward	176	static
 ../Core/Src/main.c:218:6:forwardS	168	static
-../Core/Src/main.c:230:6:forward_line_track	184	static
+../Core/Src/main.c:230:6:forward_line_track	176	static
 ../Core/Src/main.c:260:6:forward_line_track_v2	168	static
 ../Core/Src/main.c:290:6:backward	176	static
 ../Core/Src/main.c:302:6:backwardS	168	static
@@ -16,6 +16,6 @@
 ../Core/Src/main.c:339:19:CCRForAngle1	32	static
 ../Core/Src/main.c:346:6:servo_turn	16	static
 ../Core/Src/main.c:353:6:reset_servo	0	static
-../Core/Src/main.c:601:6:SystemClock_Config	88	static,ignoring_inline_asm
-../Core/Src/main.c:362:5:main	360	static
-../Core/Src/main.c:650:6:Error_Handler	0	static,ignoring_inline_asm
+../Core/Src/main.c:607:6:SystemClock_Config	88	static,ignoring_inline_asm
+../Core/Src/main.c:362:5:main	392	static
+../Core/Src/main.c:656:6:Error_Handler	0	static,ignoring_inline_asm
