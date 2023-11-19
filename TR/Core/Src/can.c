@@ -444,6 +444,7 @@ void PID_variable_init() {
 void set_motor_speed(Motor tar_motor, int16_t tar_vel, const double kp, const double ki, const double kd, const Motor motorchoice[]) {
 	static double Cur_vel = 0;
 	tar_vel = (tar_motor == motorchoice[1] || tar_motor == motorchoice[2] ) ? -tar_vel: tar_vel;
+	tar_vel *= (tar_motor == motorchoice[1]) ? 19/14: 1;
 	// collect current velocity
 	Cur_vel = get_motor_feedback(tar_motor).vel_rpm;
 	error[tar_motor] = tar_vel - Cur_vel;

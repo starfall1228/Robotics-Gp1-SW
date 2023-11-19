@@ -313,18 +313,22 @@ int main(void)
 			tft_prints(0, 9, "%0.5f", kd);
 		break;
 	}
+
 	ReceiveData(target_vel);
+
 	if(!isAutoTrack) fast_track_time = HAL_GetTick();
 	if(isAutoTrack){
 		tft_prints(0, 5, "Autotracking");
 		autotrack(fast_track_time);
 	}
+
 	for (int i = 0; i < 4; i++ ) {
 		set_motor_speed(motorchoice[i], target_vel[i], kp, ki, kd, motorchoice);
 		//set_motor_current(motorchoice[i], 700);
 
 	}
-	tft_prints(0, 0, "timee: %d", (int) HAL_GetTick());
+
+	tft_prints(0, 0, "time: %d", (int) HAL_GetTick());
 	tft_prints(0, 1, "%s     ", Btn1_text[btn1_choice]);
 	tft_prints(0, 2, "%s %d", pid_text[k_choice], velocity);
 	tft_prints(0, 3, "tar: %d %d ", target_vel[0], target_vel[1]);

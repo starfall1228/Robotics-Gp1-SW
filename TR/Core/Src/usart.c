@@ -460,15 +460,14 @@ void end_bit() {
 
 void autotrack(uint32_t fast_track_time){
 
-	lastVelocity = velocity;
+//	lastVelocity = velocity;
 	velocity = max_velocity;
 	set_tar_velocity(directionAT*1.25,directionAT*1.25,directionAT*1.25,directionAT*1.25);
 	if (HAL_GetTick() - fast_track_time > 4500) {
 		set_tar_velocity(0,0,0,0);
 		isAutoTrack = 0;
-		velocity = lastVelocity;
+		velocity = (max_velocity*percent_vel*((shifted == 0)? 1:0.3))/100;
 	}
-
 
 
 	return;
