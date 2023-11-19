@@ -265,9 +265,16 @@ void Reset_tofdat_init() {
 
 void shift() {
 	shifted = fulldat[2] - '0';
+//	shifted ? led_on(LED4) : led_off(LED4) ;
+	if(shifted){
+		led_on(LED4);
+	}else{
+		led_off(LED4);
+	}
 	velocity = max_velocity*((shifted == 0)? 1:0.3)*percent_vel/100;
 	Reset_dat_init();
 	tft_prints(0, 5, "%s", "Shifting");
+
 	return;
 }
 
