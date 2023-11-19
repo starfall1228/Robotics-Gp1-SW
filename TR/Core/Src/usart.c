@@ -42,7 +42,7 @@ const Motor* motor_choice = NULL;
 int value_Time = 0;
 int shifted = 0;
 int percent_vel = 100;
-const int max_velocity = 1500;
+const int max_velocity = 1750;
 const int fast_track_time = 2000;
 
 int prev_error = 0;
@@ -418,7 +418,7 @@ void end_bit() {
 		break;
 		case 'a':
 			isAutoTrack = 1;
-			if(fulldat[1]){
+			if(fulldat[1] - '0'){
 				directionAT = 1;
 			}else{
 				directionAT = -1;
@@ -451,9 +451,9 @@ void end_bit() {
 void autotrack(uint32_t fast_track_time){
 
 //	lastVelocity = velocity;
-	velocity = max_velocity;
+	velocity = 1500;
 	set_tar_velocity(directionAT*1.25,directionAT*1.25,directionAT*1.25,directionAT*1.25);
-	if (HAL_GetTick() - fast_track_time > 4500) {
+	if (HAL_GetTick() - fast_track_time > 6200) {
 		set_tar_velocity(0,0,0,0);
 		isAutoTrack = 0;
 		velocity = (max_velocity*percent_vel*((shifted == 0)? 1:0.3))/100;
