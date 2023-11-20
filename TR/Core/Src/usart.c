@@ -337,6 +337,7 @@ void decode_command(int value) {
 		break;
 		case 0:
 		isMoving = 0;
+		isAutoTrack = 0;
 		// Up
 		case 4:
 		// Right
